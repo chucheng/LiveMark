@@ -8,6 +8,9 @@ import { schema } from "./schema";
 import { buildKeymaps } from "./keymaps";
 import { buildInputRules } from "./input-rules";
 import { placeholderPlugin } from "./plugins/placeholder";
+import { liveRenderPlugin } from "./plugins/live-render";
+import { inlineDecorationsPlugin } from "./plugins/inline-decorations";
+import { nodeViews } from "./nodeviews";
 import { parseMarkdown } from "./markdown/parser";
 import { serializeMarkdown } from "./markdown/serializer";
 
@@ -54,11 +57,14 @@ export function createEditor(
       keymap(baseKeymap),
       history(),
       placeholderPlugin(),
+      liveRenderPlugin(),
+      inlineDecorationsPlugin(),
     ],
   });
 
   const view = new EditorView(mount, {
     state,
+    nodeViews,
     dispatchTransaction(transaction) {
       const newState = view.state.apply(transaction);
       view.updateState(newState);

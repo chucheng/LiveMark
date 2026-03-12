@@ -1,0 +1,146 @@
+/* ============================================================
+   Milestone 3 — Live Markdown Rendering
+   Syntax hints, inline markers, transitions
+   ============================================================ */
+
+/* --- Shared syntax hint style --- */
+.lm-syntax-hint {
+  font-family: var(--lm-font-mono);
+  font-size: 0.85em;
+  color: var(--lm-text-muted);
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+  user-select: none;
+  pointer-events: none;
+}
+
+.lm-active .lm-syntax-hint {
+  opacity: 0.5;
+}
+
+/* --- Inline syntax markers (widget decorations) --- */
+.lm-syntax-marker {
+  font-family: var(--lm-font-mono);
+  font-size: 0.85em;
+  color: var(--lm-text-muted);
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* --- Heading NodeView --- */
+.lm-heading-wrapper {
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+}
+
+.lm-heading-wrapper h1,
+.lm-heading-wrapper h2,
+.lm-heading-wrapper h3,
+.lm-heading-wrapper h4,
+.lm-heading-wrapper h5,
+.lm-heading-wrapper h6 {
+  display: flex;
+  align-items: baseline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Override editor.css heading margins — wrapper handles them */
+.ProseMirror .lm-heading-wrapper h1,
+.ProseMirror .lm-heading-wrapper h2,
+.ProseMirror .lm-heading-wrapper h3,
+.ProseMirror .lm-heading-wrapper h4,
+.ProseMirror .lm-heading-wrapper h5,
+.ProseMirror .lm-heading-wrapper h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.lm-heading-wrapper .lm-syntax-hint {
+  flex-shrink: 0;
+  white-space: pre;
+}
+
+.lm-heading-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Code Block NodeView --- */
+.lm-code-block-wrapper {
+  margin-bottom: 0.8em;
+}
+
+.lm-code-block-wrapper pre {
+  background-color: var(--lm-code-bg);
+  border-radius: 6px;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.lm-code-block-wrapper pre code {
+  background: none;
+  padding: 0;
+  color: var(--lm-text);
+  font-size: 0.875em;
+}
+
+.lm-fence {
+  font-size: 0.85em;
+  line-height: 1.4;
+  padding-left: 1em;
+  /* Fences use display toggle — acceptable minor layout shift */
+  display: none;
+}
+
+.lm-active .lm-fence {
+  display: block;
+  opacity: 0.5;
+}
+
+/* --- Blockquote NodeView --- */
+.lm-blockquote-wrapper {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.8em;
+}
+
+.lm-blockquote-hint {
+  flex-shrink: 0;
+  margin-right: 0.25em;
+  line-height: var(--lm-line-height);
+}
+
+.lm-blockquote-wrapper blockquote {
+  flex: 1;
+  min-width: 0;
+  border-left: 3px solid var(--lm-blockquote-border);
+  padding-left: 1em;
+  margin-left: 0;
+  margin-bottom: 0;
+  color: var(--lm-text-muted);
+}
+
+/* --- Horizontal Rule NodeView --- */
+.lm-hr-wrapper {
+  position: relative;
+  margin: 1.5em 0;
+}
+
+.lm-hr-wrapper hr {
+  border: none;
+  border-top: 1px solid var(--lm-border);
+  margin: 0;
+}
+
+.lm-hr-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--lm-bg);
+  padding: 0 0.5em;
+  font-size: 0.85em;
+}

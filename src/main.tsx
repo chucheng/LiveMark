@@ -5,6 +5,7 @@ import "./styles/variables.css";
 import "./styles/reset.css";
 import "./styles/editor.css";
 import "./styles/app.css";
+import "./styles/live-render.css";
 
 const root = document.getElementById("app");
 
