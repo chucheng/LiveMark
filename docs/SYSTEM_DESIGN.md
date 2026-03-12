@@ -288,7 +288,38 @@ const commands: Command[] = [
 ];
 ```
 
-## 9. Error Handling Strategy
+## 9. Source View Mode
+
+### Purpose
+
+Users often need to see or copy raw Markdown — for pasting into GitHub, Slack, documentation systems, or debugging formatting issues. Source view provides this without breaking the "one editing surface" principle.
+
+### Design
+
+- **Source view** is a temporary, read-only overlay that replaces the ProseMirror editor view
+- Activated via `Cmd/Ctrl+/` toggle or command palette
+- Displays the serialized Markdown string in a monospace `<pre>` block
+- The source text is generated on-demand by running the existing PM → Markdown serializer
+- No separate editor instance — just a styled text container with selection support
+- Pressing `Cmd/Ctrl+/` or `Esc` returns to the rendered ProseMirror view
+- Cursor position (mapped to document offset) is restored when switching back
+
+### "Copy as Markdown" Command
+
+- Serializes the current document (or selection) to a Markdown string via the existing serializer
+- Copies the string to the system clipboard
+- Does not require entering source view — works from the rendered editing view
+- Selection-aware: if text is selected, only the selected range is serialized
+
+### State
+
+```typescript
+const [isSourceView, setIsSourceView] = createSignal(false);
+```
+
+The source view signal controls which panel is displayed. The ProseMirror editor state is untouched while source view is active.
+
+## 10. Error Handling Strategy
 
 ### Principle: Never Lose Data
 

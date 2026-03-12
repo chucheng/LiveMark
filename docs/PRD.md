@@ -71,6 +71,7 @@ LiveMark is a desktop Markdown editor with seamless inline rendering. Markdown s
 | Command palette | Cmd/Ctrl+Shift+P for all actions | P1 |
 | Theme support | Light and dark mode, system-follow | P0 |
 | Typography | Configurable font, font size, line height | P1 |
+| View Source toggle | Cmd/Ctrl+/ to toggle full-document raw Markdown source view | P1 |
 | Focus mode | Dim all paragraphs except current | P2 |
 | Typewriter mode | Keep current line vertically centered | P2 |
 
@@ -81,6 +82,7 @@ LiveMark is a desktop Markdown editor with seamless inline rendering. Markdown s
 | Export to HTML | Standalone HTML with embedded styles | P1 |
 | Export to PDF | Via HTML-to-PDF rendering | P2 |
 | Copy as HTML | Copy rendered HTML to clipboard | P1 |
+| Copy as Markdown | Copy raw Markdown source to clipboard | P1 |
 
 ## 4. Features Explicitly NOT in v1
 

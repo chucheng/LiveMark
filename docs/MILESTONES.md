@@ -199,6 +199,7 @@ src/editor/
 ### Deliverables
 - Command palette: "Export to HTML" → save dialog → HTML file
 - Command palette: "Copy as HTML" → rendered HTML on clipboard
+- Command palette: "Copy as Markdown" → raw Markdown on clipboard (whole doc or selection)
 - Exported HTML looks like the editor's rendered output
 
 ### Files to Create/Modify
@@ -211,7 +212,7 @@ src/
     html-template.ts        — HTML wrapper template
     export-css.ts           — Bundled CSS for export
   commands/
-    export-commands.ts       — Export action handlers
+    export-commands.ts       — Export action handlers (includes Copy as Markdown)
 ```
 
 ---
@@ -224,6 +225,8 @@ src/
 - Find and replace (Cmd+F)
 - Status bar (word count, line/column, encoding)
 - Typography settings (font, size, line height)
+- Source view toggle (Cmd+/ to view raw Markdown)
+- Copy as Markdown (whole document or selection)
 - Focus mode (dim non-current paragraphs)
 - Overall visual polish and consistency
 - Preferences storage
@@ -235,6 +238,8 @@ src/
 - Find and replace with regex support
 - Status bar with live statistics
 - Settings panel for typography and behavior
+- Source view mode: Cmd+/ toggles a read-only raw Markdown view
+- Copy as Markdown: command palette action to copy raw Markdown to clipboard
 - Focus mode toggle
 
 ### Files to Create/Modify
@@ -244,6 +249,7 @@ src/
     CommandPalette.tsx       — Command palette component
     FindReplace.tsx          — Find/replace overlay
     StatusBar.tsx            — Status bar component
+    SourceView.tsx           — Raw Markdown source view overlay
     Settings.tsx             — Settings panel
     ThemeProvider.tsx         — Theme management
   state/

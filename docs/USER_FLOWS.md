@@ -155,8 +155,39 @@ Cmd/Ctrl+Shift+Z    → Redo
 Cmd/Ctrl+B          → Toggle bold on selection
 Cmd/Ctrl+I          → Toggle italic on selection
 Cmd/Ctrl+K          → Insert link
+Cmd/Ctrl+/          → Toggle source view (raw Markdown)
 Cmd/Ctrl+W          → Close window
 ```
+
+## Flow 11: Viewing and Copying Markdown Source
+
+```
+Scenario A — Quick copy
+  User wants to paste Markdown into GitHub/Slack/README
+  → Opens command palette (Cmd/Ctrl+Shift+P)
+  → Types "copy markdown"
+  → Selects "Copy as Markdown"
+  → Entire document's raw Markdown is copied to clipboard
+  → Brief "Copied" indicator in status bar (fades after 1s)
+  → User stays in the rendered editing view
+
+Scenario B — View full source
+  User presses Cmd/Ctrl+/ (or via command palette: "View Source")
+  → Editor switches to a read-only monospace source view
+  → Full raw Markdown is displayed (syntax highlighted as plain text)
+  → User can select and copy any portion
+  → Title bar shows "[Source]" indicator
+  → Press Cmd/Ctrl+/ again (or Esc) to return to rendered editing view
+  → Cursor position is preserved when switching back
+
+Scenario C — Copy selection as Markdown
+  User selects a portion of the document in rendered view
+  → Opens command palette → "Copy as Markdown"
+  → Only the selected range is serialized to Markdown and copied
+  → Works for any selection (partial paragraph, multiple blocks, etc.)
+```
+
+**Key design note:** View Source is a *temporary inspection mode*, not a permanent split pane. It respects the core principle of one editing surface — the rendered view remains the primary workspace.
 
 ## Edge Cases
 

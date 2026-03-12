@@ -32,6 +32,8 @@ M7: Polish ←── M6: Export ←── M5: Rich Elements ←─────�
 - [ ] Tables are visually rendered and editable
 - [ ] Light and dark themes
 - [ ] HTML export
+- [ ] View Source mode (Cmd/Ctrl+/ to see raw Markdown)
+- [ ] Copy as Markdown to clipboard
 - [ ] Command palette for all actions
 - [ ] Find and replace
 - [ ] Undo/redo
