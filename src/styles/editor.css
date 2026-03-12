@@ -151,3 +151,12 @@
   position: absolute;
   font-style: italic;
 }
+
+/* Focus mode */
+.lm-focus-mode .ProseMirror > *:not(.lm-active) {
+  opacity: 0.3;
+  transition: opacity 200ms;
+}
+.lm-focus-mode .ProseMirror > .lm-active {
+  opacity: 1;
+}

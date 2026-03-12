@@ -6,6 +6,11 @@ import "./styles/reset.css";
 import "./styles/editor.css";
 import "./styles/app.css";
 import "./styles/live-render.css";
+import "./styles/status-bar.css";
+import "./styles/command-palette.css";
+import "./styles/find-replace.css";
+import "./styles/source-view.css";
+import "./styles/about.css";
 
 const root = document.getElementById("app");
 

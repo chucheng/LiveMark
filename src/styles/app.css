@@ -23,16 +23,3 @@
   font-weight: 500;
 }
 
-.lm-statusbar {
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 16px;
-  background-color: var(--lm-bg);
-  border-top: 1px solid var(--lm-border);
-  font-size: 12px;
-  color: var(--lm-text-muted);
-  flex-shrink: 0;
-  user-select: none;
-}

@@ -5,6 +5,7 @@ mod commands;
 
 use commands::file::{read_file, write_file};
 use commands::image::save_image;
+use commands::preferences::{read_preferences, write_preferences};
 use tauri::Manager;
 
 pub struct InitialFilePath(pub Option<String>);
@@ -45,7 +46,9 @@ fn main() {
             read_file,
             write_file,
             get_initial_file,
-            save_image
+            save_image,
+            read_preferences,
+            write_preferences
         ])
         .run(tauri::generate_context!())
         .expect("error while running LiveMark");

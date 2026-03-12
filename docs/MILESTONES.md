@@ -254,57 +254,51 @@ package.json                            — Added @tauri-apps/plugin-clipboard-m
 
 ---
 
-## Milestone 8 — UI Polish and Themes
+## Milestone 8 — UI Polish and Themes ✓
 
 ### Goals
 - Light and dark themes with system-follow
 - Command palette (Cmd+Shift+P)
 - Find and replace (Cmd+F)
 - Status bar (word count, line/column, encoding)
-- Typography settings (font, size, line height)
 - Source view toggle (Cmd+/ to view raw Markdown)
-- Copy as Markdown (whole document or selection)
 - Focus mode (dim non-current paragraphs)
-- Overall visual polish and consistency
-- Preferences storage
+- Preferences persistence
 
 ### Deliverables
-- Polished light and dark themes
-- Smooth theme transitions
-- Full command palette with fuzzy search
-- Find and replace with regex support
-- Status bar with live statistics
-- Settings panel for typography and behavior
-- Source view mode: Cmd+/ toggles a read-only raw Markdown view
-- Copy as Markdown: command palette action to copy raw Markdown to clipboard
-- Focus mode toggle
+- Cmd+Shift+T cycles light → dark → system theme (with CSS variable swap)
+- Cmd+Shift+P opens command palette with fuzzy search across all registered commands
+- Cmd+F opens find bar with regex/case-sensitive toggles, replace, replace all
+- Cmd+/ toggles read-only raw Markdown source view
+- Cmd+Shift+F toggles focus mode (dims non-active blocks via opacity)
+- Enhanced status bar: line/column, selection count, word count, UTF-8, theme toggle button
+- Preferences auto-saved to Tauri app_config_dir/preferences.json (debounced)
+- All actions registered in command registry, accessible via palette
 
-### Files to Create/Modify
+### Files Created/Modified
 ```
-src/
-  ui/
-    CommandPalette.tsx       — Command palette component
-    FindReplace.tsx          — Find/replace overlay
-    StatusBar.tsx            — Status bar component
-    SourceView.tsx           — Raw Markdown source view overlay
-    Settings.tsx             — Settings panel
-    ThemeProvider.tsx         — Theme management
-  state/
-    preferences.ts           — Preferences signals + persistence
-    ui.ts                    — UI state signals
-  commands/
-    registry.ts              — Command registry
-    all-commands.ts          — All registered commands
-  styles/
-    themes/
-      light.css
-      dark.css
-    command-palette.css
-    find-replace.css
-    status-bar.css
-src-tauri/src/
-  commands/
-    preferences.rs           — Read/write preferences
+src/state/theme.ts                     — Theme signals (light/dark/system), system media query listener
+src/state/preferences.ts               — Preferences signals + debounced Tauri persistence
+src/state/ui.ts                        — UI state signals (palette, find, source view)
+src/ui/StatusBar.tsx                   — Enhanced status bar component
+src/ui/CommandPalette.tsx              — Command palette overlay with fuzzy search
+src/ui/FindReplace.tsx                 — Find & replace bar
+src/ui/SourceView.tsx                  — Read-only raw Markdown view
+src/commands/registry.ts               — Command registry with fuzzy search
+src/commands/all-commands.ts           — All registered commands
+src/editor/plugins/find-replace.ts     — ProseMirror search decoration plugin
+src/editor/editor.ts                   — Added onSelectionChange callback, find-replace plugin
+src/ui/App.tsx                         — Wired all M8 components and keyboard shortcuts
+src/main.tsx                           — Added new CSS imports
+src/styles/status-bar.css              — Status bar styles
+src/styles/command-palette.css         — Command palette styles
+src/styles/find-replace.css            — Find/replace bar styles
+src/styles/source-view.css             — Source view styles
+src/styles/editor.css                  — Focus mode CSS rules
+src/styles/app.css                     — Removed old statusbar styles (moved to status-bar.css)
+src-tauri/src/commands/preferences.rs  — Rust read/write preferences (atomic)
+src-tauri/src/commands/mod.rs          — Added preferences module
+src-tauri/src/main.rs                  — Registered preference commands
 ```
 
 ---

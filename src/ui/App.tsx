@@ -1,8 +1,11 @@
-import { onMount, onCleanup, createSignal } from "solid-js";
+import { onMount, onCleanup, createSignal, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { createEditor, type EditorInstance } from "../editor/editor";
+import { createEditor, type EditorInstance, type CursorPosition } from "../editor/editor";
 import { documentState } from "../state/document";
+import { uiState } from "../state/ui";
+import { themeState } from "../state/theme";
+import { preferencesState } from "../state/preferences";
 import {
   openFile,
   saveFile,
@@ -19,11 +22,23 @@ import {
   copyAsMarkdown,
   setExportEditorRef,
 } from "../commands/export-commands";
+import { registerAllCommands } from "../commands/all-commands";
+import StatusBar, { type CursorInfo } from "./StatusBar";
+import CommandPalette from "./CommandPalette";
+import FindReplace from "./FindReplace";
+import SourceView from "./SourceView";
+import AboutModal from "./AboutModal";
 
 export default function App() {
   let editorRef!: HTMLDivElement;
   let editor: EditorInstance | undefined;
   const [wordCount, setWordCount] = createSignal(0);
+  const [cursorInfo, setCursorInfo] = createSignal<CursorInfo>({
+    line: 1,
+    col: 1,
+    selected: 0,
+  });
+  const [markdown, setMarkdown] = createSignal("");
 
   function countWords(text: string): number {
     return text
@@ -42,7 +57,7 @@ export default function App() {
     } else if (e.key === "s" && e.shiftKey) {
       e.preventDefault();
       saveAsFile();
-    } else if (e.key === "s") {
+    } else if (e.key === "s" && !e.shiftKey) {
       e.preventDefault();
       saveFile();
     } else if (e.key === "n") {
@@ -51,6 +66,10 @@ export default function App() {
     } else if (e.key === "E" && e.shiftKey) {
       e.preventDefault();
       exportHTML();
+    } else if (e.key === "p" && e.shiftKey) {
+      // Cmd+Shift+P → command palette
+      e.preventDefault();
+      uiState.togglePalette();
     } else if (e.key === "p" && !e.shiftKey && !e.altKey) {
       e.preventDefault();
       exportPDF();
@@ -60,15 +79,42 @@ export default function App() {
     } else if (e.key === "c" && e.altKey) {
       e.preventDefault();
       copyAsMarkdown();
+    } else if (e.key === "T" && e.shiftKey) {
+      e.preventDefault();
+      themeState.cycleTheme();
+      preferencesState.savePreferences();
+    } else if (e.key === "/" && !e.shiftKey) {
+      e.preventDefault();
+      if (uiState.isSourceView()) {
+        // Update markdown for source view before toggling
+      } else {
+        setMarkdown(editor?.getMarkdown() ?? "");
+      }
+      uiState.toggleSourceView();
+    } else if (e.key === "f" && !e.shiftKey) {
+      e.preventDefault();
+      uiState.toggleFind();
+    } else if (e.key === "F" && e.shiftKey) {
+      e.preventDefault();
+      preferencesState.toggleFocusMode();
     }
   }
 
   onMount(async () => {
+    // Register all commands for the palette
+    registerAllCommands();
+
+    // Load saved preferences
+    await preferencesState.loadPreferences();
+
     editor = createEditor(editorRef, {
       onChange(doc) {
         documentState.setDirty();
         const text = doc.textContent;
         setWordCount(countWords(text));
+      },
+      onSelectionChange(pos) {
+        setCursorInfo(pos);
       },
     });
 
@@ -122,12 +168,27 @@ export default function App() {
           {documentState.isModified() ? " ●" : ""}
         </span>
       </div>
-      <div class="lm-editor-wrapper">
-        <div ref={editorRef} />
-      </div>
-      <div class="lm-statusbar">
-        <span>{wordCount()} words</span>
-      </div>
+
+      <Show when={uiState.isSourceView()} fallback={
+        <div class={`lm-editor-wrapper ${preferencesState.focusMode() ? "lm-focus-mode" : ""}`}>
+          <Show when={uiState.isFindOpen()}>
+            <FindReplace view={() => editor?.view} />
+          </Show>
+          <div ref={editorRef} />
+        </div>
+      }>
+        <SourceView markdown={() => editor?.getMarkdown() ?? ""} />
+      </Show>
+
+      <Show when={uiState.isPaletteOpen()}>
+        <CommandPalette />
+      </Show>
+
+      <Show when={uiState.isAboutOpen()}>
+        <AboutModal />
+      </Show>
+
+      <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} />
     </div>
   );
 }

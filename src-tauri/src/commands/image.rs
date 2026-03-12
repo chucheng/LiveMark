@@ -1,5 +1,4 @@
 use std::fs;
-use std::path::PathBuf;
 
 #[tauri::command]
 pub fn save_image(filename: String, data: Vec<u8>) -> Result<String, String> {

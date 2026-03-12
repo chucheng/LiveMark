@@ -1,0 +1,91 @@
+.lm-find-bar {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  z-index: 100;
+  background: var(--lm-bg);
+  border: 1px solid var(--lm-border);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lm-find-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lm-find-input {
+  width: 200px;
+  padding: 4px 8px;
+  border: 1px solid var(--lm-border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--lm-text);
+  font-size: 13px;
+  font-family: var(--lm-font-body);
+  outline: none;
+}
+
+.lm-find-input:focus {
+  border-color: var(--lm-accent);
+}
+
+.lm-find-info {
+  font-size: 12px;
+  color: var(--lm-text-muted);
+  min-width: 60px;
+  text-align: center;
+}
+
+.lm-find-btn {
+  background: none;
+  border: 1px solid var(--lm-border);
+  border-radius: 3px;
+  color: var(--lm-text-muted);
+  font-size: 12px;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lm-find-btn:hover {
+  color: var(--lm-text);
+  border-color: var(--lm-text-muted);
+}
+
+.lm-find-toggle {
+  background: none;
+  border: 1px solid var(--lm-border);
+  border-radius: 3px;
+  color: var(--lm-text-muted);
+  font-size: 12px;
+  padding: 3px 6px;
+  cursor: pointer;
+  font-family: var(--lm-font-mono);
+}
+
+.lm-find-toggle:hover {
+  color: var(--lm-text);
+}
+
+.lm-find-toggle-active {
+  background: var(--lm-accent);
+  color: white;
+  border-color: var(--lm-accent);
+}
+
+.lm-find-match {
+  background: rgba(255, 200, 0, 0.3);
+  border-radius: 2px;
+}
+
+.lm-find-current {
+  background: rgba(255, 140, 0, 0.5);
+  border-radius: 2px;
+}

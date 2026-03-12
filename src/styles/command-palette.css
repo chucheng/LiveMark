@@ -1,0 +1,81 @@
+.lm-palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  padding-top: 80px;
+  z-index: 1000;
+}
+
+.lm-palette {
+  width: 500px;
+  max-height: 360px;
+  background: var(--lm-bg);
+  border: 1px solid var(--lm-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.lm-palette-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid var(--lm-border);
+  background: transparent;
+  color: var(--lm-text);
+  font-size: 15px;
+  font-family: var(--lm-font-body);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.lm-palette-input::placeholder {
+  color: var(--lm-text-muted);
+}
+
+.lm-palette-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.lm-palette-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.lm-palette-item-active {
+  background: var(--lm-selection);
+}
+
+.lm-palette-category {
+  font-size: 11px;
+  color: var(--lm-text-muted);
+  min-width: 48px;
+}
+
+.lm-palette-label {
+  flex: 1;
+  font-size: 14px;
+  color: var(--lm-text);
+}
+
+.lm-palette-shortcut {
+  font-size: 12px;
+  color: var(--lm-text-muted);
+  font-family: var(--lm-font-mono);
+}
+
+.lm-palette-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--lm-text-muted);
+  font-size: 14px;
+}

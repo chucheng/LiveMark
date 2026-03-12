@@ -12,6 +12,7 @@ import { liveRenderPlugin } from "./plugins/live-render";
 import { inlineDecorationsPlugin } from "./plugins/inline-decorations";
 import { linkClickPlugin } from "./plugins/link-click";
 import { imageDropPastePlugin } from "./plugins/image-drop-paste";
+import { findReplacePlugin } from "./plugins/find-replace";
 import { tableEditing } from "prosemirror-tables";
 import { nodeViews } from "./nodeviews";
 import { parseMarkdown } from "./markdown/parser";
@@ -28,11 +29,19 @@ export interface EditorInstance {
   destroy: () => void;
 }
 
+export interface CursorPosition {
+  line: number;
+  col: number;
+  selected: number;
+}
+
 export interface EditorOptions {
   /** Initial Markdown content */
   content?: string;
   /** Called whenever the document changes */
   onChange?: (doc: Node) => void;
+  /** Called whenever the selection/cursor changes */
+  onSelectionChange?: (pos: CursorPosition) => void;
 }
 
 /**
@@ -45,7 +54,7 @@ export function createEditor(
   mount: HTMLElement,
   options: EditorOptions = {}
 ): EditorInstance {
-  const { content = "", onChange } = options;
+  const { content = "", onChange, onSelectionChange } = options;
 
   // Parse initial content
   const doc = content
@@ -64,6 +73,7 @@ export function createEditor(
       inlineDecorationsPlugin(),
       linkClickPlugin(),
       imageDropPastePlugin(),
+      findReplacePlugin(),
       tableEditing(),
     ],
   });
@@ -76,6 +86,17 @@ export function createEditor(
       view.updateState(newState);
       if (transaction.docChanged && onChange) {
         onChange(newState.doc);
+      }
+      if (onSelectionChange && (transaction.selectionSet || transaction.docChanged)) {
+        const { $head, from, to } = newState.selection;
+        // Compute line/col by counting newlines before cursor
+        const textBefore = newState.doc.textBetween(0, $head.pos, "\n");
+        const lines = textBefore.split("\n");
+        onSelectionChange({
+          line: lines.length,
+          col: lines[lines.length - 1].length + 1,
+          selected: Math.abs(to - from),
+        });
       }
     },
   });
