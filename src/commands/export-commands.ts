@@ -1,0 +1,138 @@
+import { invoke } from "@tauri-apps/api/core";
+import { save, message } from "@tauri-apps/plugin-dialog";
+import { writeText } from "@tauri-apps/plugin-clipboard-manager";
+import { documentState } from "../state/document";
+import { generateHTML, renderHTMLBody } from "../export/html-template";
+import type { EditorInstance } from "../editor/editor";
+
+let editorRef: EditorInstance | null = null;
+
+export function setExportEditorRef(editor: EditorInstance) {
+  editorRef = editor;
+}
+
+/**
+ * Export the current document as a standalone HTML file.
+ * Cmd+Shift+E
+ */
+export async function exportHTML() {
+  if (!editorRef) return;
+
+  const markdown = editorRef.getMarkdown();
+  const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
+  const html = generateHTML(markdown, title);
+
+  const path = await save({
+    filters: [{ name: "HTML", extensions: ["html"] }],
+    defaultPath: title + ".html",
+  });
+
+  if (!path) return;
+
+  try {
+    await invoke("write_file", { path, content: html });
+    await message("Exported to HTML successfully.", { title: "Export" });
+  } catch (err) {
+    await message(`Failed to export HTML:\n${err}`, {
+      title: "Export Error",
+      kind: "error",
+    });
+  }
+}
+
+/**
+ * Export the current document to PDF via system print dialog.
+ * Uses a hidden iframe approach for cross-platform compatibility.
+ * Cmd+P
+ */
+export async function exportPDF() {
+  if (!editorRef) return;
+
+  const markdown = editorRef.getMarkdown();
+  const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
+  const html = generateHTML(markdown, title);
+
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.left = "-9999px";
+  iframe.style.top = "-9999px";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  document.body.appendChild(iframe);
+
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (!iframeDoc) {
+    document.body.removeChild(iframe);
+    return;
+  }
+
+  iframeDoc.open();
+  iframeDoc.write(html);
+  iframeDoc.close();
+
+  // Wait for content to render before printing
+  iframe.onload = () => {
+    try {
+      iframe.contentWindow?.print();
+    } finally {
+      // Clean up after a delay to let print dialog finish
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }
+  };
+
+  // Fallback: if onload doesn't fire (content already loaded via write)
+  setTimeout(() => {
+    if (iframe.parentNode) {
+      try {
+        iframe.contentWindow?.print();
+      } finally {
+        setTimeout(() => {
+          if (iframe.parentNode) {
+            document.body.removeChild(iframe);
+          }
+        }, 1000);
+      }
+    }
+  }, 200);
+}
+
+/**
+ * Copy the rendered HTML to the system clipboard.
+ * Cmd+Shift+C
+ */
+export async function copyAsHTML() {
+  if (!editorRef) return;
+
+  const markdown = editorRef.getMarkdown();
+  const html = renderHTMLBody(markdown);
+
+  try {
+    await writeText(html);
+  } catch (err) {
+    await message(`Failed to copy HTML:\n${err}`, {
+      title: "Copy Error",
+      kind: "error",
+    });
+  }
+}
+
+/**
+ * Copy the raw Markdown to the system clipboard.
+ * Cmd+Alt+C
+ */
+export async function copyAsMarkdown() {
+  if (!editorRef) return;
+
+  const markdown = editorRef.getMarkdown();
+
+  try {
+    await writeText(markdown);
+  } catch (err) {
+    await message(`Failed to copy Markdown:\n${err}`, {
+      title: "Copy Error",
+      kind: "error",
+    });
+  }
+}

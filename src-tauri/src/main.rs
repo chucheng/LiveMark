@@ -18,6 +18,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
             // Pass CLI file arg to frontend via managed state
             let args: Vec<String> = std::env::args().collect();

@@ -20,7 +20,7 @@ M8: Polish ←── M7: Export ←── M6: Rich Elements ←── M5: Stabil
 | M4 — File Operations | Open, save, save-as, new file, CLI args | **Done** |
 | M5 — Stabilization & Correctness | Bug fixes, test infrastructure, round-trip tests | **Done** |
 | M6 — Rich Elements | Images, tables, code highlighting, task lists | **Done** |
-| M7 — Export | HTML export, PDF export, copy-as-HTML | |
+| M7 — Export | HTML export, PDF export, copy-as-HTML, copy-as-Markdown | **Done** |
 | M8 — UI Polish & Themes | Light/dark themes, command palette, find/replace, status bar | |
 
 ## Definition of Done for v1
@@ -32,10 +32,10 @@ M8: Polish ←── M7: Export ←── M6: Rich Elements ←── M5: Stabil
 - [x] Images render inline
 - [x] Tables are visually rendered and editable
 - [ ] Light and dark themes
-- [ ] HTML export
-- [ ] PDF export
+- [x] HTML export
+- [x] PDF export
 - [ ] View Source mode (Cmd/Ctrl+/ to see raw Markdown)
-- [ ] Copy as Markdown to clipboard
+- [x] Copy as Markdown to clipboard
 - [ ] Command palette for all actions
 - [ ] Find and replace
 - [x] Undo/redo

@@ -221,32 +221,35 @@ package.json                             — Added highlight.js, prosemirror-tab
 
 ---
 
-## Milestone 7 — Export
+## Milestone 7 — Export ✓
 
 ### Goals
 - Export to standalone HTML (embedded CSS)
-- Export to PDF via HTML-to-PDF pipeline (webview print-to-PDF)
+- Export to PDF via system print dialog (Save as PDF)
 - Copy as HTML to clipboard
+- Copy as Markdown to clipboard
 - Export template with LiveMark styling
 
 ### Deliverables
-- Command palette: "Export to HTML" → save dialog → HTML file
-- Command palette: "Export to PDF" → save dialog → PDF file
-- Command palette: "Copy as HTML" → rendered HTML on clipboard
-- Command palette: "Copy as Markdown" → raw Markdown on clipboard (whole doc or selection)
-- Exported HTML and PDF look like the editor's rendered output
+- Cmd+Shift+E → save dialog → standalone HTML file with bundled CSS
+- Cmd+P → system print dialog (Save as PDF via hidden iframe)
+- Cmd+Shift+C → rendered HTML content on clipboard
+- Cmd+Alt+C → raw Markdown on clipboard
+- Exported HTML includes full LiveMark styling (typography, code highlighting, tables, task lists)
+- Uses @tauri-apps/plugin-clipboard-manager for clipboard access
+- Reuses existing markdown-it instance and write_file Tauri command
 
-### Files to Create/Modify
+### Files Created/Modified
 ```
-src-tauri/src/
-  commands/
-    export.rs               — HTML generation, PDF export via webview
-src/
-  export/
-    html-template.ts        — HTML wrapper template
-    export-css.ts           — Bundled CSS for export
-  commands/
-    export-commands.ts       — Export action handlers (includes Copy as Markdown)
+src/export/html-template.ts             — HTML document template generation (generateHTML, renderHTMLBody)
+src/export/export-css.ts                — Bundled CSS for export (typography, code, tables, task lists, print)
+src/commands/export-commands.ts         — Export action handlers (exportHTML, exportPDF, copyAsHTML, copyAsMarkdown)
+src/editor/markdown/parser.ts           — Exported md instance for HTML rendering
+src/ui/App.tsx                          — Added export keyboard shortcuts + editor ref
+src-tauri/Cargo.toml                    — Added tauri-plugin-clipboard-manager
+src-tauri/src/main.rs                   — Registered clipboard-manager plugin
+src-tauri/capabilities/default.json     — Added clipboard-manager permissions
+package.json                            — Added @tauri-apps/plugin-clipboard-manager
 ```
 
 ---

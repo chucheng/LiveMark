@@ -4,7 +4,7 @@ import { MarkdownParser } from "prosemirror-markdown";
 import { schema } from "../schema";
 import { taskListPlugin } from "./task-list-plugin";
 
-const md = MarkdownIt("commonmark", { html: false })
+export const md = MarkdownIt("commonmark", { html: false })
   .enable("strikethrough")
   .enable("table")
   .use(taskListPlugin)

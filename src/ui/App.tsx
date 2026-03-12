@@ -12,6 +12,13 @@ import {
   setEditorRef,
   confirmUnsavedChanges,
 } from "../commands/file-commands";
+import {
+  exportHTML,
+  exportPDF,
+  copyAsHTML,
+  copyAsMarkdown,
+  setExportEditorRef,
+} from "../commands/export-commands";
 
 export default function App() {
   let editorRef!: HTMLDivElement;
@@ -41,6 +48,18 @@ export default function App() {
     } else if (e.key === "n") {
       e.preventDefault();
       newFile();
+    } else if (e.key === "E" && e.shiftKey) {
+      e.preventDefault();
+      exportHTML();
+    } else if (e.key === "p" && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      exportPDF();
+    } else if (e.key === "C" && e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      copyAsHTML();
+    } else if (e.key === "c" && e.altKey) {
+      e.preventDefault();
+      copyAsMarkdown();
     }
   }
 
@@ -54,6 +73,7 @@ export default function App() {
     });
 
     setEditorRef(editor);
+    setExportEditorRef(editor);
 
     // Check for CLI-provided file path
     try {

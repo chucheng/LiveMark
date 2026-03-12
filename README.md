@@ -26,6 +26,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Table editing** — visual tables with Tab navigation between cells
 - **Full keyboard workflow** — Cmd/Ctrl+B (bold), Cmd/Ctrl+I (italic), Markdown shortcuts like `# `, `> `, `- [ ] `
 - **File operations** — open, save, save-as, new file, CLI arg support, unsaved changes protection
+- **Export** — HTML export (Cmd+Shift+E), PDF via print dialog (Cmd+P), copy as HTML (Cmd+Shift+C), copy as Markdown (Cmd+Alt+C)
 - **Cross-platform** — macOS, Windows, Linux
 
 ## Tech Stack
@@ -139,8 +140,12 @@ src/
     App.tsx               — Root SolidJS component
   state/
     document.ts           — File path, modified flag, title signals
+  export/
+    html-template.ts      — HTML document template generation
+    export-css.ts         — Bundled CSS for export
   commands/
     file-commands.ts      — Open/save/saveAs/new file handlers
+    export-commands.ts    — Export action handlers (HTML, PDF, clipboard)
 src-tauri/
   src/
     main.rs               — Tauri entry point, command handlers
@@ -159,7 +164,7 @@ src-tauri/
 | M4 — File Operations | Open, save, save-as, new file, CLI args | Done |
 | M5 — Stabilization | Round-trip tests, bug fixes, error handling | Done |
 | M6 — Rich Elements | Images, tables, syntax highlighting, task lists | Done |
-| M7 — Export | HTML export, PDF export, copy-as-HTML | Planned |
+| M7 — Export | HTML export, PDF export, copy-as-HTML, copy-as-Markdown | Done |
 | M8 — UI Polish | Themes, command palette, find/replace, status bar | Planned |
 
 See [docs/MILESTONES.md](docs/MILESTONES.md) for detailed milestone specs and [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
