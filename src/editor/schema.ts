@@ -1,4 +1,5 @@
 import { Schema, NodeSpec, MarkSpec } from "prosemirror-model";
+import { tableNodes as createTableNodes } from "prosemirror-tables";
 
 /**
  * Minimal schema for Milestone 1.
@@ -128,6 +129,34 @@ const nodes: Record<string, NodeSpec> = {
     defining: true,
   },
 
+  task_list: {
+    content: "task_list_item+",
+    group: "block",
+    parseDOM: [{ tag: "ul.task-list" }],
+    toDOM() {
+      return ["ul", { class: "task-list" }, 0];
+    },
+  },
+
+  task_list_item: {
+    content: "paragraph block*",
+    defining: true,
+    attrs: { checked: { default: false } },
+    parseDOM: [
+      {
+        tag: "li.lm-task-item",
+        getAttrs(node) {
+          const el = node as HTMLElement;
+          const checkbox = el.querySelector("input[type=checkbox]");
+          return { checked: checkbox ? (checkbox as HTMLInputElement).checked : false };
+        },
+      },
+    ],
+    toDOM(node) {
+      return ["li", { class: `lm-task-item${node.attrs.checked ? " checked" : ""}` }, 0];
+    },
+  },
+
   image: {
     inline: true,
     attrs: {
@@ -170,6 +199,21 @@ const nodes: Record<string, NodeSpec> = {
     group: "inline",
   },
 };
+
+// Generate table nodes from prosemirror-tables
+const tableNodeSpecs = createTableNodes({
+  tableGroup: "block",
+  cellContent: "paragraph",
+  cellAttributes: {},
+});
+
+// Merge table nodes into our nodes
+Object.assign(nodes, {
+  table: tableNodeSpecs.table,
+  table_row: tableNodeSpecs.table_row,
+  table_header: tableNodeSpecs.table_header,
+  table_cell: tableNodeSpecs.table_cell,
+});
 
 const marks: Record<string, MarkSpec> = {
   strong: {

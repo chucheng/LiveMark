@@ -6,6 +6,7 @@ import {
 } from "prosemirror-inputrules";
 import { NodeType, MarkType } from "prosemirror-model";
 import { EditorState } from "prosemirror-state";
+import { findWrapping } from "prosemirror-transform";
 import { schema } from "./schema";
 
 // --- Block-level rules ---
@@ -48,6 +49,35 @@ function horizontalRuleRule(nodeType: NodeType) {
       return state.tr.replaceRangeWith(start, end, nodeType.create());
     }
   );
+}
+
+function taskListRule(checked: boolean) {
+  const pattern = checked ? /^\s*-\s*\[x\]\s$/ : /^\s*-\s*\[\s\]\s$/;
+  return new InputRule(pattern, (state: EditorState, _match, start, end) => {
+    const taskListType = schema.nodes.task_list;
+    const taskListItemType = schema.nodes.task_list_item;
+    const $start = state.doc.resolve(start);
+    const range = $start.blockRange();
+    if (!range) return null;
+
+    const tr = state.tr.delete(start, end);
+    const $pos = tr.doc.resolve(tr.mapping.map(range.start));
+    const newRange = $pos.blockRange();
+    if (!newRange) return null;
+
+    const wrap = findWrapping(newRange, taskListType);
+    if (!wrap) return null;
+
+    tr.wrap(newRange, wrap);
+    // Set the task_list_item attrs on the inner node
+    const taskItemPos = tr.mapping.map(range.start) + 1;
+    const taskItemNode = tr.doc.nodeAt(taskItemPos);
+    if (taskItemNode?.type === taskListItemType) {
+      tr.setNodeMarkup(taskItemPos, undefined, { checked });
+    }
+
+    return tr;
+  });
 }
 
 // --- Inline mark rules ---
@@ -96,6 +126,9 @@ export function buildInputRules() {
   return inputRules({
     rules: [
       // Block rules
+      // Task list rules must come before bullet list rule
+      taskListRule(false),
+      taskListRule(true),
       headingRule(schema.nodes.heading, 6),
       blockquoteRule(schema.nodes.blockquote),
       bulletListRule(schema.nodes.bullet_list),

@@ -4,6 +4,8 @@ import { HeadingView } from "./heading";
 import { CodeBlockView } from "./code-block";
 import { BlockquoteView } from "./blockquote";
 import { HorizontalRuleView } from "./horizontal-rule";
+import { TaskListItemView } from "./task-list-item";
+import { ImageView } from "./image";
 
 export type NodeViewConstructor = (
   node: Node,
@@ -16,4 +18,6 @@ export const nodeViews: Record<string, NodeViewConstructor> = {
   code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos),
   blockquote: (node, view, getPos) => new BlockquoteView(node, view, getPos),
   horizontal_rule: (node, view, getPos) => new HorizontalRuleView(node, view, getPos),
+  task_list_item: (node, view, getPos) => new TaskListItemView(node, view, getPos),
+  image: (node, view, getPos) => new ImageView(node, view, getPos),
 };

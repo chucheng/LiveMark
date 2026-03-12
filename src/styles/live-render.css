@@ -144,3 +144,127 @@
   padding: 0 0.5em;
   font-size: 0.85em;
 }
+
+/* --- Task List --- */
+.task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.lm-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.lm-task-item input[type="checkbox"] {
+  margin-top: 0.35em;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.lm-task-item.checked .lm-task-content {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.lm-task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Clickable Links --- */
+.ProseMirror a[href] {
+  cursor: pointer;
+  color: var(--lm-accent, #2563eb);
+  text-decoration: underline;
+}
+
+/* --- Image NodeView --- */
+.lm-image-wrapper {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.lm-image-wrapper img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.lm-image-wrapper.lm-image-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em;
+  border: 1px dashed var(--lm-border);
+  border-radius: 4px;
+  color: var(--lm-text-muted);
+  font-size: 0.875em;
+}
+
+.ProseMirror-selectednode .lm-image-wrapper {
+  outline: 2px solid var(--lm-accent, #2563eb);
+  border-radius: 4px;
+}
+
+/* --- Code Block Syntax Highlighting --- */
+.lm-code-block-wrapper pre {
+  position: relative;
+}
+
+.lm-code-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1em;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+  font-size: 0.875em;
+  white-space: pre;
+}
+
+.lm-active .lm-code-highlight {
+  display: none;
+}
+
+/* highlight.js tokens */
+.hljs-keyword { color: #d73a49; }
+.hljs-string { color: #032f62; }
+.hljs-comment { color: #6a737d; font-style: italic; }
+.hljs-number { color: #005cc5; }
+.hljs-built_in { color: #e36209; }
+.hljs-function .hljs-title,
+.hljs-title.function_ { color: #6f42c1; }
+.hljs-type { color: #d73a49; }
+.hljs-attr { color: #005cc5; }
+.hljs-literal { color: #005cc5; }
+.hljs-meta { color: #6a737d; }
+.hljs-params { color: var(--lm-text); }
+.hljs-variable { color: #e36209; }
+
+/* --- Table --- */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid var(--lm-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.ProseMirror th {
+  background: var(--lm-code-bg);
+  font-weight: 600;
+}
+
+.ProseMirror .selectedCell {
+  background: var(--lm-selection, rgba(37, 99, 235, 0.1));
+}

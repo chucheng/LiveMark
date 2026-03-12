@@ -10,6 +10,9 @@ import { buildInputRules } from "./input-rules";
 import { placeholderPlugin } from "./plugins/placeholder";
 import { liveRenderPlugin } from "./plugins/live-render";
 import { inlineDecorationsPlugin } from "./plugins/inline-decorations";
+import { linkClickPlugin } from "./plugins/link-click";
+import { imageDropPastePlugin } from "./plugins/image-drop-paste";
+import { tableEditing } from "prosemirror-tables";
 import { nodeViews } from "./nodeviews";
 import { parseMarkdown } from "./markdown/parser";
 import { serializeMarkdown } from "./markdown/serializer";
@@ -59,6 +62,9 @@ export function createEditor(
       placeholderPlugin(),
       liveRenderPlugin(),
       inlineDecorationsPlugin(),
+      linkClickPlugin(),
+      imageDropPastePlugin(),
+      tableEditing(),
     ],
   });
 
@@ -82,13 +88,14 @@ export function createEditor(
     },
 
     setMarkdown(content: string) {
-      const newDoc = parseMarkdown(content) ?? schema.topNodeType.createAndFill()!;
-      const tr = view.state.tr.replaceWith(
-        0,
-        view.state.doc.content.size,
-        newDoc.content
-      );
-      view.dispatch(tr);
+      const newDoc = content
+        ? parseMarkdown(content) ?? schema.topNodeType.createAndFill()!
+        : schema.topNodeType.createAndFill()!;
+      const newState = EditorState.create({
+        doc: newDoc,
+        plugins: view.state.plugins,
+      });
+      view.updateState(newState);
     },
 
     getDoc() {

@@ -1,0 +1,65 @@
+import { Node } from "prosemirror-model";
+import { EditorView, NodeView } from "prosemirror-view";
+import { convertFileSrc } from "@tauri-apps/api/core";
+
+export class ImageView implements NodeView {
+  dom: HTMLElement;
+  private img: HTMLImageElement;
+
+  constructor(
+    private node: Node,
+    _view: EditorView,
+    _getPos: () => number | undefined
+  ) {
+    this.dom = document.createElement("span");
+    this.dom.className = "lm-image-wrapper";
+
+    this.img = document.createElement("img");
+    this.img.alt = node.attrs.alt || "";
+    if (node.attrs.title) this.img.title = node.attrs.title;
+    this.setSrc(node.attrs.src);
+
+    this.img.onerror = () => {
+      this.dom.classList.add("lm-image-error");
+      this.dom.textContent = "";
+      this.dom.textContent = `\u{1F5BC} ${node.attrs.alt || "Image not found"}`;
+    };
+
+    this.dom.appendChild(this.img);
+  }
+
+  private setSrc(src: string) {
+    // Local absolute path → Tauri asset protocol
+    if (src && (src.startsWith("/") || src.match(/^[A-Z]:\\/))) {
+      this.img.src = convertFileSrc(src);
+    } else {
+      this.img.src = src;
+    }
+  }
+
+  selectNode() {
+    this.dom.classList.add("ProseMirror-selectednode");
+  }
+
+  deselectNode() {
+    this.dom.classList.remove("ProseMirror-selectednode");
+  }
+
+  update(node: Node): boolean {
+    if (node.type.name !== "image") return false;
+    this.node = node;
+    this.img.alt = node.attrs.alt || "";
+    if (node.attrs.title) this.img.title = node.attrs.title;
+    this.setSrc(node.attrs.src);
+    this.dom.classList.remove("lm-image-error");
+    return true;
+  }
+
+  ignoreMutation(): boolean {
+    return true;
+  }
+
+  stopEvent(): boolean {
+    return false;
+  }
+}

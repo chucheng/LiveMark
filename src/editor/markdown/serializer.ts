@@ -51,6 +51,68 @@ export const markdownSerializer = new MarkdownSerializer(
       state.renderContent(node);
     },
 
+    task_list(state, node) {
+      state.renderList(node, "  ", () => {
+        // Prefix is handled in task_list_item
+        return "";
+      });
+    },
+
+    task_list_item(state, node) {
+      const prefix = node.attrs.checked ? "[x] " : "[ ] ";
+      state.write("- " + prefix);
+      state.renderContent(node);
+    },
+
+    table(state, node) {
+      function serializeCell(cell: Node): string {
+        // Cell contains a paragraph; get its text content
+        // For simple cells, use textContent. For cells with marks,
+        // use a temporary serializer to preserve formatting.
+        const paragraph = cell.firstChild;
+        if (!paragraph || paragraph.childCount === 0) return "";
+        const temp = markdownSerializer.serialize(
+          cell.type.schema.node("doc", null, [paragraph])
+        );
+        return temp.trim().replace(/\|/g, "\\|");
+      }
+
+      const rows: string[][] = [];
+      node.forEach((row) => {
+        const cells: string[] = [];
+        row.forEach((cell) => {
+          cells.push(serializeCell(cell));
+        });
+        rows.push(cells);
+      });
+
+      // Write header row
+      if (rows.length > 0) {
+        state.write("| " + rows[0].join(" | ") + " |");
+        state.ensureNewLine();
+        state.write("| " + rows[0].map(() => "---").join(" | ") + " |");
+        state.ensureNewLine();
+      }
+      // Write body rows
+      for (let i = 1; i < rows.length; i++) {
+        state.write("| " + rows[i].join(" | ") + " |");
+        state.ensureNewLine();
+      }
+      state.closeBlock(node);
+    },
+
+    table_row() {
+      // Handled by table serializer
+    },
+
+    table_header() {
+      // Handled by table serializer
+    },
+
+    table_cell() {
+      // Handled by table serializer
+    },
+
     paragraph(state, node) {
       state.renderInline(node);
       state.closeBlock(node);

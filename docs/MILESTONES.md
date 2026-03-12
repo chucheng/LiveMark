@@ -151,45 +151,77 @@ src/
 
 ---
 
-## Milestone 5 — Rich Elements
+## Milestone 5 — Stabilization & Correctness
 
 ### Goals
-- Image support: inline preview, drag-and-drop, paste
-- Table support: visual rendering, cell navigation with Tab
-- Code block syntax highlighting with Shiki
-- Task list checkboxes (clickable)
-- Link rendering (clickable when not editing)
+- Fix all known correctness bugs before adding new features
+- Set up test infrastructure (vitest)
+- Ensure Markdown round-trip fidelity with a comprehensive test suite
 
 ### Deliverables
-- Images render inline as actual images
-- Dragging/pasting an image saves it and inserts Markdown
-- Tables render as visual tables; Tab moves between cells
-- Code blocks show syntax highlighting for common languages
-- Task list items have clickable checkboxes
-- Links are clickable (Cmd+click or when cursor is elsewhere)
+- Table tokens disabled in parser (no schema nodes → silent data loss)
+- `setMarkdown()` resets EditorState instead of dispatching (prevents cross-file undo)
+- `confirmUnsavedChanges()` supports 3 outcomes: Save, Don't Save, Cancel
+- All file operations have try/catch with error dialogs
+- 32 round-trip tests passing (headings, inline marks, lists, code blocks, blockquotes, images, hard breaks, mixed documents)
 
-### Files to Create/Modify
+### Files Created/Modified
 ```
-src/editor/
-  nodeviews/
-    image.ts                — Image NodeView with preview
-    table.ts                — Table NodeView with cell navigation
-    table-row.ts
-    table-cell.ts
-    link.ts                 — Link mark rendering
-  plugins/
-    drop-paste.ts           — Handle image drop/paste
-    syntax-highlight.ts     — Shiki integration for code blocks
-    table-commands.ts       — Tab navigation, cell management
-  styles/
-    images.css
-    tables.css
-    code-blocks.css
+vitest.config.ts                                — Test configuration
+src/editor/markdown/parser.ts                   — Removed .enable("table")
+src/editor/editor.ts                            — Rewrote setMarkdown() to reset state
+src/commands/file-commands.ts                   — 3-outcome confirm, try/catch error dialogs
+src/editor/markdown/__tests__/round-trip.test.ts — Round-trip test suite
 ```
 
 ---
 
-## Milestone 6 — Export
+## Milestone 6 — Rich Elements ✓
+
+### Goals
+- Task list checkboxes (clickable)
+- Clickable links (Cmd+click opens in browser)
+- Image support: inline preview, drag-and-drop, paste
+- Code block syntax highlighting with highlight.js
+- Table support: visual rendering, cell navigation with Tab
+
+### Deliverables
+- Task list items with clickable checkboxes (custom markdown-it plugin for parsing)
+- Cmd+click opens links in default browser via tauri-plugin-shell
+- Images render inline with Tauri asset protocol for local paths
+- Drag/paste image files saves to disk via Rust command and inserts node
+- Code blocks show syntax highlighting (14 languages) when cursor is outside
+- Tables parse/serialize with GFM format; Tab navigates between cells
+- 37 round-trip tests passing (5 new: task list + table tests)
+
+### Files Created/Modified
+```
+src/editor/markdown/task-list-plugin.ts  — Custom markdown-it plugin for task list tokens
+src/editor/nodeviews/task-list-item.ts   — Task list item NodeView with checkbox
+src/editor/nodeviews/image.ts            — Image inline preview NodeView
+src/editor/plugins/link-click.ts         — Cmd+click opens links in browser
+src/editor/plugins/image-drop-paste.ts   — Image drag-and-drop / paste handler
+src/editor/highlight.ts                  — highlight.js wrapper (14 languages)
+src-tauri/src/commands/image.rs          — Rust save_image command
+src/editor/schema.ts                     — Added task_list, task_list_item, table nodes
+src/editor/markdown/parser.ts            — Task list plugin, table support, thead/tbody strip
+src/editor/markdown/serializer.ts        — Added serializers for 6 new nodes
+src/editor/nodeviews/index.ts            — Registered task_list_item, image
+src/editor/nodeviews/code-block.ts       — Added highlight overlay
+src/editor/input-rules.ts               — Task list input rules
+src/editor/keymaps.ts                    — Tab/Shift-Tab context-aware (tables + lists)
+src/editor/editor.ts                     — Registered linkClick, imageDropPaste, tableEditing plugins
+src/styles/live-render.css               — Task list, image, table, code highlight styles
+src/editor/markdown/__tests__/round-trip.test.ts — 5 new round-trip tests
+src-tauri/Cargo.toml                     — Added tauri-plugin-shell
+src-tauri/src/main.rs                    — Registered shell plugin, save_image command
+src-tauri/capabilities/default.json      — Added shell:default, shell:allow-open
+package.json                             — Added highlight.js, prosemirror-tables, @tauri-apps/plugin-shell
+```
+
+---
+
+## Milestone 7 — Export
 
 ### Goals
 - Export to standalone HTML (embedded CSS)
@@ -219,7 +251,7 @@ src/
 
 ---
 
-## Milestone 7 — UI Polish and Themes
+## Milestone 8 — UI Polish and Themes
 
 ### Goals
 - Light and dark themes with system-follow
@@ -284,9 +316,10 @@ Each milestone includes tests:
 | M2 | Schema validates, parser round-trips, input rules fire correctly |
 | M3 | NodeViews render both modes, cursor transitions work, no layout shift |
 | M4 | File open/save/save-as work, modified flag tracks correctly |
-| M5 | Images load, tables navigate, code highlighting renders |
-| M6 | HTML export produces valid HTML, styling matches editor |
-| M7 | Theme switching works, command palette searches correctly, find works |
+| M5 | 32 round-trip tests, bug fixes verified manually |
+| M6 | 37 round-trip tests (task list + table), manual verification of all rich elements |
+| M7 | HTML export produces valid HTML, styling matches editor |
+| M8 | Theme switching works, command palette searches correctly, find works |
 
 ### Test Files
 ```

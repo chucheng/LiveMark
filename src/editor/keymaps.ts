@@ -16,6 +16,7 @@ import {
   splitListItem,
 } from "prosemirror-schema-list";
 import { undo, redo } from "prosemirror-history";
+import { goToNextCell } from "prosemirror-tables";
 import { schema } from "./schema";
 
 const isMac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
@@ -87,7 +88,7 @@ export function buildKeymaps() {
   keys["Mod-b"] = markCommand("strong");
   keys["Mod-i"] = markCommand("em");
   keys["Mod-`"] = markCommand("code");
-  keys["Mod-Shift-s"] = markCommand("strikethrough");
+  keys["Mod-Shift-x"] = markCommand("strikethrough");
 
   // Headings (Cmd+1 through Cmd+6)
   for (let i = 1; i <= 6; i++) {
@@ -95,9 +96,9 @@ export function buildKeymaps() {
   }
   keys["Mod-0"] = toParagraph;
 
-  // Lists
-  keys["Tab"] = sinkListItem(schema.nodes.list_item);
-  keys["Shift-Tab"] = liftListItem(schema.nodes.list_item);
+  // Lists + Tables (Tab/Shift-Tab context-aware)
+  keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item));
+  keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item));
   keys["Enter"] = splitListItem(schema.nodes.list_item);
 
   // Block operations

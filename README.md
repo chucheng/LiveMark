@@ -18,8 +18,13 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Cursor-aware editing** — raw syntax shown on focus, rendered on blur
 - **Native performance** — Tauri-powered, sub-200ms cold start
 - **Lightweight** — ~10-20MB binary, ~30-80MB memory
-- **CommonMark + GFM** — headings, bold, italic, code blocks, lists, blockquotes, links, images, and more
-- **Full keyboard workflow** — Cmd/Ctrl+B (bold), Cmd/Ctrl+I (italic), Markdown shortcuts like `# `, `> `, `- `
+- **CommonMark + GFM** — headings, bold, italic, code blocks, lists, blockquotes, links, images, tables, task lists
+- **Task list checkboxes** — clickable checkboxes that toggle checked state
+- **Clickable links** — Cmd/Ctrl+click opens links in your default browser
+- **Image preview** — images render inline; drag-and-drop or paste to insert
+- **Syntax highlighting** — 14 languages highlighted in code blocks (JS, TS, Python, Rust, Go, Java, C/C++, HTML, CSS, JSON, Bash, SQL, Ruby)
+- **Table editing** — visual tables with Tab navigation between cells
+- **Full keyboard workflow** — Cmd/Ctrl+B (bold), Cmd/Ctrl+I (italic), Markdown shortcuts like `# `, `> `, `- [ ] `
 - **File operations** — open, save, save-as, new file, CLI arg support, unsaved changes protection
 - **Cross-platform** — macOS, Windows, Linux
 
@@ -29,8 +34,9 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 |---|---|
 | Desktop framework | [Tauri 2.x](https://v2.tauri.app/) (Rust) |
 | UI framework | [SolidJS](https://www.solidjs.com/) |
-| Editor engine | [ProseMirror](https://prosemirror.net/) |
+| Editor engine | [ProseMirror](https://prosemirror.net/) + [prosemirror-tables](https://github.com/ProseMirror/prosemirror-tables) |
 | Markdown parser | [markdown-it](https://github.com/markdown-it/markdown-it) |
+| Syntax highlighting | [highlight.js](https://highlightjs.org/) (14 languages) |
 | Build tool | [Vite](https://vitejs.dev/) + TypeScript |
 | Package manager | pnpm |
 
@@ -111,13 +117,24 @@ src/
   editor/
     schema.ts             — ProseMirror schema (1:1 Markdown mapping)
     editor.ts             — Editor init, getMarkdown/setMarkdown API
-    input-rules.ts        — Auto-transforms (# heading, **bold**, etc.)
-    keymaps.ts            — Keyboard shortcuts
+    highlight.ts          — highlight.js wrapper (syntax highlighting)
+    input-rules.ts        — Auto-transforms (# heading, **bold**, - [ ], etc.)
+    keymaps.ts            — Keyboard shortcuts (Tab for tables + lists)
     markdown/
       parser.ts           — markdown-it → ProseMirror document
       serializer.ts       — ProseMirror document → Markdown string
+      task-list-plugin.ts — Custom markdown-it plugin for task lists
+    nodeviews/
+      heading.ts          — Heading NodeView
+      code-block.ts       — Code block with syntax highlight overlay
+      blockquote.ts       — Blockquote NodeView
+      horizontal-rule.ts  — Horizontal rule NodeView
+      task-list-item.ts   — Task list item with checkbox
+      image.ts            — Image inline preview
     plugins/
       placeholder.ts      — Empty doc placeholder
+      link-click.ts       — Cmd+click opens links in browser
+      image-drop-paste.ts — Image drag-drop/paste handler
   ui/
     App.tsx               — Root SolidJS component
   state/
@@ -129,6 +146,7 @@ src-tauri/
     main.rs               — Tauri entry point, command handlers
     commands/
       file.rs             — Rust read_file/write_file (atomic writes)
+      image.rs            — Rust save_image command
 ```
 
 ## Roadmap
@@ -140,7 +158,7 @@ src-tauri/
 | M3 — Live Rendering | Cursor-aware inline rendering for all elements | Done |
 | M4 — File Operations | Open, save, save-as, new file, CLI args | Done |
 | M5 — Stabilization | Round-trip tests, bug fixes, error handling | Done |
-| M6 — Rich Elements | Images, tables, syntax highlighting, task lists | Planned |
+| M6 — Rich Elements | Images, tables, syntax highlighting, task lists | Done |
 | M7 — Export | HTML export, PDF export, copy-as-HTML | Planned |
 | M8 — UI Polish | Themes, command palette, find/replace, status bar | Planned |
 
