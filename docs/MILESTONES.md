@@ -193,20 +193,22 @@ src/editor/
 
 ### Goals
 - Export to standalone HTML (embedded CSS)
+- Export to PDF via HTML-to-PDF pipeline (webview print-to-PDF)
 - Copy as HTML to clipboard
 - Export template with LiveMark styling
 
 ### Deliverables
 - Command palette: "Export to HTML" → save dialog → HTML file
+- Command palette: "Export to PDF" → save dialog → PDF file
 - Command palette: "Copy as HTML" → rendered HTML on clipboard
 - Command palette: "Copy as Markdown" → raw Markdown on clipboard (whole doc or selection)
-- Exported HTML looks like the editor's rendered output
+- Exported HTML and PDF look like the editor's rendered output
 
 ### Files to Create/Modify
 ```
 src-tauri/src/
   commands/
-    export.rs               — HTML generation
+    export.rs               — HTML generation, PDF export via webview
 src/
   export/
     html-template.ts        — HTML wrapper template

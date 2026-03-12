@@ -217,14 +217,23 @@ ProseMirror document
 
 The exported HTML is self-contained: all styles are embedded. The CSS matches LiveMark's rendered appearance.
 
-### PDF Export (v1 stretch goal)
+### PDF Export
 
 ```
 HTML export output
-  → Tauri: invoke system print dialog with "Save as PDF"
-  OR
-  → Use wkhtmltopdf/Puppeteer for headless rendering
+  → Tauri: invoke system print-to-PDF via webview
+  → Uses the same HTML + embedded CSS from HTML export
+  → No external dependencies (wkhtmltopdf/Puppeteer not needed)
 ```
+
+Tauri 2.x exposes webview print functionality that can target PDF output. Since we already generate standalone HTML for HTML export, PDF export reuses that pipeline:
+
+1. Generate HTML string (same as HTML export)
+2. Load into a hidden webview
+3. Call the webview's print-to-PDF API
+4. Save the resulting PDF to disk
+
+This keeps the dependency footprint at zero — no headless browser or external binary required.
 
 ## 7. Theme System
 

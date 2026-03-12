@@ -32,6 +32,7 @@ M7: Polish ←── M6: Export ←── M5: Rich Elements ←─────�
 - [ ] Tables are visually rendered and editable
 - [ ] Light and dark themes
 - [ ] HTML export
+- [ ] PDF export
 - [ ] View Source mode (Cmd/Ctrl+/ to see raw Markdown)
 - [ ] Copy as Markdown to clipboard
 - [ ] Command palette for all actions
@@ -54,6 +55,6 @@ These features are architected for but not implemented in v1:
 - File tree sidebar
 - YAML frontmatter support
 - Spell checking integration
-- PDF export
+- PDF export (advanced options: page size, margins, headers/footers)
 - Auto-update mechanism
 - Version history / local snapshots

@@ -80,7 +80,7 @@ LiveMark is a desktop Markdown editor with seamless inline rendering. Markdown s
 | Feature | Description | Priority |
 |---|---|---|
 | Export to HTML | Standalone HTML with embedded styles | P1 |
-| Export to PDF | Via HTML-to-PDF rendering | P2 |
+| Export to PDF | PDF generation via HTML-to-PDF pipeline | P1 |
 | Copy as HTML | Copy rendered HTML to clipboard | P1 |
 | Copy as Markdown | Copy raw Markdown source to clipboard | P1 |
 
