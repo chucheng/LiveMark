@@ -3,11 +3,21 @@
   overflow-y: auto;
   display: flex;
   justify-content: center;
+  position: relative;
+}
+
+.lm-editor-wrapper.lm-hidden {
+  display: none;
+}
+
+.lm-editor-mount {
+  width: 100%;
+  max-width: var(--lm-content-width);
+  min-height: 100%;
 }
 
 .ProseMirror {
   width: 100%;
-  max-width: var(--lm-content-width);
   padding: var(--lm-editor-padding-y) var(--lm-editor-padding-x);
   outline: none;
   min-height: 100%;
@@ -19,6 +29,7 @@
 
 .ProseMirror p {
   margin-bottom: 0.8em;
+  position: relative;
 }
 
 .ProseMirror h1,
@@ -105,11 +116,7 @@
   content: "☑";
 }
 
-.ProseMirror hr {
-  border: none;
-  border-top: 1px solid var(--lm-border);
-  margin: 1.5em 0;
-}
+/* HR styling handled by NodeView in live-render.css */
 
 .ProseMirror a {
   color: var(--lm-accent);
@@ -145,11 +152,14 @@
   background: var(--lm-selection);
 }
 
-.ProseMirror .placeholder {
+.ProseMirror .lm-placeholder::before {
+  content: attr(data-placeholder);
   color: var(--lm-text-muted);
   pointer-events: none;
-  position: absolute;
   font-style: italic;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Focus mode */

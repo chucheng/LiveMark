@@ -125,24 +125,42 @@
 
 /* --- Horizontal Rule NodeView --- */
 .lm-hr-wrapper {
-  position: relative;
-  margin: 1.5em 0;
+  margin: 2em 0;
 }
 
-.lm-hr-wrapper hr {
-  border: none;
-  border-top: 1px solid var(--lm-border);
-  margin: 0;
+.lm-hr-line {
+  display: flex;
+  align-items: center;
+}
+
+.lm-hr-line::before,
+.lm-hr-line::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--lm-border) 20%,
+    var(--lm-border) 80%,
+    transparent
+  );
+}
+
+.lm-hr-ornament {
+  padding: 0 1em;
+  color: var(--lm-text-muted);
+  font-size: 0.7em;
+  letter-spacing: 0.5em;
+  opacity: 0.5;
+  user-select: none;
 }
 
 .lm-hr-hint {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--lm-bg);
-  padding: 0 0.5em;
-  font-size: 0.85em;
+  text-align: center;
+  margin-top: 2px;
+  font-size: 0.8em;
+  line-height: 1;
 }
 
 /* --- Task List --- */

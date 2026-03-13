@@ -5,7 +5,7 @@ import {
   InputRule,
 } from "prosemirror-inputrules";
 import { NodeType, MarkType } from "prosemirror-model";
-import { EditorState } from "prosemirror-state";
+import { EditorState, TextSelection } from "prosemirror-state";
 import { findWrapping } from "prosemirror-transform";
 import { schema } from "./schema";
 
@@ -46,7 +46,18 @@ function horizontalRuleRule(nodeType: NodeType) {
   return new InputRule(
     /^(?:---|\*\*\*|___)\s$/,
     (state: EditorState, _match, start, end) => {
-      return state.tr.replaceRangeWith(start, end, nodeType.create());
+      const paragraphType = state.schema.nodes.paragraph;
+      const tr = state.tr.replaceRangeWith(start, end, nodeType.create());
+      // Ensure a paragraph exists after the HR and move cursor there
+      const hrEnd = tr.mapping.map(end);
+      const $pos = tr.doc.resolve(hrEnd);
+      const after = $pos.after($pos.depth);
+      if (after >= tr.doc.content.size) {
+        tr.insert(tr.doc.content.size, paragraphType.create());
+      }
+      tr.setSelection(TextSelection.create(tr.doc, after + 1));
+      tr.scrollIntoView();
+      return tr;
     }
   );
 }

@@ -3,6 +3,7 @@ import { Decoration, DecorationSet } from "prosemirror-view";
 
 /**
  * Shows a placeholder message when the document is empty.
+ * Uses a CSS class + ::before pseudo-element to avoid DOM interference.
  */
 export function placeholderPlugin(text = "Start writing...") {
   return new Plugin({
@@ -14,11 +15,12 @@ export function placeholderPlugin(text = "Start writing...") {
           doc.firstChild?.isTextblock &&
           doc.firstChild.content.size === 0
         ) {
-          const placeholder = document.createElement("span");
-          placeholder.className = "placeholder";
-          placeholder.textContent = text;
+          const firstChild = doc.firstChild!;
           return DecorationSet.create(doc, [
-            Decoration.widget(1, placeholder),
+            Decoration.node(0, firstChild.nodeSize, {
+              class: "lm-placeholder",
+              "data-placeholder": text,
+            }),
           ]);
         }
         return DecorationSet.empty;

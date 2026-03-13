@@ -89,7 +89,6 @@ export function createEditor(
       }
       if (onSelectionChange && (transaction.selectionSet || transaction.docChanged)) {
         const { $head, from, to } = newState.selection;
-        // Compute line/col by counting newlines before cursor
         const textBefore = newState.doc.textBetween(0, $head.pos, "\n");
         const lines = textBefore.split("\n");
         onSelectionChange({

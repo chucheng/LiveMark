@@ -8,18 +8,25 @@ export class HorizontalRuleView implements NodeView {
     this.dom = document.createElement("div");
     this.dom.className = "lm-hr-wrapper";
 
-    const hr = document.createElement("hr");
+    const rule = document.createElement("div");
+    rule.className = "lm-hr-line";
+
+    const ornament = document.createElement("span");
+    ornament.className = "lm-hr-ornament";
+    ornament.textContent = "***";
+    ornament.contentEditable = "false";
 
     const hint = document.createElement("span");
     hint.className = "lm-syntax-hint lm-hr-hint";
     hint.textContent = "---";
     hint.contentEditable = "false";
 
-    this.dom.appendChild(hr);
+    rule.appendChild(ornament);
+
+    this.dom.appendChild(rule);
     this.dom.appendChild(hint);
   }
 
-  // Leaf node — no contentDOM
   stopEvent() {
     return false;
   }

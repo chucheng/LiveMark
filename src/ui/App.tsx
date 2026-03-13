@@ -100,13 +100,11 @@ export default function App() {
     }
   }
 
-  onMount(async () => {
+  onMount(() => {
     // Register all commands for the palette
     registerAllCommands();
 
-    // Load saved preferences
-    await preferencesState.loadPreferences();
-
+    // Create editor synchronously — must happen before any async work
     editor = createEditor(editorRef, {
       onChange(doc) {
         documentState.setDirty();
@@ -121,16 +119,6 @@ export default function App() {
     setEditorRef(editor);
     setExportEditorRef(editor);
 
-    // Check for CLI-provided file path
-    try {
-      const initialFile = await invoke<string | null>("get_initial_file");
-      if (initialFile) {
-        await loadFile(initialFile);
-      }
-    } catch {
-      // No initial file — start with empty editor
-    }
-
     // Initial word count
     const text = editor.getDoc().textContent;
     setWordCount(countWords(text));
@@ -139,20 +127,35 @@ export default function App() {
     // Global keyboard shortcuts for file operations
     window.addEventListener("keydown", handleKeydown);
 
-    // Window close handler — prompt for unsaved changes
-    const appWindow = getCurrentWindow();
-    const unlisten = await appWindow.onCloseRequested(async (event) => {
-      if (documentState.isModified()) {
-        const canClose = await confirmUnsavedChanges();
-        if (!canClose) {
-          event.preventDefault();
-        }
-      }
-    });
+    // Async initialization (preferences, CLI file, close handler)
+    (async () => {
+      await preferencesState.loadPreferences();
 
-    onCleanup(() => {
-      unlisten();
-    });
+      // Check for CLI-provided file path
+      try {
+        const initialFile = await invoke<string | null>("get_initial_file");
+        if (initialFile) {
+          await loadFile(initialFile);
+        }
+      } catch {
+        // No initial file — start with empty editor
+      }
+
+      // Window close handler — prompt for unsaved changes
+      const appWindow = getCurrentWindow();
+      const unlisten = await appWindow.onCloseRequested(async (event) => {
+        if (documentState.isModified()) {
+          const canClose = await confirmUnsavedChanges();
+          if (!canClose) {
+            event.preventDefault();
+          }
+        }
+      });
+
+      onCleanup(() => {
+        unlisten();
+      });
+    })();
   });
 
   onCleanup(() => {
@@ -169,14 +172,19 @@ export default function App() {
         </span>
       </div>
 
-      <Show when={uiState.isSourceView()} fallback={
-        <div class={`lm-editor-wrapper ${preferencesState.focusMode() ? "lm-focus-mode" : ""}`}>
-          <Show when={uiState.isFindOpen()}>
-            <FindReplace view={() => editor?.view} />
-          </Show>
-          <div ref={editorRef} />
-        </div>
-      }>
+      <div
+        class="lm-editor-wrapper"
+        classList={{
+          "lm-focus-mode": preferencesState.focusMode(),
+          "lm-hidden": uiState.isSourceView(),
+        }}
+      >
+        <Show when={uiState.isFindOpen()}>
+          <FindReplace view={() => editor?.view} />
+        </Show>
+        <div ref={editorRef} class="lm-editor-mount" />
+      </div>
+      <Show when={uiState.isSourceView()}>
         <SourceView markdown={() => editor?.getMarkdown() ?? ""} />
       </Show>
 

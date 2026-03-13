@@ -21,8 +21,10 @@ export class ImageView implements NodeView {
 
     this.img.onerror = () => {
       this.dom.classList.add("lm-image-error");
-      this.dom.textContent = "";
-      this.dom.textContent = `\u{1F5BC} ${node.attrs.alt || "Image not found"}`;
+      this.img.style.display = "none";
+      const errorText = document.createElement("span");
+      errorText.textContent = node.attrs.alt || "Image not found";
+      this.dom.appendChild(errorText);
     };
 
     this.dom.appendChild(this.img);

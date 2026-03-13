@@ -115,12 +115,12 @@ export async function confirmUnsavedChanges(): Promise<boolean> {
     }
   );
 
-  if (result === "Yes") {
+  if (result === "Save") {
     await saveFile();
     return true;
   }
 
-  if (result === "No") {
+  if (result === "Don't Save") {
     // Proceed without saving
     return true;
   }

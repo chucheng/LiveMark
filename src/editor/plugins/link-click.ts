@@ -17,6 +17,7 @@ export function linkClickPlugin(): Plugin {
 
         const href = linkMark.attrs.href;
         if (href) {
+          event.preventDefault();
           open(href).catch(console.error);
         }
         return true;

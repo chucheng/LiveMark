@@ -21,9 +21,13 @@ export function imageDropPastePlugin(): Plugin {
         if (!coords) return false;
 
         handleImageFile(file).then((src) => {
-          if (src) {
+          if (src && view.dom.isConnected) {
             const node = schema.nodes.image.create({ src, alt: file.name });
-            const tr = view.state.tr.insert(coords.pos, node);
+            // Use current selection if original drop position is now invalid
+            const pos = coords.pos <= view.state.doc.content.size
+              ? coords.pos
+              : view.state.selection.from;
+            const tr = view.state.tr.insert(pos, node);
             view.dispatch(tr);
           }
         });
@@ -41,7 +45,7 @@ export function imageDropPastePlugin(): Plugin {
             if (!file) return false;
 
             handleImageFile(file).then((src) => {
-              if (src) {
+              if (src && view.dom.isConnected) {
                 const node = schema.nodes.image.create({ src, alt: file.name || "pasted-image" });
                 const tr = view.state.tr.replaceSelectionWith(node);
                 view.dispatch(tr);
