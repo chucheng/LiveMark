@@ -31,73 +31,16 @@ import SourceView from "./SourceView";
 import AboutModal from "./AboutModal";
 import ReviewPanel from "./ReviewPanel";
 
-/**
- * Get the document-position fraction visible at the top of the editor viewport.
- * Uses ProseMirror's posAtCoords to find which document position is at the top,
- * then returns pos/docSize as a 0–1 fraction.
- */
-function getEditorDocFraction(ed: EditorInstance): number {
-  const view = ed.view;
-  const docSize = view.state.doc.content.size;
-  if (docSize <= 0) return 0;
-
-  const wrapper = view.dom.parentElement;
-  if (!wrapper) return 0;
-
-  const wrapperRect = wrapper.getBoundingClientRect();
-  // Sample a point slightly inside the top of the visible area
-  const pos = view.posAtCoords({ left: wrapperRect.left + 20, top: wrapperRect.top + 4 });
-  if (!pos) return 0;
-
-  return Math.min(1, Math.max(0, pos.pos / docSize));
+/** Get scroll percentage (0–1) of a scrollable element. */
+function getScrollPercent(el: HTMLElement): number {
+  const max = el.scrollHeight - el.clientHeight;
+  return max > 0 ? el.scrollTop / max : 0;
 }
 
-/**
- * Scroll the editor so the given document fraction is at the top of the viewport.
- */
-function scrollEditorToDocFraction(ed: EditorInstance, fraction: number): void {
-  const view = ed.view;
-  const docSize = view.state.doc.content.size;
-  if (docSize <= 0) return;
-
-  const wrapper = view.dom.parentElement;
-  if (!wrapper) return;
-
-  const targetPos = Math.min(docSize, Math.max(0, Math.round(fraction * docSize)));
-  try {
-    const coords = view.coordsAtPos(targetPos);
-    const wrapperRect = wrapper.getBoundingClientRect();
-    const offset = coords.top - wrapperRect.top + wrapper.scrollTop;
-    wrapper.scrollTop = Math.max(0, offset);
-  } catch {
-    // Fallback to percentage-based scroll
-    const scrollable = wrapper.scrollHeight - wrapper.clientHeight;
-    wrapper.scrollTop = fraction * Math.max(0, scrollable);
-  }
-}
-
-/**
- * Get the line-based fraction at the top of the source view.
- * Uses line height to determine which line is at the top, then returns line/totalLines.
- */
-function getSourceLineFraction(sourceEl: HTMLElement): number {
-  const pre = sourceEl.querySelector("pre");
-  if (!pre) {
-    const scrollable = sourceEl.scrollHeight - sourceEl.clientHeight;
-    return scrollable > 0 ? sourceEl.scrollTop / scrollable : 0;
-  }
-
-  const code = pre.querySelector("code");
-  const text = code?.textContent ?? "";
-  const totalLines = text.split("\n").length;
-  if (totalLines <= 1) return 0;
-
-  // Estimate line height from pre element
-  const lineHeight = pre.scrollHeight / totalLines;
-  if (lineHeight <= 0) return 0;
-
-  const topLine = sourceEl.scrollTop / lineHeight;
-  return Math.min(1, Math.max(0, topLine / totalLines));
+/** Set scroll percentage (0–1) on a scrollable element. */
+function setScrollPercent(el: HTMLElement, pct: number): void {
+  const max = el.scrollHeight - el.clientHeight;
+  el.scrollTop = Math.max(0, pct * max);
 }
 
 export default function App() {
@@ -175,22 +118,19 @@ export default function App() {
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
       if (uiState.isSourceView()) {
-        // Switching back to editor — map source line to editor position
+        // Switching back to editor — capture source scroll %, restore on editor
         const sourceEl = document.querySelector(".lm-source-view") as HTMLElement | null;
-        const lineFraction = sourceEl ? getSourceLineFraction(sourceEl) : contentFraction();
-        setContentFraction(Math.min(1, Math.max(0, lineFraction)));
+        const pct = sourceEl ? getScrollPercent(sourceEl) : contentFraction();
+        setContentFraction(pct);
         uiState.toggleSourceView();
         requestAnimationFrame(() => {
-          if (editor) {
-            scrollEditorToDocFraction(editor, contentFraction());
-          }
+          const wrapper = editor?.view.dom.parentElement;
+          if (wrapper) setScrollPercent(wrapper, contentFraction());
         });
       } else {
-        // Switching to source view — map editor position to document fraction
-        if (editor) {
-          const fraction = getEditorDocFraction(editor);
-          setContentFraction(Math.min(1, Math.max(0, fraction)));
-        }
+        // Switching to source view — capture editor scroll %
+        const wrapper = editor?.view.dom.parentElement;
+        if (wrapper) setContentFraction(getScrollPercent(wrapper));
         setMarkdown(editor?.getMarkdown() ?? "");
         uiState.toggleSourceView();
       }
