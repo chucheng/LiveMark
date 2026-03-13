@@ -114,6 +114,28 @@ export function registerAllCommands() {
   });
 
   registerCommand({
+    id: "view.zoomIn",
+    label: "Zoom In",
+    shortcut: "Cmd+=",
+    category: "View",
+    execute: () => preferencesState.zoomIn(),
+  });
+  registerCommand({
+    id: "view.zoomOut",
+    label: "Zoom Out",
+    shortcut: "Cmd+-",
+    category: "View",
+    execute: () => preferencesState.zoomOut(),
+  });
+  registerCommand({
+    id: "view.zoomReset",
+    label: "Reset Zoom",
+    shortcut: "Cmd+0",
+    category: "View",
+    execute: () => preferencesState.resetZoom(),
+  });
+
+  registerCommand({
     id: "view.about",
     label: "About LiveMark",
     category: "View",

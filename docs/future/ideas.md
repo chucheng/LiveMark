@@ -46,6 +46,15 @@ Future possibilities for LiveMark. These are **not commitments** — they are id
 - Expose the `--lm-*` CSS custom properties as a theming API
 - Ship additional built-in themes beyond light/dark
 
+### User-Configurable Editor Template
+Let users customize the editor's visual layout and typography — not just color themes, but the full writing environment. Applies to both the in-editor experience and export output (HTML/PDF).
+- **Font family** — choose their preferred writing font (font *size* zoom is already shipped via Cmd+=/Cmd+-/Cmd+0)
+- **Content margins** — adjust left/right padding between the writing zone and the window edge (currently fixed ~48px)
+- **Content max-width** — wider or narrower writing column
+- **Line height and paragraph spacing**
+- **Two-column layout** — a toggle (like focus mode) that reflows the document into two newspaper-style columns. Still fully editable, not a separate reading mode — just a layout option for people who prefer denser content on wide screens.
+- Templates should be saveable/shareable as presets
+
 ### Spell Checking
 - Integrate spell checking (OS-level or library-based)
 - Currently relies on OS-level WebView spell check

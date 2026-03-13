@@ -1,4 +1,4 @@
-import { onMount, onCleanup, createSignal, Show } from "solid-js";
+import { onMount, onCleanup, createSignal, createEffect, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { createEditor, type EditorInstance, type CursorPosition } from "../editor/editor";
@@ -84,6 +84,10 @@ export default function App() {
   const [syncLine, setSyncLine] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
 
+  createEffect(() => {
+    document.documentElement.style.setProperty("--lm-font-size", preferencesState.fontSize() + "px");
+  });
+
   function resetAutoSaveTimer() {
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (!preferencesState.autoSave()) return;
@@ -167,6 +171,15 @@ export default function App() {
     } else if (e.key === "R" && e.shiftKey) {
       e.preventDefault();
       uiState.toggleReview();
+    } else if (e.key === "=" || e.key === "+") {
+      e.preventDefault();
+      preferencesState.zoomIn();
+    } else if (e.key === "-") {
+      e.preventDefault();
+      preferencesState.zoomOut();
+    } else if (e.key === "0" && !e.shiftKey) {
+      e.preventDefault();
+      preferencesState.resetZoom();
     }
   }
 

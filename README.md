@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.3.8-blue)
+![Version](https://img.shields.io/badge/version-1.3.9-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -39,7 +39,8 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Source view** — Cmd+/ toggles read-only raw Markdown
 - **Focus mode** — Cmd+Shift+F dims inactive blocks
 - **Review panel** — Cmd+Shift+R, document quality checks (headings, images, links, code blocks)
-- **Status bar** — line/column, selection count, word count, encoding, theme toggle
+- **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset (12–28px, persisted)
+- **Status bar** — line/column, selection count, word count, zoom %, encoding, theme toggle
 
 ### Export
 - HTML export (Cmd+Shift+E) — standalone file with embedded styles
@@ -192,6 +193,7 @@ src-tauri/
 | v1.3.4–v1.3.6 | Code block overlay alignment, inline mark decoration, scroll sync fixes |
 | v1.3.7 | Codebase review — 8 bug fixes (image error handling, PDF export race, save_image sanitization, preferences validation, find-replace ReDoS protection, scroll sync refactor) |
 | v1.3.8 | Upgrade Rust edition to 2024, docs reorganization (tutorial promoted to top-level) |
+| v1.3.9 | Font size zoom — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset editor font size (persisted) |
 
 ## Documentation
 

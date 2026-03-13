@@ -37,6 +37,15 @@ export default function StatusBar(props: StatusBarProps) {
       </div>
       <div class="lm-statusbar-right">
         <span>{props.wordCount()} words</span>
+        <Show when={preferencesState.fontSize() !== 16}>
+          <button
+            class="lm-statusbar-btn"
+            onClick={() => preferencesState.resetZoom()}
+            title="Reset zoom to 100%"
+          >
+            {Math.round(preferencesState.fontSize() / 16 * 100) + "%"}
+          </button>
+        </Show>
         <span>UTF-8</span>
         <button
           class="lm-statusbar-btn"

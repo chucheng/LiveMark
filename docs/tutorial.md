@@ -238,6 +238,9 @@ LiveMark supports a full set of keyboard shortcuts for power users:
 | `Cmd+Shift+R` | Toggle review panel |
 | `Cmd+Shift+F` | Toggle focus mode |
 | `Cmd+Shift+T` | Cycle theme |
+| `Cmd+=` | Zoom in |
+| `Cmd+-` | Zoom out |
+| `Cmd+0` | Reset zoom |
 | `Cmd+Shift+E` | Export as HTML |
 | `Cmd+P` | Print / Export PDF |
 | `Cmd+Shift+C` | Copy as HTML |
