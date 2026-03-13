@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.3.3-blue)
+![Version](https://img.shields.io/badge/version-1.3.6-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 

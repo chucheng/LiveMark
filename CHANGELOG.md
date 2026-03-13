@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.6
+
+- **Inline mark decoration fix** — fixed render/edit/blur corruption for bold, italic, strikethrough, and inline code
+  - Root cause 1: `buildInlineDecorations` used `descendants()` which skips the node itself — paragraphs and headings (top-level textblocks) never received syntax marker decorations
+  - Root cause 2: off-by-one in position calculation for nested structures (blockquotes) — `activeNodePos + pos` missing +1 to enter the active node, placing markers at wrong positions (e.g. `Bol**d` instead of `**Bold**`)
+  - Added 17 tests covering paragraphs, headings, blockquotes, position correctness, focus/blur cycles, and no-corruption guarantees
+
 ## v1.3.5
 
 - **Code block highlight overlay alignment fix** — fixed CSS specificity bug where the `pre code` rule (specificity 0,2,2) overrode the highlight overlay's padding to 0, causing text misalignment between view and edit modes

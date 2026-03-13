@@ -26,17 +26,6 @@ function getMarkSyntax(mark: Mark): { open: string; close: string } | null {
   }
 }
 
-function createMarkerWidget(text: string): Decoration {
-  // This is a factory — actual position set by caller
-  // We just need the DOM creation logic
-  const span = document.createElement("span");
-  span.className = "lm-syntax-marker";
-  span.textContent = text;
-  span.contentEditable = "false";
-  // Return the span for use in widget creation
-  return span as unknown as Decoration;
-}
-
 function collectMarkRanges(node: Node, basePos: number): MarkRange[] {
   const ranges: MarkRange[] = [];
 
@@ -87,6 +76,41 @@ function collectMarkRanges(node: Node, basePos: number): MarkRange[] {
   return ranges;
 }
 
+function addDecorationsForTextblock(
+  node: Node,
+  absPos: number,
+  decorations: Decoration[]
+): void {
+  const ranges = collectMarkRanges(node, absPos);
+
+  for (const range of ranges) {
+    const syntax = getMarkSyntax(range.mark);
+    if (!syntax) continue;
+
+    // Opening marker widget
+    decorations.push(
+      Decoration.widget(range.from, () => {
+        const span = document.createElement("span");
+        span.className = "lm-syntax-marker";
+        span.textContent = syntax.open;
+        span.contentEditable = "false";
+        return span;
+      }, { side: -1 })
+    );
+
+    // Closing marker widget
+    decorations.push(
+      Decoration.widget(range.to, () => {
+        const span = document.createElement("span");
+        span.className = "lm-syntax-marker";
+        span.textContent = syntax.close;
+        span.contentEditable = "false";
+        return span;
+      }, { side: 1 })
+    );
+  }
+}
+
 function buildInlineDecorations(
   doc: Node,
   activeNodePos: number | null
@@ -96,48 +120,24 @@ function buildInlineDecorations(
   const activeNode = doc.nodeAt(activeNodePos);
   if (!activeNode) return DecorationSet.empty;
 
-  // Find the deepest textblock containing the cursor
-  // For simple blocks (paragraph, heading), activeNode itself is the textblock
-  // For blockquote, we need to look deeper — but inline decorations only apply to textblocks
-  // The active node is depth-1 block; we decorate all textblocks within it
   const decorations: Decoration[] = [];
 
-  // Walk all textblocks within the active node
-  activeNode.descendants((node, pos) => {
-    if (!node.isTextblock) return true; // keep descending
+  if (activeNode.isTextblock) {
+    // Active node IS the textblock (paragraph, heading) — process directly
+    addDecorationsForTextblock(activeNode, activeNodePos, decorations);
+  } else {
+    // Active node contains textblocks (blockquote, list item, etc.)
+    // descendants() gives positions relative to activeNode's content start,
+    // so +1 accounts for entering the active node.
+    activeNode.descendants((node, pos) => {
+      if (!node.isTextblock) return true; // keep descending
 
-    const absPos = activeNodePos + pos;
-    const ranges = collectMarkRanges(node, absPos);
+      const absPos = activeNodePos + 1 + pos;
+      addDecorationsForTextblock(node, absPos, decorations);
 
-    for (const range of ranges) {
-      const syntax = getMarkSyntax(range.mark);
-      if (!syntax) continue;
-
-      // Opening marker widget
-      decorations.push(
-        Decoration.widget(range.from, () => {
-          const span = document.createElement("span");
-          span.className = "lm-syntax-marker";
-          span.textContent = syntax.open;
-          span.contentEditable = "false";
-          return span;
-        }, { side: -1 })
-      );
-
-      // Closing marker widget
-      decorations.push(
-        Decoration.widget(range.to, () => {
-          const span = document.createElement("span");
-          span.className = "lm-syntax-marker";
-          span.textContent = syntax.close;
-          span.contentEditable = "false";
-          return span;
-        }, { side: 1 })
-      );
-    }
-
-    return false; // don't descend into textblock children
-  });
+      return false; // don't descend into textblock children
+    });
+  }
 
   return DecorationSet.create(doc, decorations);
 }
