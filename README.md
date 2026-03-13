@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.3.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -186,6 +186,7 @@ src-tauri/
 | v1.1.1 | Code block exit and click-below behavior fixes |
 | v1.2.0 | Review panel — document quality checks with premium minimal UI |
 | v1.3.0 | Auto-save — 30s debounce, preference toggle, status bar indicator |
+| v1.3.1 | Fix task list checkbox toggle and macOS window close button |
 
 ## Future Candidates
 

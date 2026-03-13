@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.1
+
+- **Task list checkbox fix** — clicking checkboxes now properly toggles the checked state (moved toggle to mousedown to avoid WebKit event suppression)
+- **Window close fix** — macOS traffic light buttons (close/minimize/zoom) were blocked by the drag region; added a no-drag spacer so native controls are clickable
+
 ## v1.1.1
 
 - **Code block exit fix** — pressing Enter on an empty last line in a code block now exits to a new paragraph below

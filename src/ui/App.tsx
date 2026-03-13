@@ -206,6 +206,7 @@ export default function App() {
   return (
     <div class="lm-app">
       <div class="lm-titlebar">
+        <div class="lm-titlebar-traffic-light-spacer" />
         <span class="lm-titlebar-title">
           LiveMark — {documentState.fileName()}
           {documentState.isModified() ? " ●" : ""}
