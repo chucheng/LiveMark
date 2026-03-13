@@ -47,8 +47,6 @@ Create links with `[text](url)` syntax:
 
 Insert images with `![alt text](url)` syntax:
 
-![LiveMark Logo](./livemark-logo.png "LiveMark Logo")
-
 You can also **drag and drop** images directly into the editor, or **paste** them from your clipboard. LiveMark will automatically save the image alongside your document.
 
 ---
@@ -230,6 +228,13 @@ LiveMark supports a full set of keyboard shortcuts for power users:
 | `Cmd+F`               | Find & replace       |
 | `Cmd+Shift+P`         | Command palette      |
 | `Cmd+/`               | Toggle source view   |
+| `Cmd+Shift+R`         | Toggle review panel  |
+| `Cmd+Shift+F`         | Toggle focus mode    |
+| `Cmd+Shift+T`         | Cycle theme          |
+| `Cmd+Shift+E`         | Export as HTML       |
+| `Cmd+P`               | Print / Export PDF   |
+| `Cmd+Shift+C`         | Copy as HTML         |
+| `Cmd+Alt+C`           | Copy as Markdown     |
 
 ---
 
@@ -254,7 +259,36 @@ Access export options through the command palette (`Cmd+Shift+P`) or the menu.
 
 ## Themes
 
-LiveMark supports **Light** and **Dark** themes, plus a **System** option that follows your OS preference. Toggle themes from the status bar or the command palette.
+LiveMark supports **Light** and **Dark** themes, plus a **System** option that follows your OS preference. Toggle with `Cmd+Shift+T`, from the status bar, or the command palette.
+
+---
+
+## Review Panel
+
+Press `Cmd+Shift+R` to open the review panel. It analyzes your document for quality issues:
+
+- **Empty headings** — headings with no content
+- **Heading hierarchy skips** — jumping from h1 to h3 without h2
+- **Duplicate headings** — identical heading text
+- **Missing image alt text** — images without descriptive alt text
+- **Empty links** — links with no URL
+- **Code blocks without language** — fenced blocks missing a language tag
+- **Long paragraphs** — paragraphs over 300 words
+- **Missing document title** — no h1 heading in the document
+
+Click any item in the panel to jump to that location in the editor. The panel updates live as you type.
+
+---
+
+## Focus Mode
+
+Press `Cmd+Shift+F` to toggle focus mode. In focus mode, only the paragraph you're currently editing is fully visible — surrounding blocks are dimmed. This helps you concentrate on the content you're actively writing.
+
+---
+
+## Source View
+
+Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your document in a read-only view. Toggle back to return to the live-preview editor.
 
 ---
 
