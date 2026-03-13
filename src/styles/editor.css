@@ -103,6 +103,11 @@
   margin-bottom: 0.2em;
 }
 
+/* Tight lists: collapse paragraph margins so items are compact */
+.ProseMirror .lm-tight li > p {
+  margin-bottom: 0;
+}
+
 .ProseMirror li[data-task] {
   list-style: none;
   margin-left: -1.5em;

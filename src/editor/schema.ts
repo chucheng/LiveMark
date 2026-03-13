@@ -113,8 +113,10 @@ const nodes: Record<string, NodeSpec> = {
     group: "block",
     attrs: { tight: { default: false } },
     parseDOM: [{ tag: "ul" }],
-    toDOM() {
-      return ["ul", 0];
+    toDOM(node) {
+      return node.attrs.tight
+        ? ["ul", { class: "lm-tight" }, 0]
+        : ["ul", 0];
     },
   },
 
@@ -132,9 +134,10 @@ const nodes: Record<string, NodeSpec> = {
       },
     ],
     toDOM(node) {
-      return node.attrs.start === 1
-        ? ["ol", 0]
-        : ["ol", { start: node.attrs.start }, 0];
+      const attrs: Record<string, string> = {};
+      if (node.attrs.start !== 1) attrs.start = node.attrs.start;
+      if (node.attrs.tight) attrs.class = "lm-tight";
+      return ["ol", attrs, 0];
     },
   },
 
@@ -152,8 +155,9 @@ const nodes: Record<string, NodeSpec> = {
     group: "block",
     attrs: { tight: { default: false } },
     parseDOM: [{ tag: "ul.task-list" }],
-    toDOM() {
-      return ["ul", { class: "task-list" }, 0];
+    toDOM(node) {
+      const cls = node.attrs.tight ? "task-list lm-tight" : "task-list";
+      return ["ul", { class: cls }, 0];
     },
   },
 
