@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.3.7-blue)
+![Version](https://img.shields.io/badge/version-1.3.8-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -191,8 +191,11 @@ src-tauri/
 | v1.3.3 | UI polish — refined design system, deep graphite dark mode, premium surfaces |
 | v1.3.4–v1.3.6 | Code block overlay alignment, inline mark decoration, scroll sync fixes |
 | v1.3.7 | Codebase review — 8 bug fixes (image error handling, PDF export race, save_image sanitization, preferences validation, find-replace ReDoS protection, scroll sync refactor) |
+| v1.3.8 | Upgrade Rust edition to 2024, docs reorganization (tutorial promoted to top-level) |
 
 ## Documentation
+
+- [Tutorial](docs/tutorial.md) — All supported Markdown syntax and features (open in LiveMark)
 
 ### Current System (V1)
 
@@ -201,7 +204,6 @@ src-tauri/
 - [Tech Decisions](docs/v1/tech-decisions.md) — Architecture Decision Records
 - [UX Principles](docs/v1/ux-principles.md) — Design principles and visual guidelines
 - [User Flows](docs/v1/user-flows.md) — Detailed user interaction flows
-- [Tutorial](docs/v1/tutorial.md) — Interactive tutorial (open in LiveMark)
 - [Testing](docs/v1/testing.md) — UI test plan and test cases
 
 ### Future Work

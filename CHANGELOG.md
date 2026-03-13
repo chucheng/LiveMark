@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.8
+
+- **Rust edition 2024** — upgraded from edition 2021 to 2024 (Rust 1.85+)
+- **Docs reorganization** — promoted `tutorial.md` to top-level `docs/` for easier discovery
+
 ## v1.3.7
 
 - **Codebase review** — 8 fixes from a deep technical review
