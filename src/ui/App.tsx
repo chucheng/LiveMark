@@ -117,6 +117,9 @@ export default function App() {
       preferencesState.savePreferences();
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
+      // .lm-editor-wrapper is the scroll container (overflow-y: auto),
+      // NOT .lm-editor-mount (editor.view.dom.parentElement).
+      const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       if (uiState.isSourceView()) {
         // Switching back to editor — capture source scroll %, restore on editor
         const sourceEl = document.querySelector(".lm-source-view") as HTMLElement | null;
@@ -124,13 +127,11 @@ export default function App() {
         setContentFraction(pct);
         uiState.toggleSourceView();
         requestAnimationFrame(() => {
-          const wrapper = editor?.view.dom.parentElement;
-          if (wrapper) setScrollPercent(wrapper, contentFraction());
+          if (editorScroller) setScrollPercent(editorScroller, contentFraction());
         });
       } else {
         // Switching to source view — capture editor scroll %
-        const wrapper = editor?.view.dom.parentElement;
-        if (wrapper) setContentFraction(getScrollPercent(wrapper));
+        if (editorScroller) setContentFraction(getScrollPercent(editorScroller));
         setMarkdown(editor?.getMarkdown() ?? "");
         uiState.toggleSourceView();
       }
