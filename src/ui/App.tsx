@@ -206,6 +206,8 @@ export default function App() {
     }
   }
 
+  let unlistenClose: (() => void) | undefined;
+
   onMount(() => {
     // Register all commands for the palette
     registerAllCommands();
@@ -250,17 +252,13 @@ export default function App() {
 
       // Window close handler — prompt for unsaved changes
       const appWindow = getCurrentWindow();
-      const unlisten = await appWindow.onCloseRequested(async (event) => {
+      unlistenClose = await appWindow.onCloseRequested(async (event) => {
         if (documentState.isModified()) {
           const canClose = await confirmUnsavedChanges();
           if (!canClose) {
             event.preventDefault();
           }
         }
-      });
-
-      onCleanup(() => {
-        unlisten();
       });
     })();
   });
@@ -269,6 +267,7 @@ export default function App() {
     window.removeEventListener("keydown", handleKeydown);
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+    unlistenClose?.();
     editor?.destroy();
   });
 
