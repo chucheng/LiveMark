@@ -27,7 +27,7 @@ function createState(doc: Node, cursorPos?: number): EditorState {
 
 function getDecorations(state: EditorState): DecorationSet {
   const plugin = state.plugins.find(
-    (p) => p.spec.state && p.key?.startsWith("plugin$")
+    (p) => p.spec.state && (p as any).key?.startsWith("plugin$")
   );
   // The inlineDecorationsPlugin is the second plugin
   return state.plugins[1].getState(state) as DecorationSet;
