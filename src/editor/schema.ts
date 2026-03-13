@@ -111,6 +111,7 @@ const nodes: Record<string, NodeSpec> = {
   bullet_list: {
     content: "list_item+",
     group: "block",
+    attrs: { tight: { default: false } },
     parseDOM: [{ tag: "ul" }],
     toDOM() {
       return ["ul", 0];
@@ -120,7 +121,7 @@ const nodes: Record<string, NodeSpec> = {
   ordered_list: {
     content: "list_item+",
     group: "block",
-    attrs: { start: { default: 1 } },
+    attrs: { start: { default: 1 }, tight: { default: false } },
     parseDOM: [
       {
         tag: "ol",

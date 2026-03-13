@@ -141,6 +141,7 @@ src/
       placeholder.ts      — Empty doc placeholder
       link-click.ts       — Cmd+click opens links
       image-drop-paste.ts — Image drag-drop/paste handler
+      trailing-paragraph.ts — Ensures doc ends with paragraph (click below blocks)
   ui/
     App.tsx               — Root component
     StatusBar.tsx         — Status bar (line/col, words, theme toggle)
@@ -202,6 +203,8 @@ Detailed design docs live in [`docs/`](docs/):
 - [USER_FLOWS.md](docs/USER_FLOWS.md) — Detailed user interaction flows
 - [ROADMAP.md](docs/ROADMAP.md) — Development roadmap
 - [MILESTONES.md](docs/MILESTONES.md) — Detailed milestone specs
+- [UI_TEST_PLAN.md](docs/UI_TEST_PLAN.md) — Manual UI testing checklist
+- [tutorial.md](docs/tutorial.md) — Getting started tutorial for new users
 
 ## License
 

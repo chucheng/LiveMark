@@ -4,13 +4,47 @@ import { MarkdownParser } from "prosemirror-markdown";
 import { schema } from "../schema";
 import { taskListPlugin } from "./task-list-plugin";
 import { mathPlugin } from "./math-plugin";
+import { tightListPlugin } from "./tight-list-plugin";
 
 export const md = MarkdownIt("commonmark", { html: false })
   .enable("strikethrough")
   .enable("table")
   .use(taskListPlugin)
   .use(mathPlugin)
+  .use(tightListPlugin)
   .use(stripTheadTbody);
+
+/**
+ * markdown-it plugin that detects tight lists and sets a "tight" attr
+ * on bullet_list_open / ordered_list_open tokens so ProseMirror can
+ * preserve tightness through the round-trip.
+ */
+function tightListPlugin(md: MarkdownItType): void {
+  md.core.ruler.push("detect_tight_lists", (state) => {
+    for (let i = 0; i < state.tokens.length; i++) {
+      const tok = state.tokens[i];
+      if (tok.type === "bullet_list_open" || tok.type === "ordered_list_open") {
+        // A list is tight when its paragraph_open children are hidden
+        let tight = true;
+        const level = tok.level;
+        for (let j = i + 1; j < state.tokens.length; j++) {
+          const inner = state.tokens[j];
+          // Stop at matching close
+          if (
+            (inner.type === "bullet_list_close" || inner.type === "ordered_list_close") &&
+            inner.level === level
+          ) break;
+          // Check paragraph_open tokens that are direct children of list_items
+          if (inner.type === "paragraph_open" && !inner.hidden && inner.level === level + 2) {
+            tight = false;
+            break;
+          }
+        }
+        tok.attrSet("tight", tight ? "true" : "false");
+      }
+    }
+  });
+}
 
 /**
  * markdown-it plugin that:
@@ -63,10 +97,16 @@ export const markdownParser = new MarkdownParser(schema, md, {
   blockquote: { block: "blockquote" },
   paragraph: { block: "paragraph" },
   list_item: { block: "list_item" },
-  bullet_list: { block: "bullet_list" },
+  bullet_list: {
+    block: "bullet_list",
+    getAttrs: (tok) => ({ tight: tok.attrGet("tight") === "true" }),
+  },
   ordered_list: {
     block: "ordered_list",
-    getAttrs: (tok) => ({ start: +(tok.attrGet("start") || 1) }),
+    getAttrs: (tok) => ({
+      start: +(tok.attrGet("start") || 1),
+      tight: tok.attrGet("tight") === "true",
+    }),
   },
   heading: {
     block: "heading",
