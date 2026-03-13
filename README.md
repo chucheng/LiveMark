@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -19,6 +19,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Cursor-aware editing** — raw syntax shown on focus, rendered on blur
 - **CommonMark + GFM** — headings, bold, italic, strikethrough, code, blockquotes, lists, links, images, tables, task lists, horizontal rules
 - **Syntax highlighting** — 14 languages in fenced code blocks (JS, TS, Python, Rust, Go, Java, C/C++, HTML, CSS, JSON, Bash, SQL, Ruby)
+- **Math rendering** — inline `$...$` and block `$$...$$` with KaTeX
 - **Table editing** — visual tables with Tab navigation between cells
 - **Task list checkboxes** — clickable checkboxes that toggle state
 - **Image preview** — inline rendering, drag-and-drop or paste to insert
@@ -52,6 +53,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 | UI framework | [SolidJS](https://www.solidjs.com/) |
 | Editor engine | [ProseMirror](https://prosemirror.net/) + [prosemirror-tables](https://github.com/ProseMirror/prosemirror-tables) |
 | Markdown parser | [markdown-it](https://github.com/markdown-it/markdown-it) |
+| Math rendering | [KaTeX](https://katex.org/) |
 | Syntax highlighting | [highlight.js](https://highlightjs.org/) |
 | Build tool | [Vite](https://vitejs.dev/) + TypeScript |
 | Package manager | pnpm |
@@ -131,7 +133,8 @@ src/
       parser.ts           — markdown-it → ProseMirror document
       serializer.ts       — ProseMirror document → Markdown string
       task-list-plugin.ts — Custom markdown-it plugin for task lists
-    nodeviews/            — Cursor-aware NodeViews (heading, code-block, blockquote, etc.)
+      math-plugin.ts      — Custom markdown-it plugin for math ($, $$)
+    nodeviews/            — Cursor-aware NodeViews (heading, code-block, blockquote, math, etc.)
     plugins/
       live-render.ts      — Active block detection + decorations
       find-replace.ts     — Search decorations + match navigation
@@ -176,7 +179,6 @@ These are architected for but deferred to future releases:
 - Plugin/extension API
 - Vim/Emacs keybindings
 - Mermaid diagram rendering
-- Math (KaTeX) rendering
 - Custom CSS themes
 - File tree sidebar
 - YAML frontmatter support

@@ -195,6 +195,37 @@ describe("Table round-trip", () => {
   });
 });
 
+describe("Math round-trip", () => {
+  it("inline math", () => {
+    expectRoundTrip("The equation $E=mc^2$ is famous.");
+  });
+
+  it("block math", () => {
+    expectRoundTrip("$$\n\\int_0^\\infty e^{-x} dx = 1\n$$");
+  });
+
+  it("multiple inline math in one paragraph", () => {
+    expectRoundTrip("Given $a$ and $b$, compute $a+b$.");
+  });
+
+  it("escaped dollar is not math", () => {
+    // Escaped dollars should pass through as text, not become math
+    const doc = parseMarkdown("The price is \\$5.");
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const serialized = serializeMarkdown(doc);
+    // Should not contain math_inline nodes
+    expect(serialized.trim()).not.toContain("$$");
+  });
+
+  it("math with LaTeX commands", () => {
+    expectRoundTrip("$\\alpha + \\beta = \\gamma$");
+  });
+
+  it("block math structural round-trip", () => {
+    expectStructuralRoundTrip("$$\nx^2 + y^2 = z^2\n$$");
+  });
+});
+
 describe("Markdown round-trip: structural fidelity", () => {
   it("complex document preserves structure through double round-trip", () => {
     const md = `## Heading

@@ -6,6 +6,8 @@ import { BlockquoteView } from "./blockquote";
 import { HorizontalRuleView } from "./horizontal-rule";
 import { TaskListItemView } from "./task-list-item";
 import { ImageView } from "./image";
+import { MathBlockView } from "./math-block";
+import { MathInlineView } from "./math-inline";
 
 export type NodeViewConstructor = (
   node: Node,
@@ -20,4 +22,6 @@ export const nodeViews: Record<string, NodeViewConstructor> = {
   horizontal_rule: (node, view, getPos) => new HorizontalRuleView(node, view, getPos),
   task_list_item: (node, view, getPos) => new TaskListItemView(node, view, getPos),
   image: (node, view, getPos) => new ImageView(node, view, getPos),
+  math_block: (node, view, getPos) => new MathBlockView(node, view, getPos),
+  math_inline: (node, view, getPos) => new MathInlineView(node, view, getPos),
 };

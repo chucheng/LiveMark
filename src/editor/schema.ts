@@ -83,6 +83,23 @@ const nodes: Record<string, NodeSpec> = {
     },
   },
 
+  math_block: {
+    content: "text*",
+    marks: "",
+    group: "block",
+    code: true,
+    defining: true,
+    parseDOM: [
+      {
+        tag: "div.math-block",
+        preserveWhitespace: "full" as const,
+      },
+    ],
+    toDOM() {
+      return ["div", { class: "math-block" }, 0];
+    },
+  },
+
   horizontal_rule: {
     group: "block",
     parseDOM: [{ tag: "hr" }],
@@ -154,6 +171,24 @@ const nodes: Record<string, NodeSpec> = {
     ],
     toDOM(node) {
       return ["li", { class: `lm-task-item${node.attrs.checked ? " checked" : ""}` }, 0];
+    },
+  },
+
+  math_inline: {
+    inline: true,
+    atom: true,
+    group: "inline",
+    attrs: { tex: { default: "" } },
+    parseDOM: [
+      {
+        tag: "span.math-inline",
+        getAttrs(node) {
+          return { tex: (node as HTMLElement).getAttribute("data-tex") || "" };
+        },
+      },
+    ],
+    toDOM(node) {
+      return ["span", { class: "math-inline", "data-tex": node.attrs.tex }];
     },
   },
 

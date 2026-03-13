@@ -264,6 +264,61 @@
 .hljs-params { color: var(--lm-text); }
 .hljs-variable { color: #e36209; }
 
+/* --- Math Block NodeView --- */
+.lm-math-block-wrapper {
+  margin-bottom: 0.8em;
+}
+
+.lm-math-block-container {
+  position: relative;
+  background-color: var(--lm-code-bg);
+  border-radius: 6px;
+  padding: 1em;
+  overflow-x: auto;
+}
+
+.lm-math-block-container .lm-math-rendered {
+  text-align: center;
+  min-height: 1.5em;
+}
+
+.lm-active .lm-math-block-container .lm-math-rendered {
+  display: none;
+}
+
+.lm-math-block-container .lm-math-source {
+  display: none;
+  font-family: var(--lm-font-mono);
+  font-size: 0.875em;
+  white-space: pre-wrap;
+  color: var(--lm-text);
+}
+
+.lm-active .lm-math-block-container .lm-math-source {
+  display: block;
+}
+
+/* --- Math Inline NodeView --- */
+.lm-math-inline-wrapper {
+  display: inline;
+}
+
+.ProseMirror-selectednode .lm-math-inline-wrapper,
+.lm-math-inline-wrapper.ProseMirror-selectednode {
+  outline: 2px solid var(--lm-accent, #2563eb);
+  border-radius: 2px;
+}
+
+/* --- Math Error State --- */
+.lm-math-error {
+  color: var(--lm-text-muted);
+  border: 1px dashed var(--lm-border);
+  border-radius: 4px;
+  padding: 0.25em 0.5em;
+  font-family: var(--lm-font-mono);
+  font-size: 0.875em;
+}
+
 /* --- Table --- */
 .ProseMirror table {
   border-collapse: collapse;

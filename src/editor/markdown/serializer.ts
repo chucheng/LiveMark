@@ -22,6 +22,18 @@ export const markdownSerializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
 
+    math_block(state, node) {
+      state.write("$$\n");
+      state.text(node.textContent, false);
+      state.ensureNewLine();
+      state.write("$$");
+      state.closeBlock(node);
+    },
+
+    math_inline(state, node) {
+      state.write(`$${node.attrs.tex}$`);
+    },
+
     heading(state, node) {
       state.write(`${"#".repeat(node.attrs.level)} `);
       state.renderInline(node);

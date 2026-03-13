@@ -42,6 +42,10 @@ function codeBlockRule(nodeType: NodeType) {
   }));
 }
 
+function mathBlockRule(nodeType: NodeType) {
+  return textblockTypeInputRule(/^\$\$\s$/, nodeType);
+}
+
 function horizontalRuleRule(nodeType: NodeType) {
   return new InputRule(
     /^(?:---|\*\*\*|___)\s$/,
@@ -133,6 +137,21 @@ function markWrappingRule(
   });
 }
 
+function mathInlineRule() {
+  // Match $content$ where content is non-empty and doesn't start/end with space
+  return new InputRule(
+    /(?:^|(?<=\s))\$([^\s$][^$]*[^\s$]|[^\s$])\$$/,
+    (state: EditorState, match, start, end) => {
+      const tex = match[1];
+      const mathNode = schema.nodes.math_inline.create({ tex });
+      // Adjust start to skip the leading whitespace if present
+      const offset = match[0].length - match[1].length - 2; // 2 for the $ delimiters
+      const from = start + offset;
+      return state.tr.replaceWith(from, end, mathNode);
+    }
+  );
+}
+
 export function buildInputRules() {
   return inputRules({
     rules: [
@@ -145,6 +164,7 @@ export function buildInputRules() {
       bulletListRule(schema.nodes.bullet_list),
       orderedListRule(schema.nodes.ordered_list),
       codeBlockRule(schema.nodes.code_block),
+      mathBlockRule(schema.nodes.math_block),
       horizontalRuleRule(schema.nodes.horizontal_rule),
 
       // Inline mark rules
@@ -172,6 +192,9 @@ export function buildInputRules() {
         schema.marks.code,
         1
       ),
+
+      // $math$ — inline math atom
+      mathInlineRule(),
     ],
   });
 }

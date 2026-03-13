@@ -3,11 +3,13 @@ import type MarkdownItType from "markdown-it";
 import { MarkdownParser } from "prosemirror-markdown";
 import { schema } from "../schema";
 import { taskListPlugin } from "./task-list-plugin";
+import { mathPlugin } from "./math-plugin";
 
 export const md = MarkdownIt("commonmark", { html: false })
   .enable("strikethrough")
   .enable("table")
   .use(taskListPlugin)
+  .use(mathPlugin)
   .use(stripTheadTbody);
 
 /**
@@ -104,6 +106,16 @@ export const markdownParser = new MarkdownParser(schema, md, {
   },
   code_inline: { mark: "code" },
   s: { mark: "strikethrough" },
+
+  // Math
+  math_inline: {
+    node: "math_inline",
+    getAttrs: (tok) => ({ tex: tok.content }),
+  },
+  math_block: {
+    block: "math_block",
+    noCloseToken: true,
+  },
 
   // Task lists
   task_list: { block: "task_list" },

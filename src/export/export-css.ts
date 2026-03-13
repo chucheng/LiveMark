@@ -1,7 +1,10 @@
+import katexCSS from "katex/dist/katex.min.css?inline";
+
 /**
  * Bundled CSS for HTML export.
  * Includes typography, headings, lists, code blocks, blockquotes,
- * tables, images, links, task lists, and syntax highlighting tokens.
+ * tables, images, links, task lists, syntax highlighting tokens,
+ * and KaTeX math rendering styles.
  * Strips editor-specific rules (cursor, ProseMirror internals).
  */
 export function getExportCSS(): string {
@@ -169,6 +172,18 @@ li.task-list-item input[type="checkbox"] {
 .hljs-meta { color: #6a737d; }
 .hljs-variable { color: #e36209; }
 
+/* Math block */
+.math-block {
+  text-align: center;
+  margin: 1em 0;
+}
+
+.math-error {
+  color: #dc3545;
+  font-family: var(--lm-font-mono);
+  font-size: 0.9em;
+}
+
 @media print {
   body {
     max-width: 100%;
@@ -178,5 +193,5 @@ li.task-list-item input[type="checkbox"] {
     max-width: 100%;
   }
 }
-`;
+` + katexCSS;
 }
