@@ -76,28 +76,34 @@
   margin-bottom: 0.8em;
 }
 
-.lm-code-block-wrapper pre {
+/* Higher specificity to override .ProseMirror pre defaults in editor.css */
+.ProseMirror .lm-code-block-wrapper pre {
   background-color: var(--lm-code-bg);
   padding: 0.75em 1em;
   overflow-x: auto;
   margin: 0;
+  border-radius: 0;
 }
 
-.lm-code-block-wrapper pre code {
+.ProseMirror .lm-code-block-wrapper pre code {
   background: none;
   padding: 0;
   color: var(--lm-text);
+  font-family: var(--lm-font-mono);
   font-size: 0.875em;
+  line-height: var(--lm-line-height);
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 /* --- Styled Fences (always visible) --- */
 .lm-fence {
   font-family: var(--lm-font-mono);
   font-size: 0.875em;
-  line-height: 1.4;
+  line-height: 1;
   color: var(--lm-text-muted);
   opacity: 0.7;
-  padding: 4px 1em;
+  padding: 3px 1em;
   margin: 0;
   background: var(--lm-bg-surface);
   user-select: none;
@@ -265,7 +271,7 @@
 }
 
 /* --- Code Block Syntax Highlighting --- */
-.lm-code-block-wrapper pre {
+.ProseMirror .lm-code-block-wrapper pre {
   position: relative;
 }
 
@@ -279,8 +285,11 @@
   pointer-events: none;
   user-select: none;
   overflow: hidden;
+  font-family: var(--lm-font-mono);
   font-size: 0.875em;
-  white-space: pre;
+  line-height: var(--lm-line-height);
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 /* When not active, hide editable text so only highlight overlay shows */

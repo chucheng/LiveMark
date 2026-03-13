@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.4
+
+- **Code block layout fix** — resolved vertical text offset and extra bottom space when toggling between view and edit modes
+  - Root cause: ProseMirror sets `white-space: pre-wrap` on `<pre>` elements, but the syntax highlight overlay used `white-space: pre`, causing text position divergence
+  - Both code elements now share identical typography: font-family, font-size, line-height, white-space, and word-wrap
+  - Cursor position now matches rendered text exactly when entering edit mode
+
 ## v1.3.3
 
 - **UI polish** — refined design system for a more premium, modern feel
