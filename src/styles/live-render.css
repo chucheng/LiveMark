@@ -182,7 +182,8 @@
   flex-shrink: 0;
 }
 
-.lm-task-item.checked .lm-task-content {
+.lm-task-item.checked .lm-task-content,
+.lm-task-item.checked .lm-task-content p {
   opacity: 0.6;
   text-decoration: line-through;
 }
