@@ -19,9 +19,12 @@ export class TaskListItemView implements NodeView {
     this.checkbox.type = "checkbox";
     this.checkbox.checked = node.attrs.checked;
     this.checkbox.contentEditable = "false";
-    // Handle toggle on mousedown: preventDefault stops focus steal AND
-    // prevents the browser from toggling the checkbox independently.
-    // We drive checked state entirely through ProseMirror.
+    // Block native click toggle — we drive checked state entirely
+    // through ProseMirror to keep DOM and doc in sync.
+    this.checkbox.addEventListener("click", (e) => {
+      e.preventDefault();
+    });
+    // Toggle on mousedown: preventDefault stops focus steal.
     this.checkbox.addEventListener("mousedown", (e) => {
       e.preventDefault();
       const pos = this.getPos();
