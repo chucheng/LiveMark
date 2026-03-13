@@ -190,36 +190,25 @@ src-tauri/
 | v1.3.2 | Remove app name from titlebar, center filename horizontally |
 | v1.3.3 | UI polish — refined design system, deep graphite dark mode, premium surfaces |
 
-## Future Candidates
-
-- Multi-tab / multi-file editing
-- Plugin/extension API
-- Vim/Emacs keybindings
-- Mermaid diagram rendering
-- Custom CSS themes
-- File tree sidebar
-- YAML frontmatter support
-- Recent files list
-- Spell checking
-- Version history / local snapshots
-- Auto-update mechanism
-
 ## Documentation
 
-Detailed design docs live in [`docs/`](docs/):
+### Current System (V1)
 
-- [VISION.md](docs/VISION.md) — Product vision and target users
-- [PRD.md](docs/PRD.md) — v1 feature spec and requirements
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — System architecture and data flows
-- [SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) — Document model, state machine, serialization
-- [TECH_STACK.md](docs/TECH_STACK.md) — Technology choices with comparison tables
-- [TECH_DECISIONS.md](docs/TECH_DECISIONS.md) — Architecture Decision Records
-- [UX_PRINCIPLES.md](docs/UX_PRINCIPLES.md) — Design principles and visual guidelines
-- [USER_FLOWS.md](docs/USER_FLOWS.md) — Detailed user interaction flows
-- [ROADMAP.md](docs/ROADMAP.md) — Development roadmap
-- [MILESTONES.md](docs/MILESTONES.md) — Detailed milestone specs
-- [UI_TEST_PLAN.md](docs/UI_TEST_PLAN.md) — Manual UI testing checklist
-- [tutorial.md](docs/tutorial.md) — Getting started tutorial for new users
+- [Architecture & System Design](docs/v1/architecture.md) — High-level architecture, module breakdown, data flows, all subsystems
+- [Tech Stack](docs/v1/tech-stack.md) — Technology choices with comparison tables
+- [Tech Decisions](docs/v1/tech-decisions.md) — Architecture Decision Records
+- [UX Principles](docs/v1/ux-principles.md) — Design principles and visual guidelines
+- [User Flows](docs/v1/user-flows.md) — Detailed user interaction flows
+- [Tutorial](docs/v1/tutorial.md) — Interactive tutorial (open in LiveMark)
+- [Testing](docs/v1/testing.md) — UI test plan and test cases
+
+### Future Work
+
+- [Ideas](docs/future/ideas.md) — Feature ideas, improvements, possible V2 directions
+
+### Archive
+
+- [Vision](docs/archive/vision.md) | [PRD](docs/archive/prd-v1.md) | [Roadmap](docs/archive/roadmap-v1.md) | [Milestones](docs/archive/milestones-v1.md) — Historical V1 planning documents
 
 ## License
 
