@@ -20,6 +20,7 @@
     "highlight.js": "^11.10.0",
     "katex": "^0.16.38",
     "markdown-it": "^14.1.0",
+    "mermaid": "^11.13.0",
     "prosemirror-commands": "^1.6.0",
     "prosemirror-gapcursor": "^1.4.1",
     "prosemirror-history": "^1.4.1",

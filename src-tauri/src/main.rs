@@ -4,8 +4,10 @@
 mod commands;
 
 use commands::file::{read_file, write_file};
+use commands::filetree::{list_directory, watch_directory, unwatch_directory, WatcherState};
 use commands::image::save_image;
 use commands::preferences::{read_preferences, write_preferences};
+use std::sync::Mutex;
 use tauri::Manager;
 
 pub struct InitialFilePath(pub Option<String>);
@@ -15,12 +17,27 @@ fn get_initial_file(state: tauri::State<InitialFilePath>) -> Option<String> {
     state.0.clone()
 }
 
+#[tauri::command]
+fn get_home_dir() -> Option<String> {
+    #[cfg(unix)]
+    {
+        std::env::var("HOME").ok()
+    }
+    #[cfg(windows)]
+    {
+        std::env::var("USERPROFILE").ok()
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
+            // Initialize watcher state
+            app.manage(WatcherState(Mutex::new(None)));
+
             // Pass CLI file arg to frontend via managed state
             let args: Vec<String> = std::env::args().collect();
             let file_arg = args.iter().skip(1).find(|a| {
@@ -46,9 +63,13 @@ fn main() {
             read_file,
             write_file,
             get_initial_file,
+            get_home_dir,
             save_image,
             read_preferences,
-            write_preferences
+            write_preferences,
+            list_directory,
+            watch_directory,
+            unwatch_directory
         ])
         .run(tauri::generate_context!())
         .expect("error while running LiveMark");

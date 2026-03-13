@@ -1,0 +1,131 @@
+.lm-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--lm-bg-surface);
+  border-right: 1px solid var(--lm-border);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.lm-sidebar-resizing {
+  cursor: col-resize;
+}
+
+.lm-sidebar-header {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--lm-border-subtle);
+  flex-shrink: 0;
+}
+
+.lm-sidebar-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--lm-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lm-sidebar-tree {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0;
+}
+
+.lm-tree-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  cursor: pointer;
+  padding-right: 8px;
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-tree-node:hover {
+  background: var(--lm-hover);
+}
+
+.lm-tree-node-disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lm-tree-node-disabled:hover {
+  background: none;
+}
+
+.lm-tree-icon {
+  font-size: 11px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+  color: var(--lm-text-faint);
+}
+
+.lm-tree-label {
+  font-size: 12.5px;
+  color: var(--lm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lm-sidebar-resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.lm-sidebar-resize:hover {
+  background: var(--lm-accent);
+  opacity: 0.3;
+}
+
+.lm-sidebar-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+}
+
+.lm-sidebar-empty-text {
+  font-size: 12px;
+  color: var(--lm-text-faint);
+  margin: 0;
+}
+
+.lm-sidebar-open-btn {
+  padding: 5px 14px;
+  font-size: 12px;
+  border: 1px solid var(--lm-border);
+  border-radius: 4px;
+  background: var(--lm-bg-surface);
+  color: var(--lm-text);
+  cursor: pointer;
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-sidebar-open-btn:hover {
+  background: var(--lm-hover);
+}
+
+.lm-sidebar-empty-hint {
+  font-size: 10.5px;
+  color: var(--lm-text-faint);
+  margin: 0;
+}

@@ -5,10 +5,12 @@ import { schema } from "../schema";
 import { taskListPlugin } from "./task-list-plugin";
 import { mathPlugin } from "./math-plugin";
 import { tightListPlugin } from "./tight-list-plugin";
+import { frontmatterPlugin } from "./frontmatter-plugin";
 
 export const md = MarkdownIt("commonmark", { html: false })
   .enable("strikethrough")
   .enable("table")
+  .use(frontmatterPlugin)
   .use(taskListPlugin)
   .use(mathPlugin)
   .use(tightListPlugin)
@@ -132,6 +134,12 @@ export const markdownParser = new MarkdownParser(schema, md, {
   },
   code_inline: { mark: "code" },
   s: { mark: "strikethrough" },
+
+  // Frontmatter
+  frontmatter: {
+    block: "frontmatter",
+    noCloseToken: true,
+  },
 
   // Math
   math_inline: {

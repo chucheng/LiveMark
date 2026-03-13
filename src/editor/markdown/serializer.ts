@@ -9,6 +9,14 @@ import { Node, Mark } from "prosemirror-model";
  */
 export const markdownSerializer = new MarkdownSerializer(
   {
+    frontmatter(state, node) {
+      state.write("---\n");
+      state.text(node.textContent, false);
+      state.ensureNewLine();
+      state.write("---");
+      state.closeBlock(node);
+    },
+
     blockquote(state, node) {
       state.wrapBlock("> ", null, node, () => state.renderContent(node));
     },

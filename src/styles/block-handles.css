@@ -1,0 +1,81 @@
+.lm-block-handle {
+  position: absolute;
+  left: -28px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--lm-text-faint);
+  cursor: grab;
+  border-radius: var(--lm-radius-sm);
+  opacity: 0;
+  transition: opacity var(--lm-transition-fast), background var(--lm-transition-fast);
+  user-select: none;
+  letter-spacing: -1px;
+  margin-top: 2px;
+}
+
+.ProseMirror:hover .lm-block-handle {
+  opacity: 0.6;
+}
+
+.lm-block-handle:hover {
+  opacity: 1 !important;
+  background: var(--lm-hover);
+  color: var(--lm-text-muted);
+}
+
+/* Collapse indicator */
+.lm-collapse-indicator {
+  color: var(--lm-text-faint);
+  font-size: 0.85em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lm-collapse-indicator:hover {
+  color: var(--lm-accent);
+}
+
+/* Collapsed blocks */
+.lm-collapsed {
+  display: none !important;
+}
+
+/* Block context menu */
+.lm-block-context-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 140px;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  box-shadow: var(--lm-shadow-md);
+  padding: 4px;
+  font-size: 12.5px;
+}
+
+.lm-bcm-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 5px 10px;
+  border: none;
+  background: none;
+  color: var(--lm-text);
+  cursor: pointer;
+  border-radius: var(--lm-radius-sm);
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-bcm-item:hover {
+  background: var(--lm-hover);
+}
+
+.lm-bcm-separator {
+  height: 1px;
+  background: var(--lm-border);
+  margin: 4px 0;
+}

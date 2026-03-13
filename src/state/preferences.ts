@@ -5,11 +5,16 @@ import { themeState, type Theme } from "./theme";
 const [focusMode, setFocusMode] = createSignal(false);
 const [autoSave, setAutoSave] = createSignal(true);
 const [fontSize, setFontSize] = createSignal(16);
+const [contentWidth, setContentWidth] = createSignal(720);
 
 const FONT_SIZE_MIN = 12;
 const FONT_SIZE_MAX = 28;
 const FONT_SIZE_STEP = 2;
 const FONT_SIZE_DEFAULT = 16;
+
+const CONTENT_WIDTH_MIN = 480;
+const CONTENT_WIDTH_STEP = 60;
+const CONTENT_WIDTH_DEFAULT = 720;
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 let loaded = false;
@@ -19,6 +24,7 @@ interface Preferences {
   focusMode?: boolean;
   autoSave?: boolean;
   fontSize?: number;
+  contentWidth?: number;
 }
 
 async function loadPreferences() {
@@ -29,6 +35,7 @@ async function loadPreferences() {
     if (prefs.focusMode !== undefined) setFocusMode(prefs.focusMode);
     if (prefs.autoSave !== undefined) setAutoSave(prefs.autoSave);
     if (prefs.fontSize !== undefined) setFontSize(prefs.fontSize);
+    if (prefs.contentWidth !== undefined) setContentWidth(prefs.contentWidth);
   } catch {
     // Use defaults
   }
@@ -45,6 +52,7 @@ function savePreferences() {
       focusMode: focusMode(),
       autoSave: autoSave(),
       fontSize: fontSize(),
+      contentWidth: contentWidth(),
     };
     try {
       await invoke("write_preferences", { json: JSON.stringify(prefs) });
@@ -80,6 +88,20 @@ export const preferencesState = {
   },
   resetZoom() {
     setFontSize(FONT_SIZE_DEFAULT);
+    savePreferences();
+  },
+  contentWidth,
+  widenContent() {
+    const maxBase = Math.round(window.innerWidth * 16 / fontSize());
+    setContentWidth(Math.min(contentWidth() + CONTENT_WIDTH_STEP, maxBase));
+    savePreferences();
+  },
+  narrowContent() {
+    setContentWidth(Math.max(contentWidth() - CONTENT_WIDTH_STEP, CONTENT_WIDTH_MIN));
+    savePreferences();
+  },
+  resetContentWidth() {
+    setContentWidth(CONTENT_WIDTH_DEFAULT);
     savePreferences();
   },
   loadPreferences,

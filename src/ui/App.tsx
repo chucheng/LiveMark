@@ -1,20 +1,24 @@
 import { onMount, onCleanup, createSignal, createEffect, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { createEditor, type EditorInstance, type CursorPosition } from "../editor/editor";
+import { createEditor, type EditorInstance } from "../editor/editor";
 import { documentState } from "../state/document";
+import { tabsState } from "../state/tabs";
 import { uiState } from "../state/ui";
 import { themeState } from "../state/theme";
 import { preferencesState } from "../state/preferences";
 import {
   openFile,
+  openFileInTab,
   saveFile,
   saveAsFile,
   newFile,
-  loadFile,
   setEditorRef,
   onFileChange,
-  confirmUnsavedChanges,
+  onTabSwitch,
+  closeActiveTab,
+  closeTabById,
+  confirmAllUnsavedChanges,
   silentSave,
 } from "../commands/file-commands";
 import {
@@ -31,35 +35,29 @@ import FindReplace from "./FindReplace";
 import SourceView from "./SourceView";
 import AboutModal from "./AboutModal";
 import ReviewPanel from "./ReviewPanel";
+import TabBar from "./TabBar";
+import Sidebar from "./Sidebar";
+import BlockContextMenu from "./BlockContextMenu";
+import MindMap from "./MindMap";
+import { fileTreeState } from "../state/filetree";
 import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
+import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import type { EditorView } from "prosemirror-view";
 
-/**
- * Get the markdown line number (fractional) at the top of the editor viewport.
- */
 function getEditorTopLine(view: EditorView, scroller: HTMLElement): number {
   const scrollerRect = scroller.getBoundingClientRect();
-  // Use the editor DOM's left edge (not the scroller's) because the editor
-  // content is centered with max-width, leaving empty margins on wide windows.
-  // posAtCoords returns null when the probe point misses the editor element.
   const editorRect = view.dom.getBoundingClientRect();
   const pos = view.posAtCoords({ left: editorRect.left + 20, top: scrollerRect.top + 4 });
   if (!pos) return 0;
-
   const map = buildSyncMap(view.state.doc);
   return pmPosToMdLine(map, pos.pos);
 }
 
-/**
- * Scroll the editor so a given markdown line number is at the top.
- */
 function scrollEditorToLine(view: EditorView, scroller: HTMLElement, mdLine: number): void {
   const doc = view.state.doc;
   const map = buildSyncMap(doc);
   if (map.length === 0) return;
-
   const targetPos = mdLineToPmPos(map, mdLine, doc.content.size);
-
   try {
     const coords = view.coordsAtPos(targetPos);
     const scrollerRect = scroller.getBoundingClientRect();
@@ -83,9 +81,29 @@ export default function App() {
   });
   const [syncLine, setSyncLine] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
+  const [homeDir, setHomeDir] = createSignal<string | null>(null);
+
+  // Fetch home dir once on mount for ~ display
+  invoke<string | null>("get_home_dir").then((dir) => {
+    if (dir) setHomeDir(dir);
+  });
+
+  /** Format a file path for the title bar: replace home dir with ~ */
+  function displayPath(): string {
+    const fp = documentState.filePath();
+    if (!fp) return "Untitled";
+    const home = homeDir();
+    if (home && fp.startsWith(home)) {
+      return "~" + fp.slice(home.length);
+    }
+    return fp;
+  }
 
   createEffect(() => {
-    document.documentElement.style.setProperty("--lm-font-size", preferencesState.fontSize() + "px");
+    const fs = preferencesState.fontSize();
+    const cw = preferencesState.contentWidth();
+    document.documentElement.style.setProperty("--lm-font-size", fs + "px");
+    document.documentElement.style.setProperty("--lm-content-width", (cw * fs / 16) + "px");
   });
 
   function resetAutoSaveTimer() {
@@ -108,11 +126,95 @@ export default function App() {
       .filter((w) => w.length > 0).length;
   }
 
+  function updateWordCount() {
+    if (!editor) return;
+    const text = editor.getDoc().textContent;
+    setWordCount(countWords(text));
+  }
+
+  /**
+   * Restore editor state when switching to a tab.
+   */
+  async function restoreTabState() {
+    if (!editor) return;
+    const tab = tabsState.activeTab();
+    if (!tab) return;
+
+    if (tab.editorState) {
+      // Restore the saved editor state
+      editor.view.updateState(tab.editorState);
+      // Restore scroll position after state update
+      const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+      if (scroller) {
+        requestAnimationFrame(() => {
+          scroller.scrollTop = tab.scrollPosition;
+        });
+      }
+    } else if (tab.filePath) {
+      // Tab has a file but no saved editor state — reload from disk
+      try {
+        const content = await invoke<string>("read_file", { path: tab.filePath });
+        editor.setMarkdown(content);
+      } catch {
+        // File may have been deleted — show empty
+        editor.setMarkdown("");
+      }
+    } else {
+      // New untitled tab
+      editor.setMarkdown("");
+    }
+
+    updateWordCount();
+    editor.view.focus();
+  }
+
+  async function handleTabSwitch() {
+    await restoreTabState();
+  }
+
+  async function handleCloseTab(tabId: string) {
+    if (!editor) return;
+
+    // Snapshot current tab before any operations
+    const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+    tabsState.snapshotActiveTab(editor.view, scroller);
+
+    await closeTabById(tabId);
+  }
+
+  async function handleOpenFolder() {
+    const selected = await openDialog({
+      directory: true,
+      multiple: false,
+      title: "Open Folder",
+    });
+    if (selected) {
+      await fileTreeState.openFolder(selected);
+    }
+  }
+
+  function handleSwitchTab(tabId: string) {
+    if (!editor) return;
+    const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+    tabsState.snapshotActiveTab(editor.view, scroller);
+    tabsState.switchTab(tabId);
+    handleTabSwitch();
+  }
+
+  function handleSidebarFileClick(path: string) {
+    openFileInTab(path);
+  }
+
   function handleKeydown(e: KeyboardEvent) {
     const mod = e.metaKey || e.ctrlKey;
     if (!mod) return;
 
-    if (e.key === "o") {
+    if (e.key === "o" && e.shiftKey) {
+      // Cmd+Shift+O — open folder
+      e.preventDefault();
+      handleOpenFolder();
+      return;
+    } else if (e.key === "o") {
       e.preventDefault();
       openFile();
     } else if (e.key === "s" && e.shiftKey) {
@@ -124,11 +226,13 @@ export default function App() {
     } else if (e.key === "n") {
       e.preventDefault();
       newFile();
+    } else if (e.key === "w") {
+      e.preventDefault();
+      closeActiveTab();
     } else if (e.key === "E" && e.shiftKey) {
       e.preventDefault();
       exportHTML();
     } else if (e.key === "p" && e.shiftKey) {
-      // Cmd+Shift+P → command palette
       e.preventDefault();
       uiState.togglePalette();
     } else if (e.key === "p" && !e.shiftKey && !e.altKey) {
@@ -140,6 +244,9 @@ export default function App() {
     } else if (e.key === "c" && e.altKey) {
       e.preventDefault();
       copyAsMarkdown();
+    } else if (e.key === "t" && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      uiState.toggleMindMap();
     } else if (e.key === "T" && e.shiftKey) {
       e.preventDefault();
       themeState.cycleTheme();
@@ -148,7 +255,6 @@ export default function App() {
       e.preventDefault();
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       if (uiState.isSourceView()) {
-        // Source → Editor: syncLine is kept up-to-date by SourceView's onScroll
         uiState.toggleSourceView();
         requestAnimationFrame(() => {
           if (editor && editorScroller) {
@@ -156,7 +262,6 @@ export default function App() {
           }
         });
       } else {
-        // Editor → Source: find which markdown line is at the top of the viewport
         if (editor && editorScroller) {
           setSyncLine(getEditorTopLine(editor.view, editorScroller));
         }
@@ -180,62 +285,143 @@ export default function App() {
     } else if (e.key === "0" && !e.shiftKey) {
       e.preventDefault();
       preferencesState.resetZoom();
+    } else if (e.key === "\\") {
+      // Cmd+\ — toggle sidebar
+      e.preventDefault();
+      fileTreeState.toggleSidebar();
+    } else if (e.key === "[" && e.shiftKey) {
+      // Cmd+Shift+[ — previous tab
+      e.preventDefault();
+      if (editor) {
+        const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+        tabsState.snapshotActiveTab(editor.view, scroller);
+      }
+      tabsState.switchTabRelative(-1);
+      handleTabSwitch();
+    } else if (e.key === "]" && e.shiftKey) {
+      // Cmd+Shift+] — next tab
+      e.preventDefault();
+      if (editor) {
+        const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+        tabsState.snapshotActiveTab(editor.view, scroller);
+      }
+      tabsState.switchTabRelative(1);
+      handleTabSwitch();
+    } else if (/^[1-9]$/.test(e.key) && !e.shiftKey && !e.altKey) {
+      // Cmd+1-9 — switch to tab by index
+      e.preventDefault();
+      const idx = parseInt(e.key) - 1;
+      if (idx < tabsState.tabs().length) {
+        if (editor) {
+          const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+          tabsState.snapshotActiveTab(editor.view, scroller);
+        }
+        tabsState.switchTabByIndex(idx);
+        handleTabSwitch();
+      }
     }
   }
 
   let unlistenClose: (() => void) | undefined;
+  let unlistenResize: (() => void) | undefined;
+  let chromeHideTimer: ReturnType<typeof setTimeout> | null = null;
+  let chromeLeaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+  async function checkFullscreen() {
+    const fs = await getCurrentWindow().isFullscreen();
+    uiState.setFullscreen(fs);
+    if (!fs) uiState.showChrome();
+  }
+
+  function handleMouseMove(e: MouseEvent) {
+    if (!uiState.isFullscreen()) return;
+    if (e.clientY < 5) {
+      // Mouse at top edge — show chrome
+      if (chromeLeaveTimer) { clearTimeout(chromeLeaveTimer); chromeLeaveTimer = null; }
+      uiState.showChrome();
+    }
+  }
+
+  function handleChromeMouseEnter() {
+    if (chromeLeaveTimer) { clearTimeout(chromeLeaveTimer); chromeLeaveTimer = null; }
+  }
+
+  function handleChromeMouseLeave() {
+    if (!uiState.isFullscreen()) return;
+    chromeLeaveTimer = setTimeout(() => {
+      uiState.hideChrome();
+    }, 400);
+  }
+
+  function scheduleHideChrome() {
+    if (!uiState.isFullscreen() || uiState.chromeHidden()) return;
+    if (chromeHideTimer) clearTimeout(chromeHideTimer);
+    chromeHideTimer = setTimeout(() => {
+      uiState.hideChrome();
+    }, 1500);
+  }
 
   onMount(() => {
-    // Register all commands for the palette
     registerAllCommands();
 
-    // Create editor synchronously — must happen before any async work
+    // Only create an untitled tab if no tabs exist (avoid duplicates on HMR reload)
+    if (tabsState.tabs().length === 0) {
+      tabsState.createTab();
+    }
+
     editor = createEditor(editorRef, {
       onChange(doc) {
         documentState.setDirty();
         const text = doc.textContent;
         setWordCount(countWords(text));
         resetAutoSaveTimer();
+        scheduleHideChrome();
       },
       onSelectionChange(pos) {
         setCursorInfo(pos);
+        scheduleHideChrome();
       },
     });
 
     setEditorRef(editor);
     setExportEditorRef(editor);
     onFileChange(() => setSyncLine(0));
+    onTabSwitch(() => handleTabSwitch());
+
+    // Restore active tab content (handles HMR reload where tabs persist but editor is new)
+    if (tabsState.tabs().length > 0) {
+      restoreTabState();
+    }
 
     // Initial word count
     const text = editor.getDoc().textContent;
     setWordCount(countWords(text));
     editor.view.focus();
 
-    // Global keyboard shortcuts for file operations
     window.addEventListener("keydown", handleKeydown);
+    window.addEventListener("mousemove", handleMouseMove);
 
-    // Async initialization (preferences, CLI file, close handler)
     (async () => {
       await preferencesState.loadPreferences();
 
-      // Check for CLI-provided file path
+      // Fullscreen detection
+      const appWindow = getCurrentWindow();
+      await checkFullscreen();
+      unlistenResize = await appWindow.onResized(() => checkFullscreen());
+
       try {
         const initialFile = await invoke<string | null>("get_initial_file");
         if (initialFile) {
-          await loadFile(initialFile);
+          await openFileInTab(initialFile);
         }
       } catch {
-        // No initial file — start with empty editor
+        // No initial file
       }
 
-      // Window close handler — prompt for unsaved changes
-      const appWindow = getCurrentWindow();
       unlistenClose = await appWindow.onCloseRequested(async (event) => {
-        if (documentState.isModified()) {
-          const canClose = await confirmUnsavedChanges();
-          if (!canClose) {
-            event.preventDefault();
-          }
+        const canClose = await confirmAllUnsavedChanges();
+        if (!canClose) {
+          event.preventDefault();
         }
       });
     })();
@@ -243,23 +429,42 @@ export default function App() {
 
   onCleanup(() => {
     window.removeEventListener("keydown", handleKeydown);
+    window.removeEventListener("mousemove", handleMouseMove);
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+    if (chromeHideTimer) clearTimeout(chromeHideTimer);
+    if (chromeLeaveTimer) clearTimeout(chromeLeaveTimer);
     unlistenClose?.();
+    unlistenResize?.();
     editor?.destroy();
   });
 
   return (
-    <div class="lm-app">
-      <div class="lm-titlebar">
-        <div class="lm-titlebar-traffic-light-spacer" />
-        <span class="lm-titlebar-title">
-          {documentState.fileName()}
-          {documentState.isModified() ? " ●" : ""}
-        </span>
+    <div
+      class="lm-app"
+      classList={{
+        "lm-fullscreen": uiState.isFullscreen(),
+        "lm-chrome-hidden": uiState.isFullscreen() && uiState.chromeHidden(),
+      }}
+    >
+      <div
+        class="lm-chrome"
+        onMouseEnter={handleChromeMouseEnter}
+        onMouseLeave={handleChromeMouseLeave}
+      >
+        <div class="lm-titlebar">
+          <div class="lm-titlebar-traffic-light-spacer" />
+          <span class="lm-titlebar-title">
+            {displayPath()}
+            {documentState.isModified() ? " ●" : ""}
+          </span>
+        </div>
+
+        <TabBar onCloseTab={handleCloseTab} onSwitchTab={handleSwitchTab} />
       </div>
 
       <div class="lm-main-area">
+        <Sidebar onFileClick={handleSidebarFileClick} />
         <div
           class="lm-editor-wrapper"
           classList={{
@@ -288,6 +493,12 @@ export default function App() {
       <Show when={uiState.isAboutOpen()}>
         <AboutModal />
       </Show>
+
+      <Show when={uiState.isMindMapOpen()}>
+        <MindMap view={() => editor?.view} onClose={() => uiState.setMindMapOpen(false)} />
+      </Show>
+
+      <BlockContextMenu view={() => editor?.view} />
 
       <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} autoSaveStatus={autoSaveStatus} />
     </div>

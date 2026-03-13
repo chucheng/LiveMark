@@ -1,34 +1,15 @@
-import { createSignal } from "solid-js";
-
-const [filePath, setFilePath] = createSignal<string | null>(null);
-const [isModified, setIsModified] = createSignal(false);
-
-function fileName(): string {
-  const path = filePath();
-  if (!path) return "Untitled";
-  const parts = path.replace(/\\/g, "/").split("/");
-  return parts[parts.length - 1] || "Untitled";
-}
-
-function setClean() {
-  setIsModified(false);
-}
-
-function setDirty() {
-  setIsModified(true);
-}
-
-function reset() {
-  setFilePath(null);
-  setIsModified(false);
-}
+/**
+ * Document state — now delegates to tab store for multi-tab support.
+ * Maintains the same API surface so existing imports continue to work.
+ */
+import { tabsState } from "./tabs";
 
 export const documentState = {
-  filePath,
-  setFilePath,
-  isModified,
-  fileName,
-  setClean,
-  setDirty,
-  reset,
+  filePath: tabsState.filePath,
+  setFilePath: tabsState.setActiveFilePath,
+  isModified: tabsState.isModified,
+  fileName: tabsState.fileName,
+  setClean: tabsState.setActiveClean,
+  setDirty: tabsState.setActiveDirty,
+  reset: tabsState.resetActive,
 };

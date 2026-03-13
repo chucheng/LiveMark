@@ -35,8 +35,41 @@
   letter-spacing: -0.01em;
 }
 
+/* Chrome bar (titlebar + tab bar) — normal flow by default */
+.lm-chrome {
+  flex-shrink: 0;
+}
+
+/* In fullscreen, chrome overlays content instead of pushing it */
+.lm-fullscreen .lm-chrome {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 250ms ease, opacity 200ms ease;
+}
+
+.lm-fullscreen.lm-chrome-hidden .lm-chrome {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .lm-main-area {
   flex: 1;
   display: flex;
   overflow: hidden;
+}
+
+/* In fullscreen, add top padding so content isn't hidden behind the overlay chrome */
+.lm-fullscreen .lm-main-area {
+  padding-top: 72px;
+  transition: padding-top 250ms ease;
+}
+
+.lm-fullscreen.lm-chrome-hidden .lm-main-area {
+  padding-top: 0;
 }

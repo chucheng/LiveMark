@@ -3,6 +3,8 @@ import { save, message } from "@tauri-apps/plugin-dialog";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { documentState } from "../state/document";
 import { generateHTML, renderHTMLBody } from "../export/html-template";
+import { generateBeautifulHTML } from "../export/beautiful-doc";
+import { markdownSerializer } from "../editor/markdown/serializer";
 import type { EditorInstance } from "../editor/editor";
 
 let editorRef: EditorInstance | null = null;
@@ -115,17 +117,51 @@ export async function copyAsHTML() {
 
 /**
  * Copy the raw Markdown to the system clipboard.
+ * Selection-aware: if text is selected, copies only that range as Markdown.
  * Cmd+Alt+C
  */
 export async function copyAsMarkdown() {
   if (!editorRef) return;
 
-  const markdown = editorRef.getMarkdown();
+  let markdown: string;
+  const { from, to } = editorRef.view.state.selection;
+
+  if (from !== to) {
+    // Selection exists — serialize only the selected slice
+    const slice = editorRef.view.state.doc.slice(from, to);
+    const fragment = slice.content;
+    // Build a temporary doc from the fragment for serialization
+    const schema = editorRef.view.state.schema;
+    const tempDoc = schema.topNodeType.create(null, fragment);
+    markdown = markdownSerializer.serialize(tempDoc);
+  } else {
+    markdown = editorRef.getMarkdown();
+  }
 
   try {
     await writeText(markdown);
   } catch (err) {
     await message(`Failed to copy Markdown:\n${err}`, {
+      title: "Copy Error",
+      kind: "error",
+    });
+  }
+}
+
+/**
+ * Copy as Beautiful Doc — styled HTML with inline CSS.
+ * Pastes nicely into Google Docs, Notion, etc.
+ */
+export async function copyAsBeautifulDoc() {
+  if (!editorRef) return;
+
+  const markdown = editorRef.getMarkdown();
+  const html = generateBeautifulHTML(markdown);
+
+  try {
+    await writeText(html);
+  } catch (err) {
+    await message(`Failed to copy Beautiful Doc:\n${err}`, {
       title: "Copy Error",
       kind: "error",
     });

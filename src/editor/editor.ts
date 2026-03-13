@@ -14,6 +14,9 @@ import { linkClickPlugin } from "./plugins/link-click";
 import { imageDropPastePlugin } from "./plugins/image-drop-paste";
 import { findReplacePlugin } from "./plugins/find-replace";
 import { trailingParagraphPlugin } from "./plugins/trailing-paragraph";
+import { blockHandlesPlugin } from "./plugins/block-handles";
+import { headingCollapsePlugin } from "./plugins/heading-collapse";
+import { lazyRenderPlugin } from "./plugins/lazy-render";
 import { tableEditing } from "prosemirror-tables";
 import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
@@ -77,6 +80,9 @@ export function createEditor(
       imageDropPastePlugin(),
       findReplacePlugin(),
       trailingParagraphPlugin(),
+      blockHandlesPlugin(),
+      headingCollapsePlugin(),
+      lazyRenderPlugin(),
       gapCursor(),
       tableEditing(),
     ],

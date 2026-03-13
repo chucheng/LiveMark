@@ -4,16 +4,19 @@ import {
   saveFile,
   saveAsFile,
   newFile,
+  closeActiveTab,
 } from "./file-commands";
 import {
   exportHTML,
   exportPDF,
   copyAsHTML,
   copyAsMarkdown,
+  copyAsBeautifulDoc,
 } from "./export-commands";
 import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
 import { preferencesState } from "../state/preferences";
+import { fileTreeState } from "../state/filetree";
 
 export function registerAllCommands() {
   // File
@@ -44,6 +47,21 @@ export function registerAllCommands() {
     shortcut: "Cmd+Shift+S",
     category: "File",
     execute: saveAsFile,
+  });
+  registerCommand({
+    id: "file.closeTab",
+    label: "Close Tab",
+    shortcut: "Cmd+W",
+    category: "File",
+    execute: () => { closeActiveTab(); },
+  });
+
+  registerCommand({
+    id: "view.toggleSidebar",
+    label: "Toggle Sidebar",
+    shortcut: "Cmd+\\",
+    category: "View",
+    execute: () => fileTreeState.toggleSidebar(),
   });
 
   registerCommand({
@@ -81,6 +99,12 @@ export function registerAllCommands() {
     shortcut: "Cmd+Alt+C",
     category: "Export",
     execute: copyAsMarkdown,
+  });
+  registerCommand({
+    id: "export.copyBeautifulDoc",
+    label: "Copy as Beautiful Doc",
+    category: "Export",
+    execute: copyAsBeautifulDoc,
   });
 
   // View
@@ -135,6 +159,32 @@ export function registerAllCommands() {
     execute: () => preferencesState.resetZoom(),
   });
 
+  registerCommand({
+    id: "view.widenContent",
+    label: "Widen Content Area",
+    category: "View",
+    execute: () => preferencesState.widenContent(),
+  });
+  registerCommand({
+    id: "view.narrowContent",
+    label: "Narrow Content Area",
+    category: "View",
+    execute: () => preferencesState.narrowContent(),
+  });
+  registerCommand({
+    id: "view.resetContentWidth",
+    label: "Reset Content Width",
+    category: "View",
+    execute: () => preferencesState.resetContentWidth(),
+  });
+
+  registerCommand({
+    id: "view.mindMap",
+    label: "Toggle Mind Map",
+    shortcut: "Cmd+T",
+    category: "View",
+    execute: () => uiState.toggleMindMap(),
+  });
   registerCommand({
     id: "view.about",
     label: "About LiveMark",

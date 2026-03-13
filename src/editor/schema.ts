@@ -13,7 +13,24 @@ import { tableNodes as createTableNodes } from "prosemirror-tables";
 
 const nodes: Record<string, NodeSpec> = {
   doc: {
-    content: "block+",
+    content: "frontmatter? block+",
+  },
+
+  frontmatter: {
+    content: "text*",
+    marks: "",
+    code: true,
+    defining: true,
+    isolating: true,
+    parseDOM: [
+      {
+        tag: "pre.frontmatter",
+        preserveWhitespace: "full" as const,
+      },
+    ],
+    toDOM() {
+      return ["pre", { class: "frontmatter" }, 0];
+    },
   },
 
   paragraph: {

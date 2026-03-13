@@ -413,3 +413,93 @@
 .ProseMirror .selectedCell {
   background: var(--lm-selection);
 }
+
+/* Frontmatter */
+.lm-frontmatter-wrapper {
+  position: relative;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  background: var(--lm-bg-surface);
+  margin-bottom: 1.2em;
+  padding: 0.6em 1em;
+}
+
+.lm-frontmatter-label {
+  position: absolute;
+  top: -9px;
+  left: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--lm-text-faint);
+  background: var(--lm-bg);
+  padding: 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lm-frontmatter-content {
+  font-family: var(--lm-font-mono);
+  font-size: 0.85em;
+  color: var(--lm-text-muted);
+  white-space: pre-wrap;
+  margin: 0;
+  background: none;
+  padding: 0;
+}
+
+/* Mermaid diagram */
+.lm-mermaid-wrapper {
+  position: relative;
+  margin-bottom: 0.8em;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  overflow: hidden;
+}
+
+.lm-mermaid-label {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--lm-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 1;
+}
+
+.lm-mermaid-render {
+  display: flex;
+  justify-content: center;
+  padding: 1em;
+  background: var(--lm-bg-elevated);
+  min-height: 60px;
+}
+
+.lm-mermaid-render svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.lm-mermaid-source {
+  font-family: var(--lm-font-mono);
+  font-size: 0.85em;
+  white-space: pre-wrap;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lm-mermaid-error {
+  color: var(--lm-severity-issue);
+  font-family: var(--lm-font-mono);
+  font-size: 0.85em;
+  padding: 0.5em;
+}
+
+.lm-mermaid-loading {
+  color: var(--lm-text-faint);
+  font-size: 0.85em;
+  padding: 1em;
+  text-align: center;
+}
