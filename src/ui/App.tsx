@@ -227,7 +227,7 @@ export default function App() {
           <div ref={editorRef} class="lm-editor-mount" />
         </div>
         <Show when={uiState.isSourceView()}>
-          <SourceView markdown={() => editor?.getMarkdown() ?? ""} scrollFraction={scrollFraction} />
+          <SourceView markdown={() => editor?.getMarkdown() ?? ""} scrollFraction={scrollFraction} onScrollFractionChange={setScrollFraction} />
         </Show>
 
         <Show when={uiState.isReviewOpen()}>
