@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.3.3
+
+- **UI polish** — refined design system for a more premium, modern feel
+  - Deep graphite dark mode with layered surfaces (#121417, #181b20, #1e2128)
+  - New design tokens: surface layering, shadow system, transition timing, border radius
+  - Review panel: pill-style severity badges, wider layout, softer dividers
+  - Status bar: ghost-style buttons, calmer tertiary text
+  - Command palette & modals: backdrop blur, elevated surfaces, refined shadows
+  - Tighter heading scale, editorial letter-spacing, precise Inter font weights
+  - Dedicated dark mode syntax highlighting colors for code blocks
+  - Consistent transition timing and hover states across all interactive elements
+
 ## v1.3.1
 
 - **Task list checkbox fix** — clicking checkboxes now properly toggles the checked state (moved toggle to mousedown to avoid WebKit event suppression)

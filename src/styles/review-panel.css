@@ -1,20 +1,20 @@
 /* ── Review Panel ── */
 
 .lm-review {
-  width: 280px;
+  width: 296px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: var(--lm-bg);
+  background: var(--lm-bg-surface);
   border-left: 1px solid var(--lm-border);
   overflow: hidden;
-  animation: lm-review-slide-in 180ms ease-out;
+  animation: lm-review-slide-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes lm-review-slide-in {
   from {
     opacity: 0;
-    transform: translateX(12px);
+    transform: translateX(8px);
   }
   to {
     opacity: 1;
@@ -25,7 +25,7 @@
 /* ── Header ── */
 
 .lm-review-header {
-  padding: 16px 16px 12px;
+  padding: 18px 18px 14px;
   border-bottom: 1px solid var(--lm-border);
   flex-shrink: 0;
 }
@@ -34,34 +34,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .lm-review-title {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--lm-text-muted);
+  color: var(--lm-text-faint);
 }
 
 .lm-review-close {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: none;
   background: none;
-  color: var(--lm-text-muted);
-  border-radius: 4px;
+  color: var(--lm-text-faint);
+  border-radius: var(--lm-radius-sm);
   cursor: pointer;
-  transition: color 150ms, background 150ms;
+  transition: color var(--lm-transition-fast), background var(--lm-transition-fast);
 }
 
 .lm-review-close:hover {
   color: var(--lm-text);
-  background: var(--lm-selection);
+  background: var(--lm-hover);
 }
 
 /* ── Summary counts ── */
@@ -69,43 +69,54 @@
 .lm-review-summary {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .lm-review-summary-clean {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--lm-text-muted);
+  font-weight: 450;
 }
 
 .lm-review-count {
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
   font-weight: 500;
-  color: var(--lm-text-muted);
+  padding: 2px 8px;
+  border-radius: 10px;
+  line-height: 1.4;
 }
 
 .lm-review-count--issue {
-  color: #c2736e;
+  color: var(--lm-severity-issue);
+  background: rgba(192, 96, 88, 0.1);
 }
 
 .lm-review-count--warning {
-  color: #b89d5e;
+  color: var(--lm-severity-warning);
+  background: rgba(176, 145, 58, 0.1);
 }
 
 .lm-review-count--suggestion {
-  color: #7a9ec2;
+  color: var(--lm-severity-suggestion);
+  background: rgba(106, 143, 184, 0.1);
 }
 
 [data-theme="dark"] .lm-review-count--issue {
-  color: #e5988f;
+  color: var(--lm-severity-issue);
+  background: rgba(212, 138, 130, 0.1);
 }
 
 [data-theme="dark"] .lm-review-count--warning {
-  color: #d4b872;
+  color: var(--lm-severity-warning);
+  background: rgba(200, 168, 92, 0.1);
 }
 
 [data-theme="dark"] .lm-review-count--suggestion {
-  color: #89b4d4;
+  color: var(--lm-severity-suggestion);
+  background: rgba(126, 170, 208, 0.1);
 }
 
 /* ── Body / list ── */
@@ -113,7 +124,7 @@
 .lm-review-body {
   flex: 1;
   overflow-y: auto;
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
 .lm-review-body::-webkit-scrollbar {
@@ -132,17 +143,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 16px;
-  gap: 12px;
+  padding: 56px 20px;
+  gap: 10px;
 }
 
 .lm-review-empty-icon {
-  color: var(--lm-border);
+  color: var(--lm-text-faint);
+  opacity: 0.6;
 }
 
 .lm-review-empty-text {
   font-size: 13px;
-  color: var(--lm-text-muted);
+  color: var(--lm-text-faint);
+  font-weight: 450;
 }
 
 /* ── Item ── */
@@ -158,11 +171,11 @@
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: background 150ms;
+  transition: background var(--lm-transition-fast);
 }
 
 .lm-review-item:hover {
-  background: var(--lm-selection);
+  background: var(--lm-hover);
 }
 
 .lm-review-item--active {
@@ -171,40 +184,28 @@
 
 /* Left accent bar */
 .lm-review-item-accent {
-  width: 2px;
+  width: 3px;
   flex-shrink: 0;
-  border-radius: 1px;
-  margin: 8px 0 8px 12px;
+  border-radius: 2px;
+  margin: 10px 0 10px 12px;
 }
 
 .lm-review-item-accent--issue {
-  background: #c2736e;
+  background: var(--lm-severity-issue);
 }
 
 .lm-review-item-accent--warning {
-  background: #b89d5e;
+  background: var(--lm-severity-warning);
 }
 
 .lm-review-item-accent--suggestion {
-  background: #7a9ec2;
-}
-
-[data-theme="dark"] .lm-review-item-accent--issue {
-  background: #e5988f;
-}
-
-[data-theme="dark"] .lm-review-item-accent--warning {
-  background: #d4b872;
-}
-
-[data-theme="dark"] .lm-review-item-accent--suggestion {
-  background: #89b4d4;
+  background: var(--lm-severity-suggestion);
 }
 
 /* Content */
 .lm-review-item-content {
   flex: 1;
-  padding: 10px 14px 10px 10px;
+  padding: 10px 16px 10px 12px;
   min-width: 0;
 }
 
@@ -213,50 +214,37 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .lm-review-item-title {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 520;
   color: var(--lm-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.01em;
 }
 
 .lm-review-item-badge {
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   flex-shrink: 0;
-  color: var(--lm-text-muted);
-  opacity: 0.7;
 }
 
 .lm-review-item-badge--issue {
-  color: #c2736e;
+  color: var(--lm-severity-issue);
 }
 
 .lm-review-item-badge--warning {
-  color: #b89d5e;
+  color: var(--lm-severity-warning);
 }
 
 .lm-review-item-badge--suggestion {
-  color: #7a9ec2;
-}
-
-[data-theme="dark"] .lm-review-item-badge--issue {
-  color: #e5988f;
-}
-
-[data-theme="dark"] .lm-review-item-badge--warning {
-  color: #d4b872;
-}
-
-[data-theme="dark"] .lm-review-item-badge--suggestion {
-  color: #89b4d4;
+  color: var(--lm-severity-suggestion);
 }
 
 .lm-review-item-desc {
@@ -272,13 +260,13 @@
 .lm-review-item-line {
   display: block;
   font-size: 11px;
-  color: var(--lm-text-muted);
-  opacity: 0.6;
-  margin-top: 3px;
+  color: var(--lm-text-faint);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Divider between items ── */
 
 .lm-review-item + .lm-review-item {
-  border-top: 1px solid var(--lm-border);
+  border-top: 1px solid var(--lm-border-subtle);
 }

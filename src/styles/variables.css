@@ -1,13 +1,25 @@
 :root {
   --lm-bg: #fafafa;
-  --lm-text: #1a1a2e;
-  --lm-text-muted: #6b7280;
-  --lm-accent: #4a90d9;
-  --lm-border: #e5e7eb;
-  --lm-code-bg: #f0f0f5;
-  --lm-code-text: #d63384;
-  --lm-blockquote-border: #c0c8d8;
-  --lm-selection: rgba(74, 144, 217, 0.2);
+  --lm-bg-surface: #f4f4f6;
+  --lm-bg-elevated: #ffffff;
+  --lm-text: #1c1c22;
+  --lm-text-muted: #7c818c;
+  --lm-text-faint: #a0a4ad;
+  --lm-accent: #4a8ed0;
+  --lm-border: #e8e9ec;
+  --lm-border-subtle: #f0f0f2;
+  --lm-code-bg: #f2f2f6;
+  --lm-code-text: #c4407d;
+  --lm-blockquote-border: #d0d4dc;
+  --lm-selection: rgba(74, 142, 208, 0.14);
+  --lm-hover: rgba(0, 0, 0, 0.035);
+  --lm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --lm-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.05);
+  --lm-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  --lm-severity-issue: #c06058;
+  --lm-severity-warning: #b0913a;
+  --lm-severity-suggestion: #6a8fb8;
 
   --lm-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --lm-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", monospace;
@@ -17,22 +29,41 @@
   --lm-editor-padding-x: 48px;
   --lm-editor-padding-y: 32px;
 
-  --lm-heading-1: 2em;
-  --lm-heading-2: 1.5em;
-  --lm-heading-3: 1.25em;
-  --lm-heading-4: 1.1em;
+  --lm-heading-1: 1.875em;
+  --lm-heading-2: 1.4em;
+  --lm-heading-3: 1.2em;
+  --lm-heading-4: 1.05em;
   --lm-heading-5: 1em;
   --lm-heading-6: 0.9em;
+
+  --lm-radius-sm: 4px;
+  --lm-radius-md: 6px;
+  --lm-radius-lg: 10px;
+
+  --lm-transition-fast: 120ms ease;
+  --lm-transition-base: 160ms ease;
 }
 
 [data-theme="dark"] {
-  --lm-bg: #1e1e2e;
-  --lm-text: #cdd6f4;
-  --lm-text-muted: #9399b2;
-  --lm-accent: #89b4fa;
-  --lm-border: #45475a;
-  --lm-code-bg: #2a2a3e;
-  --lm-code-text: #f38ba8;
-  --lm-blockquote-border: #585b70;
-  --lm-selection: rgba(137, 180, 250, 0.2);
+  --lm-bg: #121417;
+  --lm-bg-surface: #181b20;
+  --lm-bg-elevated: #1e2128;
+  --lm-text: #d0d4dc;
+  --lm-text-muted: #7c818c;
+  --lm-text-faint: #51555e;
+  --lm-accent: #7aa8d6;
+  --lm-border: #282c34;
+  --lm-border-subtle: #1f2228;
+  --lm-code-bg: #1a1d22;
+  --lm-code-text: #e8879e;
+  --lm-blockquote-border: #383c46;
+  --lm-selection: rgba(122, 168, 214, 0.14);
+  --lm-hover: rgba(255, 255, 255, 0.04);
+  --lm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --lm-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2);
+  --lm-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  --lm-severity-issue: #d48a82;
+  --lm-severity-warning: #c8a85c;
+  --lm-severity-suggestion: #7eaad0;
 }

@@ -15,7 +15,7 @@
 
 .lm-active .lm-syntax-hint {
   display: inline;
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 /* --- Inline syntax markers (widget decorations) --- */
@@ -23,7 +23,7 @@
   font-family: var(--lm-font-mono);
   font-size: 0.85em;
   color: var(--lm-text-muted);
-  opacity: 0.5;
+  opacity: 0.45;
   user-select: none;
   pointer-events: none;
 }
@@ -69,13 +69,16 @@
 
 /* --- Code Block NodeView --- */
 .lm-code-block-wrapper {
+  position: relative;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  overflow: hidden;
   margin-bottom: 0.8em;
 }
 
 .lm-code-block-wrapper pre {
   background-color: var(--lm-code-bg);
-  border-radius: 6px;
-  padding: 1em;
+  padding: 0.75em 1em;
   overflow-x: auto;
   margin: 0;
 }
@@ -87,18 +90,51 @@
   font-size: 0.875em;
 }
 
+/* --- Styled Fences (always visible) --- */
 .lm-fence {
-  font-size: 0.85em;
-  line-height: 1;
-  padding-left: 1em;
+  font-family: var(--lm-font-mono);
+  font-size: 0.875em;
+  line-height: 1.4;
+  color: var(--lm-text-muted);
+  opacity: 0.7;
+  padding: 4px 1em;
   margin: 0;
-  /* Fences use display toggle — acceptable minor layout shift */
-  display: none;
+  background: var(--lm-bg-surface);
+  user-select: none;
+  pointer-events: none;
 }
 
-.lm-active .lm-fence {
-  display: block;
-  opacity: 0.5;
+.lm-fence-open {
+  border-bottom: 1px solid var(--lm-border-subtle);
+}
+
+.lm-fence-close {
+  border-top: 1px solid var(--lm-border-subtle);
+}
+
+/* --- Language Badge --- */
+.lm-code-lang-badge {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 10px;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  font-family: var(--lm-font-body);
+  font-size: 11px;
+  color: var(--lm-text-muted);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.lm-code-lang-badge svg {
+  flex-shrink: 0;
 }
 
 /* --- Blockquote NodeView --- */
@@ -150,7 +186,7 @@
 
 .lm-hr-ornament {
   padding: 0 1em;
-  color: var(--lm-text-muted);
+  color: var(--lm-text-faint);
   font-size: 0.7em;
   letter-spacing: 0.5em;
   opacity: 0.5;
@@ -184,7 +220,7 @@
 
 .lm-task-item.checked .lm-task-content,
 .lm-task-item.checked .lm-task-content p {
-  opacity: 0.6;
+  opacity: 0.5;
   text-decoration: line-through;
 }
 
@@ -196,7 +232,7 @@
 /* --- Clickable Links --- */
 .ProseMirror a[href] {
   cursor: pointer;
-  color: var(--lm-accent, #2563eb);
+  color: var(--lm-accent);
   text-decoration: underline;
 }
 
@@ -209,7 +245,7 @@
 .lm-image-wrapper img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: var(--lm-radius-sm);
 }
 
 .lm-image-wrapper.lm-image-error {
@@ -218,14 +254,14 @@
   gap: 0.5em;
   padding: 0.5em;
   border: 1px dashed var(--lm-border);
-  border-radius: 4px;
+  border-radius: var(--lm-radius-sm);
   color: var(--lm-text-muted);
   font-size: 0.875em;
 }
 
 .ProseMirror-selectednode .lm-image-wrapper {
-  outline: 2px solid var(--lm-accent, #2563eb);
-  border-radius: 4px;
+  outline: 2px solid var(--lm-accent);
+  border-radius: var(--lm-radius-sm);
 }
 
 /* --- Code Block Syntax Highlighting --- */
@@ -239,7 +275,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 1em;
+  padding: 0.75em 1em;
   pointer-events: none;
   user-select: none;
   overflow: hidden;
@@ -262,20 +298,34 @@
   display: none;
 }
 
-/* highlight.js tokens */
-.hljs-keyword { color: #d73a49; }
-.hljs-string { color: #032f62; }
-.hljs-comment { color: #6a737d; font-style: italic; }
-.hljs-number { color: #005cc5; }
-.hljs-built_in { color: #e36209; }
+/* highlight.js tokens — light mode */
+.hljs-keyword { color: #c94f57; }
+.hljs-string { color: #1a6b47; }
+.hljs-comment { color: #8b919a; font-style: italic; }
+.hljs-number { color: #2b5fb3; }
+.hljs-built_in { color: #c07030; }
 .hljs-function .hljs-title,
-.hljs-title.function_ { color: #6f42c1; }
-.hljs-type { color: #d73a49; }
-.hljs-attr { color: #005cc5; }
-.hljs-literal { color: #005cc5; }
-.hljs-meta { color: #6a737d; }
+.hljs-title.function_ { color: #6840a8; }
+.hljs-type { color: #c94f57; }
+.hljs-attr { color: #2b5fb3; }
+.hljs-literal { color: #2b5fb3; }
+.hljs-meta { color: #8b919a; }
 .hljs-params { color: var(--lm-text); }
-.hljs-variable { color: #e36209; }
+.hljs-variable { color: #c07030; }
+
+/* highlight.js tokens — dark mode */
+[data-theme="dark"] .hljs-keyword { color: #d48a8e; }
+[data-theme="dark"] .hljs-string { color: #7ec4a0; }
+[data-theme="dark"] .hljs-comment { color: #636871; font-style: italic; }
+[data-theme="dark"] .hljs-number { color: #7aade4; }
+[data-theme="dark"] .hljs-built_in { color: #d4a06a; }
+[data-theme="dark"] .hljs-function .hljs-title,
+[data-theme="dark"] .hljs-title.function_ { color: #b89ce4; }
+[data-theme="dark"] .hljs-type { color: #d48a8e; }
+[data-theme="dark"] .hljs-attr { color: #7aade4; }
+[data-theme="dark"] .hljs-literal { color: #7aade4; }
+[data-theme="dark"] .hljs-meta { color: #636871; }
+[data-theme="dark"] .hljs-variable { color: #d4a06a; }
 
 /* --- Math Block NodeView --- */
 .lm-math-block-wrapper {
@@ -285,7 +335,7 @@
 .lm-math-block-container {
   position: relative;
   background-color: var(--lm-code-bg);
-  border-radius: 6px;
+  border-radius: var(--lm-radius-md);
   padding: 1em;
   overflow-x: auto;
 }
@@ -318,7 +368,7 @@
 
 .ProseMirror-selectednode .lm-math-inline-wrapper,
 .lm-math-inline-wrapper.ProseMirror-selectednode {
-  outline: 2px solid var(--lm-accent, #2563eb);
+  outline: 2px solid var(--lm-accent);
   border-radius: 2px;
 }
 
@@ -326,7 +376,7 @@
 .lm-math-error {
   color: var(--lm-text-muted);
   border: 1px dashed var(--lm-border);
-  border-radius: 4px;
+  border-radius: var(--lm-radius-sm);
   padding: 0.25em 0.5em;
   font-family: var(--lm-font-mono);
   font-size: 0.875em;
@@ -352,5 +402,5 @@
 }
 
 .ProseMirror .selectedCell {
-  background: var(--lm-selection, rgba(37, 99, 235, 0.1));
+  background: var(--lm-selection);
 }
