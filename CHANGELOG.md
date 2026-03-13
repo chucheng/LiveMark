@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.1
+
+- **Code block exit fix** — pressing Enter on an empty last line in a code block now exits to a new paragraph below
+- **Gap cursor** — clicking below code blocks, blockquotes, and tables now places the cursor correctly
+- **Trailing paragraph** — document always ends with a paragraph so users can click below the last block to continue typing
+
 ## v1.1.0
 
 - **Math rendering** — inline `$...$` and block `$$...$$` with KaTeX
