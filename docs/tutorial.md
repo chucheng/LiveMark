@@ -11,10 +11,15 @@ This document showcases every feature LiveMark supports. Open it in LiveMark to 
 Markdown supports six levels of headings. Type `#` followed by a space to create one:
 
 # Heading 1
+
 ## Heading 2
+
 ### Heading 3
+
 #### Heading 4
+
 ##### Heading 5
+
 ###### Heading 6
 
 ---
@@ -28,7 +33,7 @@ LiveMark supports all standard inline formatting. These render live as you type:
 - ~~Strikethrough~~ — wrap text with `~~double tildes~~`
 - `Inline code` — wrap text with `` `backticks` ``
 
-You can also **combine *formatting* together** for ~~**bold strikethrough**~~ and other combinations.
+You can also **combine *formatting* together** for **~~bold strikethrough~~** and other combinations.
 
 ---
 
@@ -76,7 +81,7 @@ Type a number followed by `.` and a space:
 Type `- [ ]` for unchecked or `- [x]` for checked items:
 
 - [x] Design the feature
-- [x] Implement the parser
+- [ ] Implement the parser
 - [ ] Write tests
 - [ ] Update documentation
 
@@ -105,7 +110,7 @@ Blockquotes can contain other elements:
 
 ## Code Blocks
 
-Type three backticks (`` ``` ``) followed by a language name and press space:
+Type three backticks (```` ``` ````) followed by a language name and press space:
 
 ```javascript
 function greet(name) {
@@ -154,23 +159,23 @@ LiveMark supports syntax highlighting for many languages including JavaScript, T
 
 Create tables using pipe `|` and dash `-` syntax:
 
-| Feature         | Status | Priority |
-| --------------- | ------ | -------- |
-| Live Preview    | Done   | P0       |
-| File Operations | Done   | P0       |
-| Export          | Done   | P1       |
-| Themes          | Done   | P1       |
-| Tables          | Done   | P1       |
+| Feature | Status | Priority |
+| --- | --- | --- |
+| Live Preview | Done | P0 |
+| File Operations | Done | P0 |
+| Export | Done | P1 |
+| Themes | Done | P1 |
+| Tables | Done | P1 |
 
 ### Alignment
 
 Use colons in the separator row to control column alignment:
 
 | Left-aligned | Centered | Right-aligned |
-| :----------- | :------: | ------------: |
-| Apple        |   Red    |         $1.20 |
-| Banana       |  Yellow  |         $0.50 |
-| Grape        |  Purple  |         $2.00 |
+| --- | --- | --- |
+| Apple | Red | $1.20 |
+| Banana | Yellow | $0.50 |
+| Grape | Purple | $2.00 |
 
 **Tip:** Press `Tab` to navigate between table cells, `Shift+Tab` to go back.
 
@@ -212,29 +217,29 @@ $$
 
 LiveMark supports a full set of keyboard shortcuts for power users:
 
-| Shortcut               | Action               |
-| ---------------------- | -------------------- |
-| `Cmd+B`               | Toggle **bold**      |
-| `Cmd+I`               | Toggle *italic*      |
-| `Cmd+Shift+X`         | Toggle ~~strikethrough~~ |
-| `` Cmd+` ``           | Toggle `inline code` |
-| `Cmd+1` through `Cmd+6` | Set heading level  |
-| `Cmd+Z`               | Undo                 |
-| `Cmd+Shift+Z`         | Redo                 |
-| `Cmd+O`               | Open file            |
-| `Cmd+S`               | Save file            |
-| `Cmd+Shift+S`         | Save as              |
-| `Cmd+N`               | New file             |
-| `Cmd+F`               | Find & replace       |
-| `Cmd+Shift+P`         | Command palette      |
-| `Cmd+/`               | Toggle source view   |
-| `Cmd+Shift+R`         | Toggle review panel  |
-| `Cmd+Shift+F`         | Toggle focus mode    |
-| `Cmd+Shift+T`         | Cycle theme          |
-| `Cmd+Shift+E`         | Export as HTML       |
-| `Cmd+P`               | Print / Export PDF   |
-| `Cmd+Shift+C`         | Copy as HTML         |
-| `Cmd+Alt+C`           | Copy as Markdown     |
+| Shortcut | Action |
+| --- | --- |
+| `Cmd+B` | Toggle **bold** |
+| `Cmd+I` | Toggle *italic* |
+| `Cmd+Shift+X` | Toggle ~~strikethrough~~ |
+| `` Cmd+` `` | Toggle `inline code` |
+| `Cmd+1` through `Cmd+6` | Set heading level |
+| `Cmd+Z` | Undo |
+| `Cmd+Shift+Z` | Redo |
+| `Cmd+O` | Open file |
+| `Cmd+S` | Save file |
+| `Cmd+Shift+S` | Save as |
+| `Cmd+N` | New file |
+| `Cmd+F` | Find & replace |
+| `Cmd+Shift+P` | Command palette |
+| `Cmd+/` | Toggle source view |
+| `Cmd+Shift+R` | Toggle review panel |
+| `Cmd+Shift+F` | Toggle focus mode |
+| `Cmd+Shift+T` | Cycle theme |
+| `Cmd+Shift+E` | Export as HTML |
+| `Cmd+P` | Print / Export PDF |
+| `Cmd+Shift+C` | Copy as HTML |
+| `Cmd+Alt+C` | Copy as Markdown |
 
 ---
 

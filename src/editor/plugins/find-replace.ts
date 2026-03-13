@@ -12,6 +12,50 @@ interface FindReplaceState {
   decorations: DecorationSet;
 }
 
+/**
+ * Build a mapping from text offsets (as produced by doc.textBetween)
+ * to document positions. Mirrors ProseMirror's textBetween logic exactly:
+ * only textblocks (paragraph, heading, code_block) and leaf blocks with
+ * text contribute \n separators — not wrapper blocks like list_item or blockquote.
+ */
+function buildTextPosMap(state: EditorState): number[] {
+  const map: number[] = [];
+  let first = true;
+
+  state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
+    // Mirror textBetween: separators only for textblocks and leaf blocks with content
+    if (node.isBlock && (node.isTextblock || (node.isLeaf && node.type.spec.leafText))) {
+      if (first) {
+        first = false;
+      } else {
+        map.push(pos); // \n separator
+      }
+    }
+
+    if (node.isText) {
+      for (let i = 0; i < node.text!.length; i++) {
+        map.push(pos + i);
+      }
+      return false;
+    }
+
+    if (node.type.name === "hard_break") {
+      map.push(pos);
+      return false;
+    }
+
+    // Non-text inline leaf nodes (images, math_inline) contribute \0
+    if (node.isLeaf && !node.isBlock && !node.isText) {
+      map.push(pos);
+      return false;
+    }
+
+    return true;
+  });
+
+  return map;
+}
+
 function findMatches(
   state: EditorState,
   query: string,
@@ -20,7 +64,6 @@ function findMatches(
 ): Array<{ from: number; to: number }> {
   if (!query) return [];
 
-  const matches: Array<{ from: number; to: number }> = [];
   const text = state.doc.textBetween(0, state.doc.content.size, "\n", "\0");
 
   let regex: RegExp;
@@ -31,51 +74,22 @@ function findMatches(
     return [];
   }
 
+  const posMap = buildTextPosMap(state);
+  const matches: Array<{ from: number; to: number }> = [];
+
   let match: RegExpExecArray | null;
   while ((match = regex.exec(text)) !== null) {
     if (match[0].length === 0) {
       regex.lastIndex++;
       continue;
     }
-    // Convert text offset to doc position
-    const from = textOffsetToDocPos(state, match.index);
-    const to = textOffsetToDocPos(state, match.index + match[0].length);
-    if (from !== null && to !== null) {
-      matches.push({ from, to });
-    }
+    const fromOffset = match.index;
+    const toOffset = match.index + match[0].length;
+    const from = fromOffset < posMap.length ? posMap[fromOffset] : state.doc.content.size;
+    const to = toOffset < posMap.length ? posMap[toOffset] : state.doc.content.size;
+    matches.push({ from, to });
   }
   return matches;
-}
-
-function textOffsetToDocPos(state: EditorState, offset: number): number | null {
-  let pos = 0;
-  let remaining = offset;
-
-  state.doc.descendants((node, nodePos) => {
-    if (remaining < 0) return false;
-    if (node.isText) {
-      const len = node.text!.length;
-      if (remaining <= len) {
-        pos = nodePos + remaining;
-        remaining = -1;
-        return false;
-      }
-      remaining -= len;
-    } else if (node.isBlock && nodePos > 0) {
-      // Block nodes contribute a newline in textBetween
-      remaining -= 1;
-    } else if (node.type.name === "hard_break") {
-      remaining -= 1;
-    }
-    return true;
-  });
-
-  if (remaining >= 0) {
-    // Offset is at or past the end
-    pos = state.doc.content.size;
-  }
-
-  return pos;
 }
 
 function escapeRegex(s: string): string {
