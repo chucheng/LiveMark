@@ -147,10 +147,11 @@ src/
       trailing-paragraph.ts — Ensures doc ends with paragraph (click below blocks)
   ui/
     App.tsx               — Root component
-    StatusBar.tsx         — Status bar (line/col, words, theme toggle)
+    StatusBar.tsx         — Status bar (line/col, words, zoom, theme toggle)
     CommandPalette.tsx    — Command palette overlay
     FindReplace.tsx       — Find & replace bar
-    SourceView.tsx        — Raw Markdown source view
+    SourceView.tsx        — Raw Markdown source view (scroll-synced)
+    scroll-sync.ts        — Editor ↔ source view scroll position mapping
     AboutModal.tsx        — About dialog (version info)
     ReviewPanel.tsx       — Document review panel
   state/
