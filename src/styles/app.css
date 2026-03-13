@@ -23,3 +23,9 @@
   font-weight: 500;
 }
 
+.lm-main-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+

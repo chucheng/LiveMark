@@ -28,6 +28,7 @@ import CommandPalette from "./CommandPalette";
 import FindReplace from "./FindReplace";
 import SourceView from "./SourceView";
 import AboutModal from "./AboutModal";
+import ReviewPanel from "./ReviewPanel";
 
 export default function App() {
   let editorRef!: HTMLDivElement;
@@ -39,6 +40,7 @@ export default function App() {
     selected: 0,
   });
   const [markdown, setMarkdown] = createSignal("");
+  const [scrollFraction, setScrollFraction] = createSignal(0);
 
   function countWords(text: string): number {
     return text
@@ -86,17 +88,34 @@ export default function App() {
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
       if (uiState.isSourceView()) {
-        // Update markdown for source view before toggling
+        // Switching back to editor — restore scroll position
+        uiState.toggleSourceView();
+        requestAnimationFrame(() => {
+          const pm = editorRef.querySelector(".ProseMirror") as HTMLElement;
+          if (pm) {
+            pm.scrollTop = scrollFraction() * (pm.scrollHeight - pm.clientHeight);
+          }
+        });
       } else {
+        // Switching to source view — capture scroll position
+        const pm = editorRef.querySelector(".ProseMirror") as HTMLElement;
+        if (pm && pm.scrollHeight > pm.clientHeight) {
+          setScrollFraction(pm.scrollTop / (pm.scrollHeight - pm.clientHeight));
+        } else {
+          setScrollFraction(0);
+        }
         setMarkdown(editor?.getMarkdown() ?? "");
+        uiState.toggleSourceView();
       }
-      uiState.toggleSourceView();
     } else if (e.key === "f" && !e.shiftKey) {
       e.preventDefault();
       uiState.toggleFind();
     } else if (e.key === "F" && e.shiftKey) {
       e.preventDefault();
       preferencesState.toggleFocusMode();
+    } else if (e.key === "R" && e.shiftKey) {
+      e.preventDefault();
+      uiState.toggleReview();
     }
   }
 
@@ -172,21 +191,27 @@ export default function App() {
         </span>
       </div>
 
-      <div
-        class="lm-editor-wrapper"
-        classList={{
-          "lm-focus-mode": preferencesState.focusMode(),
-          "lm-hidden": uiState.isSourceView(),
-        }}
-      >
-        <Show when={uiState.isFindOpen()}>
-          <FindReplace view={() => editor?.view} />
+      <div class="lm-main-area">
+        <div
+          class="lm-editor-wrapper"
+          classList={{
+            "lm-focus-mode": preferencesState.focusMode(),
+            "lm-hidden": uiState.isSourceView(),
+          }}
+        >
+          <Show when={uiState.isFindOpen()}>
+            <FindReplace view={() => editor?.view} />
+          </Show>
+          <div ref={editorRef} class="lm-editor-mount" />
+        </div>
+        <Show when={uiState.isSourceView()}>
+          <SourceView markdown={() => editor?.getMarkdown() ?? ""} scrollFraction={scrollFraction} />
         </Show>
-        <div ref={editorRef} class="lm-editor-mount" />
+
+        <Show when={uiState.isReviewOpen()}>
+          <ReviewPanel view={() => editor?.view} />
+        </Show>
       </div>
-      <Show when={uiState.isSourceView()}>
-        <SourceView markdown={() => editor?.getMarkdown() ?? ""} />
-      </Show>
 
       <Show when={uiState.isPaletteOpen()}>
         <CommandPalette />

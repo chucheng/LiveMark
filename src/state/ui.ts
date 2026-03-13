@@ -4,6 +4,7 @@ const [isSourceView, setSourceView] = createSignal(false);
 const [isPaletteOpen, setPaletteOpen] = createSignal(false);
 const [isFindOpen, setFindOpen] = createSignal(false);
 const [isAboutOpen, setAboutOpen] = createSignal(false);
+const [isReviewOpen, setReviewOpen] = createSignal(false);
 
 export const uiState = {
   isSourceView,
@@ -23,4 +24,9 @@ export const uiState = {
   },
   isAboutOpen,
   setAboutOpen,
+  isReviewOpen,
+  setReviewOpen,
+  toggleReview() {
+    setReviewOpen(!isReviewOpen());
+  },
 };

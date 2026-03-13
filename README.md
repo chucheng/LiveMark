@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.1.1-blue)
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -37,6 +37,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Command palette** — Cmd+Shift+P, fuzzy search across all actions
 - **Source view** — Cmd+/ toggles read-only raw Markdown
 - **Focus mode** — Cmd+Shift+F dims inactive blocks
+- **Review panel** — Cmd+Shift+R, document quality checks (headings, images, links, code blocks)
 - **Status bar** — line/column, selection count, word count, encoding, theme toggle
 
 ### Export
@@ -149,6 +150,7 @@ src/
     FindReplace.tsx       — Find & replace bar
     SourceView.tsx        — Raw Markdown source view
     AboutModal.tsx        — About dialog (version info)
+    ReviewPanel.tsx       — Document review panel
   state/
     document.ts           — File path, modified flag, title signals
     theme.ts              — Light/dark/system theme management
@@ -159,6 +161,8 @@ src/
     export-commands.ts    — Export action handlers
     registry.ts           — Command registry with fuzzy search
     all-commands.ts       — All registered commands
+  review/
+    engine.ts             — Document analysis engine (quality checks)
   export/
     html-template.ts      — HTML document template generation
     export-css.ts         — Bundled CSS for export
@@ -172,9 +176,16 @@ src-tauri/
       preferences.rs      — Rust read/write preferences (atomic)
 ```
 
-## What's Not in 1.0
+## Release History
 
-These are architected for but deferred to future releases:
+| Version | Highlights |
+|---|---|
+| v1.0.0 | Full Markdown editor: inline live rendering, file operations, themes, export, command palette, find & replace |
+| v1.1.0 | Math rendering (KaTeX — `$...$` and `$$...$$`), tight list support |
+| v1.1.1 | Code block exit and click-below behavior fixes |
+| v1.2.0 | Review panel — document quality checks with premium minimal UI |
+
+## Future Candidates
 
 - Multi-tab / multi-file editing
 - Plugin/extension API

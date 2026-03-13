@@ -121,4 +121,12 @@ export function registerAllCommands() {
     category: "Edit",
     execute: () => uiState.toggleFind(),
   });
+
+  registerCommand({
+    id: "view.review",
+    label: "Toggle Review Panel",
+    shortcut: "Cmd+Shift+R",
+    category: "View",
+    execute: () => uiState.toggleReview(),
+  });
 }

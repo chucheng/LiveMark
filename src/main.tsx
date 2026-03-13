@@ -11,6 +11,7 @@ import "./styles/command-palette.css";
 import "./styles/find-replace.css";
 import "./styles/source-view.css";
 import "./styles/about.css";
+import "./styles/review-panel.css";
 import "katex/dist/katex.min.css";
 import "prosemirror-gapcursor/style/gapcursor.css";
 
