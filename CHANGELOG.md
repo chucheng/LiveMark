@@ -6,6 +6,10 @@
   - Root cause 1: `buildInlineDecorations` used `descendants()` which skips the node itself — paragraphs and headings (top-level textblocks) never received syntax marker decorations
   - Root cause 2: off-by-one in position calculation for nested structures (blockquotes) — `activeNodePos + pos` missing +1 to enter the active node, placing markers at wrong positions (e.g. `Bol**d` instead of `**Bold**`)
   - Added 17 tests covering paragraphs, headings, blockquotes, position correctness, focus/blur cycles, and no-corruption guarantees
+- **Code block highlight overlay fix (cont.)** — two remaining issues from v1.3.5
+  - Removed `color: var(--lm-text)` from base code rule — the `:not()` selector bumped specificity to (0,3,2), overriding the `color: transparent` toggle and making both layers visible simultaneously
+  - Changed overlay `padding: 0.75em 1em` → `padding: inherit` — `em` units computed at the overlay's 14px font-size (10.5px) instead of the pre's 16px (12px), causing a 1.5px vertical offset
+- **Scroll sync simplification** — replaced document-position mapping with simple scroll-percentage sync between editor and source view
 
 ## v1.3.5
 
