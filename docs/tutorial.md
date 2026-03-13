@@ -292,6 +292,12 @@ Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your 
 
 ---
 
+## Auto-Save
+
+LiveMark automatically saves your file 30 seconds after your last edit (when the file has a path on disk). You can toggle auto-save on or off from the status bar button at the bottom-right. When auto-save triggers, a brief "Auto-saved" indicator appears in the status bar.
+
+---
+
 ## Tips & Tricks
 
 1. **Click below the last block** to create a new paragraph at the end of the document

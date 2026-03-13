@@ -35,3 +35,8 @@
   color: var(--lm-text);
   border-color: var(--lm-text-muted);
 }
+
+.lm-statusbar-autosave {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}

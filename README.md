@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -29,6 +29,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 
 ### File Operations
 - Open, save, save-as, new file (Cmd+O/S/Shift+S/N)
+- **Auto-save** — 30s after last edit, toggleable from status bar
 - CLI argument support (`livemark file.md`)
 - Unsaved changes protection on close
 
@@ -184,6 +185,7 @@ src-tauri/
 | v1.1.0 | Math rendering (KaTeX — `$...$` and `$$...$$`), tight list support |
 | v1.1.1 | Code block exit and click-below behavior fixes |
 | v1.2.0 | Review panel — document quality checks with premium minimal UI |
+| v1.3.0 | Auto-save, theme cycle order fix, code block rendering improvements |
 
 ## Future Candidates
 
@@ -194,7 +196,6 @@ src-tauri/
 - Custom CSS themes
 - File tree sidebar
 - YAML frontmatter support
-- Auto-save
 - Recent files list
 - Spell checking
 - Version history / local snapshots

@@ -64,6 +64,22 @@ export async function saveFile() {
   }
 }
 
+/** Silent save for auto-save — no error dialogs, returns success boolean. */
+export async function silentSave(): Promise<boolean> {
+  if (!editorRef) return false;
+  const path = documentState.filePath();
+  if (!path) return false;
+  if (!documentState.isModified()) return false;
+  try {
+    const content = editorRef.getMarkdown();
+    await invoke("write_file", { path, content });
+    documentState.setClean();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function saveAsFile() {
   if (!editorRef) return;
 

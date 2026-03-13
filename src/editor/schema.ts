@@ -150,6 +150,7 @@ const nodes: Record<string, NodeSpec> = {
   task_list: {
     content: "task_list_item+",
     group: "block",
+    attrs: { tight: { default: false } },
     parseDOM: [{ tag: "ul.task-list" }],
     toDOM() {
       return ["ul", { class: "task-list" }, 0];

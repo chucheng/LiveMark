@@ -64,15 +64,14 @@ export const markdownSerializer = new MarkdownSerializer(
     },
 
     task_list(state, node) {
-      state.renderList(node, "  ", () => {
-        // Prefix is handled in task_list_item
-        return "";
+      state.renderList(node, "  ", (i: number) => {
+        const item = node.child(i);
+        const checkbox = item.attrs.checked ? "[x] " : "[ ] ";
+        return "- " + checkbox;
       });
     },
 
     task_list_item(state, node) {
-      const prefix = node.attrs.checked ? "[x] " : "[ ] ";
-      state.write("- " + prefix);
       state.renderContent(node);
     },
 

@@ -46,6 +46,13 @@ export function registerAllCommands() {
     execute: saveAsFile,
   });
 
+  registerCommand({
+    id: "file.toggleAutoSave",
+    label: "Toggle Auto-Save",
+    category: "File",
+    execute: () => preferencesState.toggleAutoSave(),
+  });
+
   // Export
   registerCommand({
     id: "export.html",

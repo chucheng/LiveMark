@@ -29,7 +29,7 @@ function setTheme(t: Theme) {
 }
 
 function cycleTheme() {
-  const order: Theme[] = ["light", "dark", "system"];
+  const order: Theme[] = ["system", "dark", "light"];
   const idx = order.indexOf(theme());
   setTheme(order[(idx + 1) % order.length]);
 }

@@ -15,38 +15,6 @@ export const md = MarkdownIt("commonmark", { html: false })
   .use(stripTheadTbody);
 
 /**
- * markdown-it plugin that detects tight lists and sets a "tight" attr
- * on bullet_list_open / ordered_list_open tokens so ProseMirror can
- * preserve tightness through the round-trip.
- */
-function tightListPlugin(md: MarkdownItType): void {
-  md.core.ruler.push("detect_tight_lists", (state) => {
-    for (let i = 0; i < state.tokens.length; i++) {
-      const tok = state.tokens[i];
-      if (tok.type === "bullet_list_open" || tok.type === "ordered_list_open") {
-        // A list is tight when its paragraph_open children are hidden
-        let tight = true;
-        const level = tok.level;
-        for (let j = i + 1; j < state.tokens.length; j++) {
-          const inner = state.tokens[j];
-          // Stop at matching close
-          if (
-            (inner.type === "bullet_list_close" || inner.type === "ordered_list_close") &&
-            inner.level === level
-          ) break;
-          // Check paragraph_open tokens that are direct children of list_items
-          if (inner.type === "paragraph_open" && !inner.hidden && inner.level === level + 2) {
-            tight = false;
-            break;
-          }
-        }
-        tok.attrSet("tight", tight ? "true" : "false");
-      }
-    }
-  });
-}
-
-/**
  * markdown-it plugin that:
  * 1. Strips thead_open/close and tbody_open/close tokens (no PM equivalent)
  * 2. Wraps inline content inside td/th with paragraph tokens
@@ -158,7 +126,10 @@ export const markdownParser = new MarkdownParser(schema, md, {
   },
 
   // Task lists
-  task_list: { block: "task_list" },
+  task_list: {
+    block: "task_list",
+    getAttrs: (tok) => ({ tight: tok.attrGet("tight") === "true" }),
+  },
   task_list_item: {
     block: "task_list_item",
     getAttrs: (tok) => ({ checked: tok.meta?.checked ?? false }),

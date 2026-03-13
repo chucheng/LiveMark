@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Main background gradient: deep indigo to vibrant teal -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2D1B69"/>
+      <stop offset="50%" stop-color="#1E3A5F"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+    <!-- Accent glow for the "live" dot -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#34D399" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Subtle inner shadow -->
+    <filter id="innerLight" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="20" result="blur"/>
+      <feOffset dx="8" dy="8" result="offsetBlur"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.08"/>
+      <feComposite in2="offsetBlur" operator="in"/>
+      <feComposite in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="220" ry="220" fill="url(#bg)"/>
+
+  <!-- Subtle top-left highlight for depth -->
+  <rect x="0" y="0" width="1024" height="1024" rx="220" ry="220" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
+
+  <!-- Pen nib / writing instrument forming an abstract "L" shape -->
+  <!-- The nib points down-left, suggesting writing direction -->
+  <g transform="translate(512, 480)" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Main pen stroke: a flowing "L" that suggests both writing and the letter -->
+    <path d="M -180,-200 L -180,140 Q -180,180 -140,180 L 200,180"
+          stroke-width="56" fill="none" opacity="0.95"/>
+
+    <!-- The pen nib at the end of the stroke -->
+    <path d="M 200,180 L 240,160 L 260,180 L 240,200 Z"
+          fill="white" stroke="none" opacity="0.95"/>
+  </g>
+
+  <!-- Markdown hash lines: two small horizontal lines suggesting "rendered" heading -->
+  <!-- Positioned at the top of the L, suggesting text that has been "live rendered" -->
+  <g transform="translate(512, 480)" stroke="white" stroke-linecap="round" opacity="0.5" stroke-width="28">
+    <line x1="-80" y1="-200" x2="140" y2="-200"/>
+    <line x1="-80" y1="-130" x2="80" y2="-130"/>
+  </g>
+
+  <!-- "Live" indicator dot: glowing green circle at the pen tip -->
+  <circle cx="752" cy="660" r="50" fill="url(#glow)"/>
+  <circle cx="752" cy="660" r="22" fill="#34D399"/>
+
+  <!-- Tiny sparkle near the dot for "live" effect -->
+  <g transform="translate(752, 660)" stroke="#34D399" stroke-width="5" stroke-linecap="round" opacity="0.7">
+    <line x1="32" y1="0" x2="44" y2="0"/>
+    <line x1="-32" y1="0" x2="-44" y2="0"/>
+    <line x1="0" y1="-32" x2="0" y2="-44"/>
+    <line x1="0" y1="32" x2="0" y2="44"/>
+  </g>
+</svg>

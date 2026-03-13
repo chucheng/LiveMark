@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import { themeState, type Theme } from "./theme";
 
 const [focusMode, setFocusMode] = createSignal(false);
+const [autoSave, setAutoSave] = createSignal(true);
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 let loaded = false;
@@ -10,6 +11,7 @@ let loaded = false;
 interface Preferences {
   theme?: Theme;
   focusMode?: boolean;
+  autoSave?: boolean;
 }
 
 async function loadPreferences() {
@@ -18,6 +20,7 @@ async function loadPreferences() {
     const prefs: Preferences = JSON.parse(json);
     if (prefs.theme) themeState.setTheme(prefs.theme);
     if (prefs.focusMode !== undefined) setFocusMode(prefs.focusMode);
+    if (prefs.autoSave !== undefined) setAutoSave(prefs.autoSave);
   } catch {
     // Use defaults
   }
@@ -32,6 +35,7 @@ function savePreferences() {
     const prefs: Preferences = {
       theme: themeState.theme(),
       focusMode: focusMode(),
+      autoSave: autoSave(),
     };
     try {
       await invoke("write_preferences", { json: JSON.stringify(prefs) });
@@ -49,6 +53,11 @@ export const preferencesState = {
   },
   toggleFocusMode() {
     setFocusMode(!focusMode());
+    savePreferences();
+  },
+  autoSave,
+  toggleAutoSave() {
+    setAutoSave(!autoSave());
     savePreferences();
   },
   loadPreferences,

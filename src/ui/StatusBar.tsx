@@ -1,5 +1,6 @@
-import { type Accessor } from "solid-js";
+import { type Accessor, Show } from "solid-js";
 import { themeState } from "../state/theme";
+import { preferencesState } from "../state/preferences";
 
 export interface CursorInfo {
   line: number;
@@ -10,6 +11,7 @@ export interface CursorInfo {
 interface StatusBarProps {
   wordCount: Accessor<number>;
   cursorInfo: Accessor<CursorInfo>;
+  autoSaveStatus?: Accessor<string>;
 }
 
 export default function StatusBar(props: StatusBarProps) {
@@ -29,10 +31,20 @@ export default function StatusBar(props: StatusBarProps) {
         {props.cursorInfo().selected > 0 && (
           <span>{props.cursorInfo().selected} selected</span>
         )}
+        <Show when={props.autoSaveStatus?.()}>
+          <span class="lm-statusbar-autosave">{props.autoSaveStatus!()}</span>
+        </Show>
       </div>
       <div class="lm-statusbar-right">
         <span>{props.wordCount()} words</span>
         <span>UTF-8</span>
+        <button
+          class="lm-statusbar-btn"
+          onClick={() => preferencesState.toggleAutoSave()}
+          title="Toggle auto-save"
+        >
+          {preferencesState.autoSave() ? "Auto-save: On" : "Auto-save: Off"}
+        </button>
         <button
           class="lm-statusbar-btn"
           onClick={() => themeState.cycleTheme()}

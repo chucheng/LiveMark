@@ -43,15 +43,23 @@ M8: Polish ←── M7: Export ←── M6: Rich Elements ←── M5: Stabil
 - [x] Works on macOS, Windows, Linux (Tauri cross-platform)
 - [x] Clean, documented codebase
 
+## Post-v1 Releases
+
+| Version | Features | Status |
+|---|---|---|
+| v1.1.0 | Math rendering (KaTeX) — inline `$...$` and block `$$...$$`, tight list support | **Done** |
+| v1.1.1 | Code block exit/click-below fixes | **Done** |
+| v1.2.0 | Review panel — document quality checks | **Done** |
+| v1.3.0 | Auto-save with debounce (30s inactivity), preference toggle, status bar indicator | **Done** |
+
 ## Post-v1 Candidates
 
-These features are architected for but not implemented in v1:
+These features are architected for but not yet implemented:
 
 - Multi-tab editing
 - Plugin/extension API
 - Vim keybindings
 - Mermaid diagram rendering
-- Math (KaTeX) rendering
 - Custom CSS themes
 - File tree sidebar
 - YAML frontmatter support

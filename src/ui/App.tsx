@@ -14,6 +14,7 @@ import {
   loadFile,
   setEditorRef,
   confirmUnsavedChanges,
+  silentSave,
 } from "../commands/file-commands";
 import {
   exportHTML,
@@ -33,6 +34,9 @@ import ReviewPanel from "./ReviewPanel";
 export default function App() {
   let editorRef!: HTMLDivElement;
   let editor: EditorInstance | undefined;
+  let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  let autoSaveFadeTimer: ReturnType<typeof setTimeout> | null = null;
+  const AUTO_SAVE_DELAY = 30_000;
   const [wordCount, setWordCount] = createSignal(0);
   const [cursorInfo, setCursorInfo] = createSignal<CursorInfo>({
     line: 1,
@@ -41,6 +45,20 @@ export default function App() {
   });
   const [markdown, setMarkdown] = createSignal("");
   const [scrollFraction, setScrollFraction] = createSignal(0);
+  const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
+
+  function resetAutoSaveTimer() {
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    if (!preferencesState.autoSave()) return;
+    autoSaveTimer = setTimeout(async () => {
+      const saved = await silentSave();
+      if (saved) {
+        setAutoSaveStatus("Auto-saved");
+        if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+        autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 2000);
+      }
+    }, AUTO_SAVE_DELAY);
+  }
 
   function countWords(text: string): number {
     return text
@@ -129,6 +147,7 @@ export default function App() {
         documentState.setDirty();
         const text = doc.textContent;
         setWordCount(countWords(text));
+        resetAutoSaveTimer();
       },
       onSelectionChange(pos) {
         setCursorInfo(pos);
@@ -179,6 +198,8 @@ export default function App() {
 
   onCleanup(() => {
     window.removeEventListener("keydown", handleKeydown);
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
     editor?.destroy();
   });
 
@@ -221,7 +242,7 @@ export default function App() {
         <AboutModal />
       </Show>
 
-      <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} />
+      <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} autoSaveStatus={autoSaveStatus} />
     </div>
   );
 }

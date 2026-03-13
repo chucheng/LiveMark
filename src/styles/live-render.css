@@ -89,8 +89,9 @@
 
 .lm-fence {
   font-size: 0.85em;
-  line-height: 1.4;
+  line-height: 1;
   padding-left: 1em;
+  margin: 0;
   /* Fences use display toggle — acceptable minor layout shift */
   display: none;
 }
@@ -243,6 +244,17 @@
   overflow: hidden;
   font-size: 0.875em;
   white-space: pre;
+}
+
+/* When not active, hide editable text so only highlight overlay shows */
+.lm-code-block-wrapper pre > code:not(.lm-code-highlight) {
+  color: transparent;
+  caret-color: var(--lm-text);
+}
+
+/* When active (editing), show plain text and hide the highlight overlay */
+.lm-active pre > code:not(.lm-code-highlight) {
+  color: var(--lm-text);
 }
 
 .lm-active .lm-code-highlight {
