@@ -12,7 +12,25 @@ export const md = MarkdownIt("commonmark", { html: false })
   .use(taskListPlugin)
   .use(mathPlugin)
   .use(tightListPlugin)
-  .use(stripTheadTbody);
+  .use(stripTheadTbody)
+  .use(trimCodeBlockTrailingNewline);
+
+/**
+ * markdown-it plugin that strips trailing newlines from fence/code_block
+ * token content, preventing an empty last line in the editor.
+ */
+function trimCodeBlockTrailingNewline(md: MarkdownItType): void {
+  md.core.ruler.push("trim_code_trailing_newline", (state) => {
+    for (const tok of state.tokens) {
+      if (
+        (tok.type === "fence" || tok.type === "code_block") &&
+        tok.content.endsWith("\n")
+      ) {
+        tok.content = tok.content.slice(0, -1);
+      }
+    }
+  });
+}
 
 /**
  * markdown-it plugin that:

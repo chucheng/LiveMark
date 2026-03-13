@@ -44,7 +44,7 @@ export default function App() {
     selected: 0,
   });
   const [markdown, setMarkdown] = createSignal("");
-  const [scrollFraction, setScrollFraction] = createSignal(0);
+  const [contentFraction, setContentFraction] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
 
   function resetAutoSaveTimer() {
@@ -106,21 +106,43 @@ export default function App() {
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
       if (uiState.isSourceView()) {
-        // Switching back to editor — restore scroll position
+        // Switching back to editor — scroll to matching content position
         uiState.toggleSourceView();
         requestAnimationFrame(() => {
-          const pm = editorRef.querySelector(".ProseMirror") as HTMLElement;
-          if (pm) {
-            pm.scrollTop = scrollFraction() * (pm.scrollHeight - pm.clientHeight);
+          if (!editor) return;
+          const view = editor.view;
+          const docSize = view.state.doc.content.size;
+          if (docSize <= 0) return;
+          const targetPos = Math.min(
+            Math.floor(contentFraction() * docSize),
+            docSize - 1
+          );
+          // Clamp to a valid position
+          const resolvedPos = Math.max(0, targetPos);
+          try {
+            const coords = view.coordsAtPos(resolvedPos);
+            const pm = view.dom as HTMLElement;
+            const editorRect = pm.getBoundingClientRect();
+            pm.scrollTop += coords.top - editorRect.top;
+          } catch {
+            // Fallback: use fraction-based scroll
+            const pm = view.dom as HTMLElement;
+            pm.scrollTop = contentFraction() * (pm.scrollHeight - pm.clientHeight);
           }
         });
       } else {
-        // Switching to source view — capture scroll position
-        const pm = editorRef.querySelector(".ProseMirror") as HTMLElement;
-        if (pm && pm.scrollHeight > pm.clientHeight) {
-          setScrollFraction(pm.scrollTop / (pm.scrollHeight - pm.clientHeight));
-        } else {
-          setScrollFraction(0);
+        // Switching to source view — compute content fraction from viewport top
+        if (editor) {
+          const view = editor.view;
+          const pm = view.dom as HTMLElement;
+          const rect = pm.getBoundingClientRect();
+          const topPos = view.posAtCoords({ left: rect.left + 1, top: rect.top + 1 });
+          const docSize = view.state.doc.content.size;
+          if (topPos && docSize > 0) {
+            setContentFraction(Math.min(1, Math.max(0, topPos.pos / docSize)));
+          } else {
+            setContentFraction(0);
+          }
         }
         setMarkdown(editor?.getMarkdown() ?? "");
         uiState.toggleSourceView();
@@ -227,7 +249,7 @@ export default function App() {
           <div ref={editorRef} class="lm-editor-mount" />
         </div>
         <Show when={uiState.isSourceView()}>
-          <SourceView markdown={() => editor?.getMarkdown() ?? ""} scrollFraction={scrollFraction} onScrollFractionChange={setScrollFraction} />
+          <SourceView markdown={() => editor?.getMarkdown() ?? ""} contentFraction={contentFraction} onContentFractionChange={setContentFraction} />
         </Show>
 
         <Show when={uiState.isReviewOpen()}>
