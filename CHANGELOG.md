@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.5
+
+- **Code block highlight overlay alignment fix** — fixed CSS specificity bug where the `pre code` rule (specificity 0,2,2) overrode the highlight overlay's padding to 0, causing text misalignment between view and edit modes
+  - Excluded `.lm-code-highlight` from the editable-code rule via `:not()` selector
+  - Bumped highlight overlay selector to `.ProseMirror .lm-code-block-wrapper .lm-code-highlight` (specificity 0,3,0) to beat both the `pre code` rule and the inline-code rule from editor.css
+  - Overlay text now renders at the correct (0.75em, 1em) offset matching the `pre` padding
+
 ## v1.3.4
 
 - **Code block layout fix** — resolved vertical text offset and extra bottom space when toggling between view and edit modes

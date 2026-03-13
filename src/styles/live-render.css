@@ -85,7 +85,7 @@
   border-radius: 0;
 }
 
-.ProseMirror .lm-code-block-wrapper pre code {
+.ProseMirror .lm-code-block-wrapper pre code:not(.lm-code-highlight) {
   background: none;
   padding: 0;
   color: var(--lm-text);
@@ -275,7 +275,7 @@
   position: relative;
 }
 
-.lm-code-highlight {
+.ProseMirror .lm-code-block-wrapper .lm-code-highlight {
   position: absolute;
   top: 0;
   left: 0;
@@ -285,6 +285,7 @@
   pointer-events: none;
   user-select: none;
   overflow: hidden;
+  background: none;
   font-family: var(--lm-font-mono);
   font-size: 0.875em;
   line-height: var(--lm-line-height);
