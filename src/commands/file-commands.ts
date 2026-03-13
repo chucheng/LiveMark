@@ -10,9 +10,14 @@ const MD_FILTERS = [
 ];
 
 let editorRef: EditorInstance | null = null;
+let onFileChangeCallback: (() => void) | null = null;
 
 export function setEditorRef(editor: EditorInstance) {
   editorRef = editor;
+}
+
+export function onFileChange(cb: () => void) {
+  onFileChangeCallback = cb;
 }
 
 export async function openFile() {
@@ -36,6 +41,7 @@ export async function loadFile(path: string) {
     editorRef.setMarkdown(content);
     documentState.setFilePath(path);
     documentState.setClean();
+    onFileChangeCallback?.();
   } catch (err) {
     await message(`Failed to open file:\n${err}`, {
       title: "Open Error",
@@ -109,6 +115,7 @@ export async function newFile() {
 
   editorRef.setMarkdown("");
   documentState.reset();
+  onFileChangeCallback?.();
 }
 
 /**

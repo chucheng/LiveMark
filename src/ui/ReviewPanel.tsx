@@ -45,7 +45,11 @@ export default function ReviewPanel(props: ReviewPanelProps) {
     const patchedDispatch: typeof view.dispatch = (tr) => {
       origDispatch(tr);
       if (tr.docChanged) {
-        runAnalysis();
+        try {
+          runAnalysis();
+        } catch {
+          // Don't break the dispatch chain if analysis fails
+        }
       }
     };
     view.dispatch = patchedDispatch;

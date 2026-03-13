@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.3.7
+
+- **Codebase review** — 8 fixes from a deep technical review
+  - **ImageView error handling** — fixed DOM leak where duplicate error spans accumulated on repeated image load failures; `update()` now properly clears stale error UI
+  - **PDF export race condition** — `onload` and fallback timer could both fire `print()`, causing double print dialogs; unified into a single guarded `printAndCleanup()`
+  - **ReviewPanel dispatch safety** — wrapped `runAnalysis()` in try-catch inside the monkey-patched `dispatch` to prevent analysis errors from breaking the editor dispatch chain
+  - **save_image filename sanitization** — filenames with path separators (`../`) could escape the temp directory; now extracts only the file name component via `Path::file_name()`
+  - **save_image counter bound** — dedup filename counter loop was unbounded; capped at 10,000 iterations
+  - **Preferences JSON validation** — `write_preferences` now validates JSON with `serde_json` before writing, preventing corrupted preference files
+  - **Find-replace ReDoS protection** — added 10,000 match limit to prevent catastrophic backtracking from user-supplied regex patterns
+  - **SyncLine reset on file change** — source view scroll position now resets when opening or creating a new file
+- **Scroll sync refactor** — extracted `buildSyncMap`, `pmPosToMdLine`, `mdLineToPmPos` into `src/ui/scroll-sync.ts` with 16 unit tests
+- **Docs reorganization** — restructured `docs/` into `v1/`, `archive/`, and `future/` subdirectories
+- **Cargo.toml version sync** — fixed version mismatch (was 1.1.0, now tracks package.json)
+
 ## v1.3.6
 
 - **Inline mark decoration fix** — fixed render/edit/blur corruption for bold, italic, strikethrough, and inline code

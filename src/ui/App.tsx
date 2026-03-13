@@ -13,6 +13,7 @@ import {
   newFile,
   loadFile,
   setEditorRef,
+  onFileChange,
   confirmUnsavedChanges,
   silentSave,
 } from "../commands/file-commands";
@@ -30,17 +31,38 @@ import FindReplace from "./FindReplace";
 import SourceView from "./SourceView";
 import AboutModal from "./AboutModal";
 import ReviewPanel from "./ReviewPanel";
+import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
+import type { EditorView } from "prosemirror-view";
 
-/** Get scroll percentage (0–1) of a scrollable element. */
-function getScrollPercent(el: HTMLElement): number {
-  const max = el.scrollHeight - el.clientHeight;
-  return max > 0 ? el.scrollTop / max : 0;
+/**
+ * Get the markdown line number (fractional) at the top of the editor viewport.
+ */
+function getEditorTopLine(view: EditorView, scroller: HTMLElement): number {
+  const rect = scroller.getBoundingClientRect();
+  const pos = view.posAtCoords({ left: rect.left + 20, top: rect.top + 4 });
+  if (!pos) return 0;
+
+  const map = buildSyncMap(view.state.doc);
+  return pmPosToMdLine(map, pos.pos);
 }
 
-/** Set scroll percentage (0–1) on a scrollable element. */
-function setScrollPercent(el: HTMLElement, pct: number): void {
-  const max = el.scrollHeight - el.clientHeight;
-  el.scrollTop = Math.max(0, pct * max);
+/**
+ * Scroll the editor so a given markdown line number is at the top.
+ */
+function scrollEditorToLine(view: EditorView, scroller: HTMLElement, mdLine: number): void {
+  const doc = view.state.doc;
+  const map = buildSyncMap(doc);
+  if (map.length === 0) return;
+
+  const targetPos = mdLineToPmPos(map, mdLine, doc.content.size);
+
+  try {
+    const coords = view.coordsAtPos(targetPos);
+    const scrollerRect = scroller.getBoundingClientRect();
+    scroller.scrollTop = coords.top - scrollerRect.top + scroller.scrollTop;
+  } catch {
+    // ignore
+  }
 }
 
 export default function App() {
@@ -55,8 +77,7 @@ export default function App() {
     col: 1,
     selected: 0,
   });
-  const [markdown, setMarkdown] = createSignal("");
-  const [contentFraction, setContentFraction] = createSignal(0);
+  const [syncLine, setSyncLine] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
 
   function resetAutoSaveTimer() {
@@ -117,22 +138,20 @@ export default function App() {
       preferencesState.savePreferences();
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
-      // .lm-editor-wrapper is the scroll container (overflow-y: auto),
-      // NOT .lm-editor-mount (editor.view.dom.parentElement).
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       if (uiState.isSourceView()) {
-        // Switching back to editor — capture source scroll %, restore on editor
-        const sourceEl = document.querySelector(".lm-source-view") as HTMLElement | null;
-        const pct = sourceEl ? getScrollPercent(sourceEl) : contentFraction();
-        setContentFraction(pct);
+        // Source → Editor: syncLine is kept up-to-date by SourceView's onScroll
         uiState.toggleSourceView();
         requestAnimationFrame(() => {
-          if (editorScroller) setScrollPercent(editorScroller, contentFraction());
+          if (editor && editorScroller) {
+            scrollEditorToLine(editor.view, editorScroller, syncLine());
+          }
         });
       } else {
-        // Switching to source view — capture editor scroll %
-        if (editorScroller) setContentFraction(getScrollPercent(editorScroller));
-        setMarkdown(editor?.getMarkdown() ?? "");
+        // Editor → Source: find which markdown line is at the top of the viewport
+        if (editor && editorScroller) {
+          setSyncLine(getEditorTopLine(editor.view, editorScroller));
+        }
         uiState.toggleSourceView();
       }
     } else if (e.key === "f" && !e.shiftKey) {
@@ -168,6 +187,7 @@ export default function App() {
 
     setEditorRef(editor);
     setExportEditorRef(editor);
+    onFileChange(() => setSyncLine(0));
 
     // Initial word count
     const text = editor.getDoc().textContent;
@@ -236,7 +256,7 @@ export default function App() {
           <div ref={editorRef} class="lm-editor-mount" />
         </div>
         <Show when={uiState.isSourceView()}>
-          <SourceView markdown={() => editor?.getMarkdown() ?? ""} contentFraction={contentFraction} onContentFractionChange={setContentFraction} />
+          <SourceView markdown={() => editor?.getMarkdown() ?? ""} initialLine={syncLine} onTopLineChange={setSyncLine} />
         </Show>
 
         <Show when={uiState.isReviewOpen()}>

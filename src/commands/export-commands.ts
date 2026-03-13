@@ -70,32 +70,27 @@ export async function exportPDF() {
   iframeDoc.write(html);
   iframeDoc.close();
 
-  // Wait for content to render before printing
-  iframe.onload = () => {
+  let printed = false;
+
+  function printAndCleanup() {
+    if (printed) return;
+    printed = true;
     try {
       iframe.contentWindow?.print();
     } finally {
-      // Clean up after a delay to let print dialog finish
       setTimeout(() => {
-        document.body.removeChild(iframe);
+        if (iframe.parentNode) {
+          document.body.removeChild(iframe);
+        }
       }, 1000);
     }
-  };
+  }
+
+  // Wait for content to render before printing
+  iframe.onload = printAndCleanup;
 
   // Fallback: if onload doesn't fire (content already loaded via write)
-  setTimeout(() => {
-    if (iframe.parentNode) {
-      try {
-        iframe.contentWindow?.print();
-      } finally {
-        setTimeout(() => {
-          if (iframe.parentNode) {
-            document.body.removeChild(iframe);
-          }
-        }, 1000);
-      }
-    }
-  }, 200);
+  setTimeout(printAndCleanup, 200);
 }
 
 /**

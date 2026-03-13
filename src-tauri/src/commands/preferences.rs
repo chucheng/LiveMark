@@ -24,6 +24,10 @@ pub fn read_preferences(app: tauri::AppHandle) -> Result<String, String> {
 
 #[tauri::command]
 pub fn write_preferences(app: tauri::AppHandle, json: String) -> Result<(), String> {
+    // Validate JSON before writing to prevent corrupted preferences
+    let _: serde_json::Value =
+        serde_json::from_str(&json).map_err(|e| format!("Invalid JSON: {e}"))?;
+
     let path = prefs_path(&app)?;
     let tmp_path = path.with_extension("tmp");
 

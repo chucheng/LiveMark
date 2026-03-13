@@ -5,6 +5,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 export class ImageView implements NodeView {
   dom: HTMLElement;
   private img: HTMLImageElement;
+  private errorSpan: HTMLSpanElement | null = null;
 
   constructor(
     private node: Node,
@@ -20,14 +21,29 @@ export class ImageView implements NodeView {
     this.setSrc(node.attrs.src);
 
     this.img.onerror = () => {
-      this.dom.classList.add("lm-image-error");
-      this.img.style.display = "none";
-      const errorText = document.createElement("span");
-      errorText.textContent = node.attrs.alt || "Image not found";
-      this.dom.appendChild(errorText);
+      this.showError(this.node.attrs.alt || "Image not found");
     };
 
     this.dom.appendChild(this.img);
+  }
+
+  private showError(text: string) {
+    this.dom.classList.add("lm-image-error");
+    this.img.style.display = "none";
+    if (!this.errorSpan) {
+      this.errorSpan = document.createElement("span");
+      this.dom.appendChild(this.errorSpan);
+    }
+    this.errorSpan.textContent = text;
+  }
+
+  private clearError() {
+    this.dom.classList.remove("lm-image-error");
+    this.img.style.display = "";
+    if (this.errorSpan) {
+      this.errorSpan.remove();
+      this.errorSpan = null;
+    }
   }
 
   private setSrc(src: string) {
@@ -52,8 +68,8 @@ export class ImageView implements NodeView {
     this.node = node;
     this.img.alt = node.attrs.alt || "";
     if (node.attrs.title) this.img.title = node.attrs.title;
+    this.clearError();
     this.setSrc(node.attrs.src);
-    this.dom.classList.remove("lm-image-error");
     return true;
   }
 

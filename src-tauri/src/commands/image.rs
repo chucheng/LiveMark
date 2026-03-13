@@ -1,14 +1,21 @@
 use std::fs;
+use std::path::Path;
 
 #[tauri::command]
 pub fn save_image(filename: String, data: Vec<u8>) -> Result<String, String> {
-    // Save to a temp directory if no specific dir is given
+    // Sanitize filename: extract only the file name component, rejecting path separators
+    let safe_name = Path::new(&filename)
+        .file_name()
+        .and_then(|n| n.to_str())
+        .filter(|n| !n.is_empty() && !n.starts_with('.'))
+        .ok_or_else(|| "Invalid filename".to_string())?;
+
     let dir = std::env::temp_dir().join("livemark-images");
     fs::create_dir_all(&dir).map_err(|e| format!("Failed to create image directory: {e}"))?;
 
-    let target = dir.join(&filename);
+    let target = dir.join(safe_name);
 
-    // Deduplicate filenames
+    // Deduplicate filenames with a bounded counter
     let target = if target.exists() {
         let stem = target
             .file_stem()
@@ -21,6 +28,9 @@ pub fn save_image(filename: String, data: Vec<u8>) -> Result<String, String> {
             .unwrap_or_default();
         let mut counter = 1u32;
         loop {
+            if counter > 10_000 {
+                return Err("Too many files with the same name".to_string());
+            }
             let candidate = dir.join(format!("{stem}-{counter}{ext}"));
             if !candidate.exists() {
                 break candidate;

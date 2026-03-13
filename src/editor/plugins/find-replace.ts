@@ -77,6 +77,7 @@ function findMatches(
   const posMap = buildTextPosMap(state);
   const matches: Array<{ from: number; to: number }> = [];
 
+  const MAX_MATCHES = 10_000;
   let match: RegExpExecArray | null;
   while ((match = regex.exec(text)) !== null) {
     if (match[0].length === 0) {
@@ -88,6 +89,7 @@ function findMatches(
     const from = fromOffset < posMap.length ? posMap[fromOffset] : state.doc.content.size;
     const to = toOffset < posMap.length ? posMap[toOffset] : state.doc.content.size;
     matches.push({ from, to });
+    if (matches.length >= MAX_MATCHES) break;
   }
   return matches;
 }
