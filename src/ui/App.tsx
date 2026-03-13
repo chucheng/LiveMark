@@ -38,8 +38,12 @@ import type { EditorView } from "prosemirror-view";
  * Get the markdown line number (fractional) at the top of the editor viewport.
  */
 function getEditorTopLine(view: EditorView, scroller: HTMLElement): number {
-  const rect = scroller.getBoundingClientRect();
-  const pos = view.posAtCoords({ left: rect.left + 20, top: rect.top + 4 });
+  const scrollerRect = scroller.getBoundingClientRect();
+  // Use the editor DOM's left edge (not the scroller's) because the editor
+  // content is centered with max-width, leaving empty margins on wide windows.
+  // posAtCoords returns null when the probe point misses the editor element.
+  const editorRect = view.dom.getBoundingClientRect();
+  const pos = view.posAtCoords({ left: editorRect.left + 20, top: scrollerRect.top + 4 });
   if (!pos) return 0;
 
   const map = buildSyncMap(view.state.doc);
