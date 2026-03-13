@@ -76,6 +76,31 @@ const insertHorizontalRule: Command = (state, dispatch) => {
   return true;
 };
 
+/**
+ * On Enter, convert a paragraph containing only "---", "***", or "___"
+ * into a horizontal rule. This complements the input rule which requires
+ * a trailing space.
+ */
+const hrOnEnter: Command = (state, dispatch) => {
+  const { $from, empty } = state.selection;
+  if (!empty) return false;
+
+  const parent = $from.parent;
+  if (parent.type !== schema.nodes.paragraph) return false;
+
+  const text = parent.textContent;
+  if (text !== "---" && text !== "***" && text !== "___") return false;
+
+  if (dispatch) {
+    const pos = $from.before();
+    const tr = state.tr;
+    tr.replaceRangeWith(pos, pos + parent.nodeSize, schema.nodes.horizontal_rule.create());
+    tr.insert(tr.mapping.map(pos + 1), schema.nodes.paragraph.create());
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
+
 export function buildKeymaps() {
   const keys: Record<string, Command> = {};
 
@@ -99,7 +124,7 @@ export function buildKeymaps() {
   // Lists + Tables (Tab/Shift-Tab context-aware)
   keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item));
   keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item));
-  keys["Enter"] = splitListItem(schema.nodes.list_item);
+  keys["Enter"] = chainCommands(hrOnEnter, splitListItem(schema.nodes.list_item));
 
   // Block operations
   keys["Mod-Shift-c"] = toCodeBlock;
