@@ -185,7 +185,7 @@ src-tauri/
 | v1.1.0 | Math rendering (KaTeX — `$...$` and `$$...$$`), tight list support |
 | v1.1.1 | Code block exit and click-below behavior fixes |
 | v1.2.0 | Review panel — document quality checks with premium minimal UI |
-| v1.3.0 | Auto-save, theme cycle order fix, code block rendering improvements |
+| v1.3.0 | Auto-save — 30s debounce, preference toggle, status bar indicator |
 
 ## Future Candidates
 
