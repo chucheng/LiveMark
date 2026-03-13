@@ -11,6 +11,7 @@ import "./styles/command-palette.css";
 import "./styles/find-replace.css";
 import "./styles/source-view.css";
 import "./styles/about.css";
+import "prosemirror-gapcursor/style/gapcursor.css";
 
 const root = document.getElementById("app");
 

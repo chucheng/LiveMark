@@ -13,7 +13,9 @@ import { inlineDecorationsPlugin } from "./plugins/inline-decorations";
 import { linkClickPlugin } from "./plugins/link-click";
 import { imageDropPastePlugin } from "./plugins/image-drop-paste";
 import { findReplacePlugin } from "./plugins/find-replace";
+import { trailingParagraphPlugin } from "./plugins/trailing-paragraph";
 import { tableEditing } from "prosemirror-tables";
+import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
 import { parseMarkdown } from "./markdown/parser";
 import { serializeMarkdown } from "./markdown/serializer";
@@ -74,6 +76,8 @@ export function createEditor(
       linkClickPlugin(),
       imageDropPastePlugin(),
       findReplacePlugin(),
+      trailingParagraphPlugin(),
+      gapCursor(),
       tableEditing(),
     ],
   });

@@ -1,5 +1,5 @@
 import { keymap } from "prosemirror-keymap";
-import { Command } from "prosemirror-state";
+import { Command, TextSelection } from "prosemirror-state";
 import {
   toggleMark,
   setBlockType,
@@ -20,6 +20,48 @@ import { goToNextCell } from "prosemirror-tables";
 import { schema } from "./schema";
 
 const isMac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
+
+/**
+ * Exit a code block when pressing Enter on an empty line at the end.
+ * Creates a new paragraph below the code block. If the code block becomes
+ * empty, it is converted to a paragraph instead.
+ */
+const exitCodeBlockOnEnter: Command = (state, dispatch) => {
+  const { $head, empty } = state.selection;
+  if (!empty) return false;
+
+  const parent = $head.parent;
+  if (parent.type !== schema.nodes.code_block) return false;
+
+  const text = parent.textContent;
+  // Only trigger when the cursor is at the very end and the last line is empty
+  if ($head.parentOffset !== text.length) return false;
+  if (!text.endsWith("\n") && text.length > 0) return false;
+
+  if (dispatch) {
+    const codeBlockPos = $head.before();
+    const tr = state.tr;
+
+    if (text === "" || text === "\n") {
+      // Empty or single-newline code block: replace with paragraph
+      tr.setNodeMarkup(codeBlockPos, schema.nodes.paragraph);
+      if (text.length > 0) {
+        tr.delete(codeBlockPos + 1, codeBlockPos + 1 + text.length);
+      }
+    } else {
+      // Remove the trailing newline and insert a paragraph after
+      const trimEnd = codeBlockPos + 1 + text.length;
+      const trimStart = codeBlockPos + 1 + text.length - 1;
+      const after = codeBlockPos + parent.nodeSize;
+      tr.delete(trimStart, trimEnd);
+      const mappedAfter = tr.mapping.map(after);
+      tr.insert(mappedAfter, schema.nodes.paragraph.create());
+      tr.setSelection(TextSelection.near(tr.doc.resolve(mappedAfter + 1)));
+    }
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
 
 /**
  * Toggle a mark on the current selection.
@@ -124,7 +166,7 @@ export function buildKeymaps() {
   // Lists + Tables (Tab/Shift-Tab context-aware)
   keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item));
   keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item));
-  keys["Enter"] = chainCommands(hrOnEnter, splitListItem(schema.nodes.list_item));
+  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, splitListItem(schema.nodes.list_item));
 
   // Block operations
   keys["Mod-Shift-c"] = toCodeBlock;
