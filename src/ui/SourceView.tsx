@@ -2,44 +2,30 @@ import { onMount } from "solid-js";
 
 interface SourceViewProps {
   markdown: () => string;
-  /** Content fraction (0–1) representing position in the document */
+  /** Scroll fraction (0–1) representing scroll position */
   contentFraction?: () => number;
-  /** Reports the current content fraction when the user scrolls */
+  /** Reports the current scroll fraction when the user scrolls */
   onContentFractionChange?: (fraction: number) => void;
 }
 
 export default function SourceView(props: SourceViewProps) {
   let containerRef!: HTMLDivElement;
 
-  /** Compute the height of a single line in the <pre> */
-  function getLineHeight(): number {
-    const code = containerRef.querySelector("code");
-    if (!code) return 20;
-    const style = getComputedStyle(code);
-    return parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.5 || 20;
-  }
-
-  function getTotalLines(): number {
-    return props.markdown().split("\n").length;
-  }
-
   onMount(() => {
     const fraction = props.contentFraction?.() ?? 0;
     if (fraction > 0) {
       requestAnimationFrame(() => {
-        const targetLine = Math.floor(fraction * getTotalLines());
-        containerRef.scrollTop = targetLine * getLineHeight();
+        const scrollable = containerRef.scrollHeight - containerRef.clientHeight;
+        containerRef.scrollTop = fraction * Math.max(0, scrollable);
       });
     }
   });
 
   function handleScroll() {
     if (!containerRef) return;
-    const lineHeight = getLineHeight();
-    const totalLines = getTotalLines();
-    if (totalLines <= 0 || lineHeight <= 0) return;
-    const topLine = containerRef.scrollTop / lineHeight;
-    const fraction = topLine / totalLines;
+    const scrollable = containerRef.scrollHeight - containerRef.clientHeight;
+    if (scrollable <= 0) return;
+    const fraction = containerRef.scrollTop / scrollable;
     props.onContentFractionChange?.(Math.min(1, Math.max(0, fraction)));
   }
 

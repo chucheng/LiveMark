@@ -106,43 +106,25 @@ export default function App() {
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
       if (uiState.isSourceView()) {
-        // Switching back to editor — scroll to matching content position
+        // Switching back to editor — capture source view scroll % before hiding
+        const sourceEl = document.querySelector(".lm-source-view") as HTMLElement | null;
+        const scrollPct = sourceEl
+          ? sourceEl.scrollTop / Math.max(1, sourceEl.scrollHeight - sourceEl.clientHeight)
+          : contentFraction();
+        setContentFraction(Math.min(1, Math.max(0, scrollPct)));
         uiState.toggleSourceView();
         requestAnimationFrame(() => {
-          if (!editor) return;
-          const view = editor.view;
-          const docSize = view.state.doc.content.size;
-          if (docSize <= 0) return;
-          const targetPos = Math.min(
-            Math.floor(contentFraction() * docSize),
-            docSize - 1
-          );
-          // Clamp to a valid position
-          const resolvedPos = Math.max(0, targetPos);
-          try {
-            const coords = view.coordsAtPos(resolvedPos);
-            const pm = view.dom as HTMLElement;
-            const editorRect = pm.getBoundingClientRect();
-            pm.scrollTop += coords.top - editorRect.top;
-          } catch {
-            // Fallback: use fraction-based scroll
-            const pm = view.dom as HTMLElement;
-            pm.scrollTop = contentFraction() * (pm.scrollHeight - pm.clientHeight);
+          const wrapper = document.querySelector(".lm-editor-wrapper") as HTMLElement | null;
+          if (wrapper) {
+            wrapper.scrollTop = contentFraction() * Math.max(0, wrapper.scrollHeight - wrapper.clientHeight);
           }
         });
       } else {
-        // Switching to source view — compute content fraction from viewport top
-        if (editor) {
-          const view = editor.view;
-          const pm = view.dom as HTMLElement;
-          const rect = pm.getBoundingClientRect();
-          const topPos = view.posAtCoords({ left: rect.left + 1, top: rect.top + 1 });
-          const docSize = view.state.doc.content.size;
-          if (topPos && docSize > 0) {
-            setContentFraction(Math.min(1, Math.max(0, topPos.pos / docSize)));
-          } else {
-            setContentFraction(0);
-          }
+        // Switching to source view — capture editor scroll % before hiding
+        const wrapper = document.querySelector(".lm-editor-wrapper") as HTMLElement | null;
+        if (wrapper) {
+          const scrollPct = wrapper.scrollTop / Math.max(1, wrapper.scrollHeight - wrapper.clientHeight);
+          setContentFraction(Math.min(1, Math.max(0, scrollPct)));
         }
         setMarkdown(editor?.getMarkdown() ?? "");
         uiState.toggleSourceView();
