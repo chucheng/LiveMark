@@ -52,6 +52,8 @@ Create links with `[text](url)` syntax:
 
 Insert images with `![alt text](url)` syntax:
 
+![LiveMark Logo](../src-tauri/icons/icon.png)
+
 You can also **drag and drop** images directly into the editor, or **paste** them from your clipboard. LiveMark will automatically save the image alongside your document.
 
 ---
@@ -293,7 +295,7 @@ Press `Cmd+Shift+F` to toggle focus mode. In focus mode, only the paragraph you'
 
 ## Source View
 
-Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your document in a read-only view. Toggle back to return to the live-preview editor.
+Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your document in a read-only view. Toggle back to return to the live-preview editor. Your scroll position is preserved when switching between views — scroll to any section, toggle, and you'll land in the same place.
 
 ---
 
