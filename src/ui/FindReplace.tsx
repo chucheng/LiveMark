@@ -20,16 +20,23 @@ export default function FindReplace(props: FindReplaceProps) {
   const [query, setQuery] = createSignal("");
   const [replacement, setReplacement] = createSignal("");
   const [caseSensitive, setCaseSensitive] = createSignal(false);
-  const [isRegex, setIsRegex] = createSignal(false);
   const [showReplace, setShowReplace] = createSignal(false);
   const [matchInfo, setMatchInfo] = createSignal({ current: 0, total: 0 });
 
+  /** Run search immediately (no debounce) and update match info */
+  function runSearch() {
+    const v = props.view();
+    if (v) {
+      setSearchQuery(v, query(), caseSensitive(), false);
+      setMatchInfo(getMatchInfo(v));
+    }
+  }
+
   onMount(() => {
-    // Pre-fill with selected text if provided
     const initial = uiState.findInitialQuery();
     if (initial) {
       setQuery(initial);
-      uiState.setFindInitialQuery(""); // consume it
+      uiState.setFindInitialQuery("");
     }
     findInputRef.focus();
     findInputRef.select();
@@ -47,20 +54,13 @@ export default function FindReplace(props: FindReplaceProps) {
     });
   });
 
-  let searchTimer: ReturnType<typeof setTimeout> | undefined;
-
+  // Re-run search whenever query or caseSensitive changes
   createEffect(() => {
-    const v = props.view();
-    const q = query();
-    const cs = caseSensitive();
-    const re = isRegex();
-    if (searchTimer) clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => {
-      if (v) {
-        setSearchQuery(v, q, cs, re);
-        setMatchInfo(getMatchInfo(v));
-      }
-    }, 150);
+    // Subscribe to reactive deps
+    query();
+    caseSensitive();
+    // Run search synchronously — no debounce
+    runSearch();
   });
 
   function doNext() {
@@ -83,7 +83,6 @@ export default function FindReplace(props: FindReplaceProps) {
     const v = props.view();
     if (v) {
       replaceMatch(v, replacement());
-      // Doc change triggers auto re-search in plugin; just update UI
       setMatchInfo(getMatchInfo(v));
     }
   }
@@ -92,7 +91,7 @@ export default function FindReplace(props: FindReplaceProps) {
     const v = props.view();
     if (v) {
       replaceAll(v, replacement());
-      setSearchQuery(v, query(), caseSensitive(), isRegex());
+      setSearchQuery(v, query(), caseSensitive(), false);
       setMatchInfo(getMatchInfo(v));
     }
   }
@@ -126,6 +125,11 @@ export default function FindReplace(props: FindReplaceProps) {
           placeholder="Find…"
           value={query()}
           onInput={(e) => setQuery(e.currentTarget.value)}
+          spellcheck={false}
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          data-1p-ignore
         />
         <span class="lm-find-info">
           {matchInfo().total > 0
@@ -140,13 +144,6 @@ export default function FindReplace(props: FindReplaceProps) {
           title="Case sensitive"
         >
           Aa
-        </button>
-        <button
-          class={`lm-find-toggle ${isRegex() ? "lm-find-toggle-active" : ""}`}
-          onClick={() => setIsRegex(!isRegex())}
-          title="Regular expression"
-        >
-          .*
         </button>
         <button class="lm-find-btn" onClick={doPrev} title="Previous match">
           ↑
@@ -173,6 +170,11 @@ export default function FindReplace(props: FindReplaceProps) {
             placeholder="Replace…"
             value={replacement()}
             onInput={(e) => setReplacement(e.currentTarget.value)}
+            spellcheck={false}
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            data-1p-ignore
           />
           <button class="lm-find-btn" onClick={doReplace}>
             Replace

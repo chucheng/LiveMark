@@ -20,6 +20,7 @@ import { lazyRenderPlugin } from "./plugins/lazy-render";
 import { typewriterPlugin } from "./plugins/typewriter";
 import { sentenceFocusPlugin } from "./plugins/sentence-focus";
 import { smartCopyPlugin } from "./plugins/smart-copy";
+import { markdownPastePlugin } from "./plugins/markdown-paste";
 import { imagePopoverPlugin } from "./plugins/image-popover";
 import { linkPopoverPlugin } from "./plugins/link-popover";
 import { tableEditing } from "prosemirror-tables";
@@ -84,6 +85,7 @@ export function createEditor(
       inlineDecorationsPlugin(),
       linkClickPlugin(),
       imageDropPastePlugin(),
+      markdownPastePlugin(),
       findReplacePlugin(),
       trailingParagraphPlugin(),
       blockHandlesPlugin(),

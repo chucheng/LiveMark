@@ -1,4 +1,4 @@
-import { Plugin, PluginKey, EditorState, TextSelection } from "prosemirror-state";
+import { Plugin, PluginKey, EditorState } from "prosemirror-state";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
 
 export const findReplaceKey = new PluginKey<FindReplaceState>("findReplace");
@@ -312,9 +312,14 @@ export function getMatchInfo(view: EditorView): { current: number; total: number
 function scrollToCurrentMatch(view: EditorView) {
   const pluginState = findReplaceKey.getState(view.state);
   if (!pluginState || pluginState.currentIndex < 0) return;
-  const match = pluginState.matches[pluginState.currentIndex];
-  const tr = view.state.tr.setSelection(
-    TextSelection.create(view.state.doc, match.from, match.to)
-  );
-  view.dispatch(tr.scrollIntoView());
+
+  // Use DOM-based scrolling — ProseMirror's scrollIntoView only works
+  // reliably when the editor has focus, but during find/replace the
+  // focus is in the find bar input.
+  requestAnimationFrame(() => {
+    const el = view.dom.querySelector(".lm-find-current");
+    if (el) {
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  });
 }

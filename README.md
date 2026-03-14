@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.5.0-blue)
+![Version](https://img.shields.io/badge/version-2.6.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -29,7 +29,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
 - **Smart link open** — local file links (e.g. `tutorial.md`) open in a tab; external URLs open in browser. Works in popover and Cmd+click
 - **Clickable links** — Cmd/Ctrl+click opens links (local files in-app, URLs in browser)
-- **Find & replace** — Cmd+F with selection pre-fill, jumps to nearest match, regex and case-sensitive toggles, replace all
+- **Find & replace** — Cmd+F with selection pre-fill, jumps to nearest match, case-sensitive toggle (Aa), replace and replace-all
 - **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts (`# `, `> `, `- [ ] `), undo/redo
 - **Large file lazy rendering** — IntersectionObserver-based viewport rendering
 
@@ -66,6 +66,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - Copy as Markdown (Cmd+Alt+C) — selection-aware
 - Copy as Beautiful Doc — styled HTML for pasting into rich editors
 - **Smart copy** — copy/cut produces Markdown as text/plain + styled HTML as text/html
+- **Smart paste** — pasting Markdown text auto-parses into structured content (headings, lists, tables, etc.); plain text pastes normally
 
 ### Keyboard Shortcuts
 
@@ -194,6 +195,7 @@ src/
       typewriter.ts       — Typewriter mode (cursor vertical centering)
       sentence-focus.ts   — Sentence-level focus mode decorations
       smart-copy.ts       — Smart copy/cut (Markdown + styled HTML clipboard)
+      markdown-paste.ts   — Smart paste (Markdown text → structured content)
   ui/
     App.tsx               — Root component
     StatusBar.tsx         — Status bar (line/col, words, zoom, theme toggle)
@@ -260,6 +262,7 @@ src-tauri/
 | v2.4.0 | Link popover — click rendered links for compact URL preview with Open, Copy, Edit, Unlink actions |
 | v2.4.1 | Find & Replace UX — jump to nearest match on search, pre-fill from selection, auto-advance after replace, re-focus on Cmd+F |
 | v2.5.0 | Smart link open — local file links open in-app tabs, external URLs open in browser; works in popover and Cmd+click |
+| v2.6.0 | Smart Markdown paste — pasting Markdown text auto-parses into headings, lists, tables, etc.; skips code blocks; detects structural HTML; find & replace scroll fix |
 
 ## Documentation
 
