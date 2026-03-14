@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.3.0-blue)
+![Version](https://img.shields.io/badge/version-2.3.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -277,6 +277,7 @@ src-tauri/
 | v2.2.1 | Edge case hardening — auto-save failure feedback, external file deletion detection, disk-full error guidance, unsupported file drop feedback, improved encoding error messages |
 | v2.2.2 | Remove two-column layout mode for simplicity |
 | v2.3.0 | Document outline — sidebar tab with heading tree, active heading tracking, click-to-navigate (Cmd+Shift+O) |
+| v2.3.1 | Add DOCX to welcome.md export list |
 
 ## Documentation
 
