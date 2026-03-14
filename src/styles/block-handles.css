@@ -2,17 +2,17 @@
 
 .lm-block-gutter {
   position: absolute;
+  /* Positioned by JS (top computed from block's first line) */
   left: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   opacity: 0;
   transition: opacity var(--lm-transition-fast);
   user-select: none;
   z-index: 5;
-  /* Vertically center with the first line of the block */
-  margin-top: 2px;
+  pointer-events: auto;
 }
 
 /* Show gutter when the ProseMirror editor is hovered */

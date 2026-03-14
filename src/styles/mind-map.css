@@ -72,6 +72,24 @@
   max-height: 100%;
 }
 
+.lm-mindmap-svg .mindmap-node,
+.lm-mindmap-svg .node {
+  cursor: pointer;
+}
+
+.lm-mindmap-svg .mindmap-node:hover rect,
+.lm-mindmap-svg .mindmap-node:hover circle,
+.lm-mindmap-svg .mindmap-node:hover ellipse,
+.lm-mindmap-svg .mindmap-node:hover polygon,
+.lm-mindmap-svg .mindmap-node:hover path,
+.lm-mindmap-svg .node:hover rect,
+.lm-mindmap-svg .node:hover circle,
+.lm-mindmap-svg .node:hover ellipse,
+.lm-mindmap-svg .node:hover polygon,
+.lm-mindmap-svg .node:hover path {
+  filter: brightness(1.15);
+}
+
 .lm-mindmap-svg text {
   cursor: pointer;
 }

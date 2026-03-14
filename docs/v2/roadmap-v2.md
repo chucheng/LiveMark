@@ -32,12 +32,12 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** None — can start immediately, runs in parallel with all other milestones.
 
 **Definition of Done:**
-- [ ] PR CI workflow runs on macOS, Windows, Linux
-- [ ] `pnpm test` passes on all three platforms
-- [ ] `pnpm tauri build` succeeds on all three platforms
-- [ ] Tag-triggered release workflow builds and publishes artifacts (DMG, MSI/NSIS, AppImage/deb)
-- [ ] Changelog auto-generated from commits since last tag
-- [ ] README badge shows CI status
+- [x] PR CI workflow runs on macOS, Windows, Linux
+- [x] `pnpm test` passes on all three platforms
+- [x] `pnpm tauri build` succeeds on all three platforms
+- [x] Tag-triggered release workflow builds and publishes artifacts (DMG, MSI/NSIS, AppImage/deb)
+- [x] Changelog auto-generated from commits since last tag
+- [x] README badge shows CI status
 
 ---
 
@@ -58,15 +58,15 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** None — foundational milestone.
 
 **Definition of Done:**
-- [ ] Can open multiple files, each in its own tab
-- [ ] Switching tabs restores exact editor state (text, cursor, scroll, undo history)
-- [ ] Closing a modified tab prompts to save
-- [ ] Closing last tab returns to single-file mode (new untitled document)
-- [ ] All keyboard shortcuts work (Cmd+W, Cmd+1-9, Cmd+Shift+[/])
-- [ ] Tab bar hidden when only one file is open
-- [ ] Existing file commands (save, save-as, new) work correctly with tabs
-- [ ] All existing v1 tests pass (no regressions)
-- [ ] New unit tests for tab state management
+- [x] Can open multiple files, each in its own tab
+- [x] Switching tabs restores exact editor state (text, cursor, scroll, undo history)
+- [x] Closing a modified tab prompts to save
+- [x] Closing last tab returns to single-file mode (new untitled document)
+- [x] All keyboard shortcuts work (Cmd+W, Cmd+1-9, Cmd+Shift+[/])
+- [x] Tab bar hidden when only one file is open
+- [x] Existing file commands (save, save-as, new) work correctly with tabs
+- [x] All existing v1 tests pass (no regressions)
+- [x] New unit tests for tab state management
 
 ---
 
@@ -88,17 +88,17 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** M2 (Multi-Tab) — sidebar opens files in tabs.
 
 **Definition of Done:**
-- [ ] "Open Folder" shows directory tree in sidebar
-- [ ] Clicking a file opens it in a new tab
-- [ ] Directory expand/collapse works
-- [ ] Filesystem changes (new file, delete, rename) update the tree within 1s
-- [ ] Sidebar toggles with Cmd+\
-- [ ] Sidebar width is drag-resizable and persisted
-- [ ] No sidebar shown when no folder is open
-- [ ] Recent Files accessible via command palette
-- [ ] Drag-and-drop .md file onto window opens in new tab
-- [ ] All existing v1 tests pass
-- [ ] New tests for Rust directory listing and file tree state
+- [x] "Open Folder" shows directory tree in sidebar
+- [x] Clicking a file opens it in a new tab
+- [x] Directory expand/collapse works
+- [x] Filesystem changes (new file, delete, rename) update the tree within 1s
+- [x] Sidebar toggles with Cmd+\
+- [x] Sidebar width is drag-resizable and persisted
+- [x] No sidebar shown when no folder is open
+- [x] Recent Files accessible via command palette
+- [x] Drag-and-drop .md file onto window opens in new tab
+- [x] All existing v1 tests pass
+- [x] New tests for Rust directory listing and file tree state
 
 ---
 
@@ -116,20 +116,20 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** None (operates on single-document editor), but benefits from M2 being done first so block handles work correctly with tab state.
 
 **Definition of Done:**
-- [ ] Hovering any top-level block shows a handle (⋮⋮) on the left edge
-- [ ] Clicking handle opens context menu with all actions
-- [ ] Move Up/Down works correctly (PM transaction, undoable)
-- [ ] Duplicate creates an identical block below
-- [ ] Delete removes the block (undoable)
-- [ ] Drag-and-drop reorders blocks with visual drop indicator
-- [ ] Heading collapse/expand works (fold children, show placeholder)
-- [ ] Collapsed state survives edits elsewhere in the document
-- [ ] Copy Link copies correct URL with heading slug or block ID
-- [ ] Block ID comments (`<!-- id: ... -->`) are stripped on Markdown export by default
-- [ ] Cmd+Shift+↑/↓ move current block without mouse
-- [ ] Handles do not appear when cursor is inside the block
-- [ ] All existing v1 tests pass
-- [ ] New tests for block move, duplicate, delete, collapse
+- [x] Hovering any top-level block shows a handle (⋮⋮) on the left edge
+- [x] Clicking handle opens context menu with all actions
+- [x] Move Up/Down works correctly (PM transaction, undoable)
+- [x] Duplicate creates an identical block below
+- [x] Delete removes the block (undoable)
+- [x] Drag-and-drop reorders blocks with visual drop indicator
+- [x] Heading collapse/expand works (fold children, show placeholder)
+- [x] Collapsed state survives edits elsewhere in the document
+- [x] Copy Link copies correct URL with heading slug or block ID
+- [x] Block ID comments (`<!-- id: ... -->`) are stripped on Markdown export by default
+- [x] Cmd+Shift+↑/↓ move current block without mouse
+- [x] Handles do not appear when cursor is inside the block
+- [x] All existing v1 tests pass
+- [x] New tests for block move, duplicate, delete, collapse
 
 ---
 
@@ -146,20 +146,20 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** M2 (for tab-aware features), M3 (for testing multi-file + sidebar + Mermaid together). M4 recommended (block handles + mind map can be tested together).
 
 **Definition of Done:**
-- [ ] ```mermaid code blocks render as SVG diagrams when cursor is outside
-- [ ] Mermaid syntax errors show inline error message
-- [ ] Mermaid.js loads lazily (not in initial bundle)
-- [ ] Mind Map View shows heading hierarchy as interactive graph
-- [ ] Clicking a mind map node scrolls to that heading
-- [ ] Cmd+T toggles mind map on/off
-- [ ] YAML frontmatter renders as a styled block at document top
-- [ ] Frontmatter preserved on round-trip
-- [ ] "Copy as Beautiful Doc" produces styled rich text on clipboard
-- [ ] Pasting into Google Docs/Notion preserves formatting
-- [ ] "Copy as Markdown" with selection copies only selected range
-- [ ] Large files (10K+ lines) render smoothly with lazy NodeViews
-- [ ] All existing v1 tests pass
-- [ ] New tests: Mermaid rendering, frontmatter round-trip, beautiful doc export, lazy rendering
+- [x] ```mermaid code blocks render as SVG diagrams when cursor is outside
+- [x] Mermaid syntax errors show inline error message
+- [x] Mermaid.js loads lazily (not in initial bundle)
+- [x] Mind Map View shows heading hierarchy as interactive graph
+- [x] Clicking a mind map node scrolls to that heading
+- [x] Cmd+T toggles mind map on/off
+- [x] YAML frontmatter renders as a styled block at document top
+- [x] Frontmatter preserved on round-trip
+- [x] "Copy as Beautiful Doc" produces styled rich text on clipboard
+- [x] Pasting into Google Docs/Notion preserves formatting
+- [x] "Copy as Markdown" with selection copies only selected range
+- [x] Large files (10K+ lines) render smoothly with lazy NodeViews
+- [x] All existing v1 tests pass
+- [x] New tests: Mermaid rendering, frontmatter round-trip, beautiful doc export, lazy rendering
 
 ---
 

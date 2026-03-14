@@ -319,6 +319,17 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
               gutter.className = "lm-block-gutter";
               gutter.dataset.blockPos = String(pos);
 
+              // Vertically align gutter with the block's first line of text
+              try {
+                const coords = view.coordsAtPos(pos + 1);
+                const editorRect = view.dom.getBoundingClientRect();
+                const lineCenter = (coords.top + coords.bottom) / 2;
+                const gutterHeight = 22; // matches button height
+                gutter.style.top = `${lineCenter - editorRect.top - gutterHeight / 2}px`;
+              } catch {
+                // fallback: auto position from DOM flow
+              }
+
               // Plus button
               const plus = document.createElement("button");
               plus.className = "lm-block-plus";

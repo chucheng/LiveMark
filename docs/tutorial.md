@@ -236,7 +236,7 @@ Mermaid is lazy-loaded — the library only downloads when you first use a diagr
 
 LiveMark supports **YAML frontmatter** at the top of your document. Wrap metadata in triple dashes:
 
-```
+```yaml
 ---
 title: My Document
 date: 2024-01-15

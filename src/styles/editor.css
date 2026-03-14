@@ -18,6 +18,7 @@
 }
 
 .ProseMirror {
+  position: relative;
   width: 100%;
   padding: var(--lm-editor-padding-y) var(--lm-editor-padding-x);
   outline: none;

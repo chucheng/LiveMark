@@ -64,20 +64,30 @@ export default function MindMap(props: MindMapProps) {
 
   function handleSvgClick(e: MouseEvent) {
     const target = e.target as SVGElement;
-    // Mermaid mindmap nodes have text content matching heading text
-    const textEl = target.closest("text") || (target.tagName === "text" ? target : null);
+
+    // Mermaid mindmap nodes are <g> groups containing shapes + <text>.
+    // Walk up to the nearest node group, then find <text> within it.
+    const nodeGroup =
+      target.closest(".mindmap-node") ||
+      target.closest(".node") ||
+      target.closest("g");
+    if (!nodeGroup) return;
+
+    const textEl = nodeGroup.querySelector("text");
     if (!textEl) return;
 
     const clickedText = textEl.textContent?.trim();
     if (!clickedText) return;
 
-    const heading = headingsRef.find((h) => h.sanitizedText === clickedText || h.text.trim() === clickedText);
+    const heading = headingsRef.find(
+      (h) => h.sanitizedText === clickedText || h.text.trim() === clickedText
+    );
     if (!heading) return;
 
     const view = props.view();
     if (!view) return;
 
-    // Scroll to heading position
+    // Jump to heading in editor
     view.focus();
     const tr = view.state.tr.setSelection(
       TextSelection.near(view.state.doc.resolve(heading.pos + 1))
