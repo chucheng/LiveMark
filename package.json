@@ -10,7 +10,8 @@
     "tauri": "tauri",
     "build:dmg": "tauri build --bundles dmg",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "version:sync": "node scripts/version-sync.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
