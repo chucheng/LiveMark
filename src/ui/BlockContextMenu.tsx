@@ -1,6 +1,6 @@
 import { createSignal, onMount, onCleanup, Show } from "solid-js";
 import type { EditorView } from "prosemirror-view";
-import { moveBlockUp, moveBlockDown, duplicateBlock, deleteBlock } from "../editor/plugins/block-handles";
+import { moveBlockUp, moveBlockDown, duplicateBlock, deleteBlock, getBlockAnchor } from "../editor/plugins/block-handles";
 import { toggleHeadingCollapse, isHeadingCollapsed } from "../editor/plugins/heading-collapse";
 import { TextSelection } from "prosemirror-state";
 
@@ -21,23 +21,20 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
 
   function handleClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
-    if (target.closest(".lm-block-handle")) {
+    if (target.closest(".lm-block-grip")) {
       e.preventDefault();
       e.stopPropagation();
       const view = props.view();
       if (!view) return;
 
-      // Find the block position from the handle's parent decoration
-      const handleEl = target.closest(".lm-block-handle") as HTMLElement;
+      const handleEl = target.closest(".lm-block-grip") as HTMLElement;
       const rect = handleEl.getBoundingClientRect();
 
-      // Get the block position by finding which block the handle is next to
-      const pos = view.posAtCoords({ left: rect.right + 20, top: rect.top + rect.height / 2 });
-      if (!pos) return;
-
-      // Resolve to top-level block
-      const $pos = view.state.doc.resolve(pos.pos);
-      const blockPos = $pos.before(1);
+      // Read block position from data attribute set by the decoration
+      const posAttr = handleEl.dataset.blockPos;
+      if (posAttr == null) return;
+      const blockPos = parseInt(posAttr, 10);
+      if (isNaN(blockPos) || blockPos < 0 || blockPos >= view.state.doc.content.size) return;
       const node = view.state.doc.nodeAt(blockPos);
       const isHeading = node?.type.name === "heading";
       const isCollapsed = isHeading && isHeadingCollapsed(view.state, blockPos);
@@ -99,6 +96,26 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
     runCommand(() => deleteBlock(view.state, view.dispatch.bind(view)));
   }
 
+  async function handleCopyLink() {
+    const view = props.view();
+    if (!view) return;
+    const m = menu();
+    if (!m) return;
+
+    const anchor = getBlockAnchor(view, m.blockPos);
+    if (anchor) {
+      try {
+        const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
+        await writeText(`#${anchor}`);
+      } catch {
+        // Fallback to navigator clipboard for dev/non-Tauri
+        await navigator.clipboard.writeText(`#${anchor}`);
+      }
+    }
+    setMenu(null);
+    view.focus();
+  }
+
   function handleToggleCollapse() {
     const view = props.view();
     if (!view) return;
@@ -107,17 +124,22 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
     runCommand(() => toggleHeadingCollapse(view.state, view.dispatch.bind(view), m.blockPos));
   }
 
+  function handleMouseDown(e: MouseEvent) {
+    if (menu() && !(e.target as HTMLElement).closest(".lm-block-context-menu")) {
+      handleDismiss();
+    }
+  }
+
   onMount(() => {
     document.addEventListener("click", handleClick, true);
-    document.addEventListener("mousedown", (e) => {
-      if (menu() && !(e.target as HTMLElement).closest(".lm-block-context-menu")) {
-        handleDismiss();
-      }
-    });
+    document.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("scroll", handleDismiss, true);
   });
 
   onCleanup(() => {
     document.removeEventListener("click", handleClick, true);
+    document.removeEventListener("mousedown", handleMouseDown);
+    window.removeEventListener("scroll", handleDismiss, true);
   });
 
   return (
@@ -131,6 +153,8 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
           <button class="lm-bcm-item" onClick={handleMoveDown}>Move Down</button>
           <button class="lm-bcm-item" onClick={handleDuplicate}>Duplicate</button>
           <button class="lm-bcm-item" onClick={handleDelete}>Delete</button>
+          <div class="lm-bcm-separator" />
+          <button class="lm-bcm-item" onClick={handleCopyLink}>Copy Link</button>
           <Show when={m().isHeading}>
             <div class="lm-bcm-separator" />
             <button class="lm-bcm-item" onClick={handleToggleCollapse}>

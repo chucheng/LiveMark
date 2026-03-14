@@ -27,7 +27,7 @@ const OPENABLE_EXTENSIONS = new Set([
 
 /** Check if a file path can be opened as text. */
 function isOpenableFile(path: string): boolean {
-  const name = path.split("/").pop()?.toLowerCase() ?? "";
+  const name = path.replace(/\\/g, "/").split("/").pop()?.toLowerCase() ?? "";
   // Dotfiles without extensions (e.g. .gitignore, .editorconfig)
   if (name.startsWith(".") && !name.includes(".", 1)) {
     const bare = name.slice(1);
@@ -86,7 +86,7 @@ export async function openFileInTab(path: string) {
 
   // Guard: only open text-based files
   if (!isOpenableFile(path)) {
-    const name = path.split("/").pop() ?? path;
+    const name = path.replace(/\\/g, "/").split("/").pop() ?? path;
     await message(
       `"${name}" is not a supported text file and cannot be opened in the editor.`,
       { title: "Unsupported File", kind: "info" },
@@ -128,7 +128,7 @@ export async function openFileInTab(path: string) {
   } catch (err) {
     const errStr = String(err);
     const msg = errStr.includes("valid UTF-8")
-      ? `"${path.split("/").pop()}" appears to be a binary file and cannot be opened as text.`
+      ? `"${path.replace(/\\/g, "/").split("/").pop()}" appears to be a binary file and cannot be opened as text.`
       : `Failed to open file:\n${err}`;
     await message(msg, {
       title: "Open Error",

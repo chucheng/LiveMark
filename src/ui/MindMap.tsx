@@ -2,6 +2,7 @@ import { createSignal, onMount, onCleanup, Show, createEffect } from "solid-js";
 import { extractHeadings, headingsToMindmap, type HeadingEntry } from "../editor/mind-map";
 import { renderMermaid } from "../editor/mermaid-loader";
 import type { EditorView } from "prosemirror-view";
+import { TextSelection } from "prosemirror-state";
 
 interface MindMapProps {
   view: () => EditorView | undefined;
@@ -53,7 +54,7 @@ export default function MindMap(props: MindMapProps) {
 
     // Listen for doc changes via MutationObserver on the editor DOM
     const observer = new MutationObserver(handler);
-    observer.observe(view.dom, { childList: true, subtree: true, characterData: true });
+    observer.observe(view.dom, { childList: true, subtree: true });
 
     onCleanup(() => {
       observer.disconnect();
@@ -70,7 +71,7 @@ export default function MindMap(props: MindMapProps) {
     const clickedText = textEl.textContent?.trim();
     if (!clickedText) return;
 
-    const heading = headingsRef.find((h) => h.text.trim() === clickedText);
+    const heading = headingsRef.find((h) => h.sanitizedText === clickedText || h.text.trim() === clickedText);
     if (!heading) return;
 
     const view = props.view();
@@ -79,7 +80,7 @@ export default function MindMap(props: MindMapProps) {
     // Scroll to heading position
     view.focus();
     const tr = view.state.tr.setSelection(
-      view.state.selection.constructor.near(view.state.doc.resolve(heading.pos + 1))
+      TextSelection.near(view.state.doc.resolve(heading.pos + 1))
     );
     view.dispatch(tr.scrollIntoView());
     props.onClose();

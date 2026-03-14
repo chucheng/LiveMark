@@ -1,5 +1,5 @@
 import { Node } from "prosemirror-model";
-import { EditorView, NodeView } from "prosemirror-view";
+import { EditorView, NodeView, type ViewMutationRecord } from "prosemirror-view";
 
 /**
  * Frontmatter NodeView: shows YAML content in a styled card.
@@ -33,7 +33,7 @@ export class FrontmatterView implements NodeView {
     return true;
   }
 
-  ignoreMutation(mutation: MutationRecord): boolean {
+  ignoreMutation(mutation: ViewMutationRecord): boolean {
     return mutation.type !== "selection";
   }
 }

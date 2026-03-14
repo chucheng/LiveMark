@@ -3,6 +3,7 @@ import { Node } from "prosemirror-model";
 export interface HeadingEntry {
   level: number;
   text: string;
+  sanitizedText: string;
   pos: number;
   id: string;
 }
@@ -16,7 +17,7 @@ export function extractHeadings(doc: Node): HeadingEntry[] {
     if (node.type.name === "heading") {
       const text = node.textContent || "Untitled";
       const id = `h${headings.length}`;
-      headings.push({ level: node.attrs.level, text, pos: offset, id });
+      headings.push({ level: node.attrs.level, text, sanitizedText: sanitize(text), pos: offset, id });
     }
   });
   return headings;

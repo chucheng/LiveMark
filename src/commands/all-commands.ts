@@ -192,6 +192,33 @@ export function registerAllCommands() {
     execute: () => { uiState.setAboutOpen(true); },
   });
 
+  // Block
+  registerCommand({
+    id: "block.copyLink",
+    label: "Copy Link to Block",
+    category: "Edit",
+    execute: async () => {
+      // Uses the active block (where cursor is) via the shared editorRef
+      const { getBlockAnchor } = await import("../editor/plugins/block-handles");
+      const { getEditorRef } = await import("./file-commands");
+      const editor = getEditorRef();
+      if (!editor) return;
+      const view = editor.view;
+      const { $head } = view.state.selection;
+      if ($head.depth < 1) return;
+      const blockPos = $head.before(1);
+      const anchor = getBlockAnchor(view, blockPos);
+      if (anchor) {
+        try {
+          const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
+          await writeText(`#${anchor}`);
+        } catch {
+          await navigator.clipboard.writeText(`#${anchor}`);
+        }
+      }
+    },
+  });
+
   // Edit
   registerCommand({
     id: "edit.find",

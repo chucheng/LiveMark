@@ -1,33 +1,111 @@
-.lm-block-handle {
+/* ── Block Handle Gutter ─────────────────────────────────────── */
+
+.lm-block-gutter {
   position: absolute;
-  left: -28px;
-  width: 20px;
-  height: 20px;
+  left: 0;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: var(--lm-text-faint);
-  cursor: grab;
-  border-radius: var(--lm-radius-sm);
+  gap: 2px;
   opacity: 0;
-  transition: opacity var(--lm-transition-fast), background var(--lm-transition-fast);
+  transition: opacity var(--lm-transition-fast);
   user-select: none;
-  letter-spacing: -1px;
+  z-index: 5;
+  /* Vertically center with the first line of the block */
   margin-top: 2px;
 }
 
-.ProseMirror:hover .lm-block-handle {
-  opacity: 0.6;
+/* Show gutter when the ProseMirror editor is hovered */
+.ProseMirror:hover .lm-block-gutter,
+.ProseMirror .lm-block-gutter:hover {
+  opacity: 1;
 }
 
-.lm-block-handle:hover {
-  opacity: 1 !important;
+/* ── Plus Button ─────────────────────────────────────────────── */
+
+.lm-block-plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--lm-text-faint);
+  border-radius: var(--lm-radius-sm);
+  cursor: pointer;
+  transition: background var(--lm-transition-fast), color var(--lm-transition-fast);
+}
+
+.lm-block-plus:hover {
+  background: var(--lm-hover);
+  color: var(--lm-accent);
+}
+
+.lm-block-plus svg {
+  display: block;
+}
+
+/* ── Grip Handle ─────────────────────────────────────────────── */
+
+.lm-block-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: var(--lm-text-faint);
+  border-radius: var(--lm-radius-sm);
+  cursor: grab;
+  transition: background var(--lm-transition-fast), color var(--lm-transition-fast);
+}
+
+.lm-block-grip:hover {
   background: var(--lm-hover);
   color: var(--lm-text-muted);
 }
 
-/* Collapse indicator */
+.lm-block-grip:active {
+  cursor: grabbing;
+}
+
+.lm-block-grip svg {
+  display: block;
+}
+
+/* ── Drop Indicator ──────────────────────────────────────────── */
+
+.lm-drop-indicator {
+  height: 2px;
+  background: var(--lm-accent);
+  border-radius: 1px;
+  margin: -1px 0;
+  position: relative;
+  pointer-events: none;
+}
+
+.lm-drop-indicator::before,
+.lm-drop-indicator::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lm-accent);
+}
+
+.lm-drop-indicator::before {
+  left: -4px;
+}
+
+.lm-drop-indicator::after {
+  right: -4px;
+}
+
+/* ── Collapse indicator ──────────────────────────────────────── */
+
 .lm-collapse-indicator {
   color: var(--lm-text-faint);
   font-size: 0.85em;
@@ -39,12 +117,12 @@
   color: var(--lm-accent);
 }
 
-/* Collapsed blocks */
 .lm-collapsed {
   display: none !important;
 }
 
-/* Block context menu */
+/* ── Block Context Menu ──────────────────────────────────────── */
+
 .lm-block-context-menu {
   position: fixed;
   z-index: 1000;
@@ -78,4 +156,55 @@
   height: 1px;
   background: var(--lm-border);
   margin: 4px 0;
+}
+
+/* ── Block Type Picker ───────────────────────────────────────── */
+
+.lm-block-type-picker {
+  position: fixed;
+  z-index: 1000;
+  min-width: 180px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  box-shadow: var(--lm-shadow-md);
+  padding: 4px;
+  font-size: 12.5px;
+}
+
+.lm-btp-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  color: var(--lm-text);
+  cursor: pointer;
+  border-radius: var(--lm-radius-sm);
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-btp-item:hover,
+.lm-btp-item.lm-btp-active {
+  background: var(--lm-hover);
+}
+
+.lm-btp-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--lm-text-muted);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.lm-btp-label {
+  flex: 1;
 }

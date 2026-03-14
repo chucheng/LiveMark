@@ -95,7 +95,7 @@ export default function Sidebar(props: SidebarProps) {
       >
         <div class="lm-sidebar-header">
           <span class="lm-sidebar-title">
-            {fileTreeState.rootPath()?.split("/").pop() ?? "Files"}
+            {fileTreeState.rootPath()?.replace(/\\/g, "/").split("/").pop() ?? "Files"}
           </span>
         </div>
         <Show when={fileTreeState.rootPath()} fallback={

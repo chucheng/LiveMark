@@ -9,7 +9,6 @@ export interface Tab {
   isModified: boolean;
   editorState: EditorState | null;
   scrollPosition: number;
-  cursorPosition: number;
 }
 
 let nextId = 1;
@@ -39,7 +38,6 @@ function createTab(filePath?: string | null): Tab {
     isModified: false,
     editorState: null,
     scrollPosition: 0,
-    cursorPosition: 0,
   };
   setTabs((prev) => [...prev, tab]);
   setActiveTabId(tab.id);
@@ -62,7 +60,6 @@ function closeTab(tabId: string): Tab | null {
       isModified: false,
       editorState: null,
       scrollPosition: 0,
-      cursorPosition: 0,
     };
     setTabs([newTab]);
     setActiveTabId(newTab.id);
@@ -106,7 +103,7 @@ function findTabByPath(path: string): Tab | undefined {
   return tabs().find((t) => t.filePath === path);
 }
 
-function updateTab(tabId: string, updates: Partial<Pick<Tab, "filePath" | "fileName" | "isModified" | "editorState" | "scrollPosition" | "cursorPosition">>) {
+function updateTab(tabId: string, updates: Partial<Pick<Tab, "filePath" | "fileName" | "isModified" | "editorState" | "scrollPosition">>) {
   setTabs((prev) =>
     prev.map((t) => {
       if (t.id !== tabId) return t;
@@ -151,7 +148,6 @@ function snapshotActiveTab(view: EditorView, scroller: HTMLElement | null) {
   updateTab(id, {
     editorState: view.state,
     scrollPosition: scroller?.scrollTop ?? 0,
-    cursorPosition: view.state.selection.anchor,
   });
 }
 

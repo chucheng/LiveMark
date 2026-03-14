@@ -1,17 +1,20 @@
 import { Plugin, PluginKey, EditorState, Transaction, TextSelection } from "prosemirror-state";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
-import { Node, ResolvedPos } from "prosemirror-model";
+import { Node } from "prosemirror-model";
 
 export const blockHandlesKey = new PluginKey("blockHandles");
 
 interface BlockHandlesState {
   hoveredPos: number | null;
   menuPos: number | null;
+  /** Drag-and-drop state */
+  dragSourcePos: number | null;
+  dropTargetPos: number | null;
+  // plusClick is communicated via custom DOM event "lm-plus-click" — not stored in state
 }
 
-/**
- * Find the position of the top-level block node at the given screen coordinates.
- */
+// ── Helpers ──────────────────────────────────────────────────────
+
 function topLevelBlockAtCoords(view: EditorView, y: number): number | null {
   const doc = view.state.doc;
   for (let i = 0; i < doc.childCount; i++) {
@@ -48,8 +51,134 @@ function indexOfPos(doc: Node, pos: number): number {
 }
 
 /**
- * Move a top-level block up by one position.
+ * Find the nearest block boundary position from mouse Y.
+ * Returns the position *before* the block that the indicator should appear above.
  */
+function nearestBlockBoundary(view: EditorView, mouseY: number): number | null {
+  const doc = view.state.doc;
+  let closest: number | null = null;
+  let closestDist = Infinity;
+
+  for (let i = 0; i <= doc.childCount; i++) {
+    let boundaryY: number;
+    try {
+      if (i === 0) {
+        const pos = posOfChild(doc, 0);
+        boundaryY = view.coordsAtPos(pos + 1).top;
+      } else if (i === doc.childCount) {
+        const prevChild = doc.child(i - 1);
+        const prevPos = posOfChild(doc, i - 1);
+        boundaryY = view.coordsAtPos(prevPos + prevChild.nodeSize - 1).bottom;
+      } else {
+        const pos = posOfChild(doc, i);
+        const prevChild = doc.child(i - 1);
+        const prevPos = posOfChild(doc, i - 1);
+        const prevBottom = view.coordsAtPos(prevPos + prevChild.nodeSize - 1).bottom;
+        const curTop = view.coordsAtPos(pos + 1).top;
+        boundaryY = (prevBottom + curTop) / 2;
+      }
+    } catch {
+      continue;
+    }
+
+    const dist = Math.abs(mouseY - boundaryY);
+    if (dist < closestDist) {
+      closestDist = dist;
+      closest = i < doc.childCount ? posOfChild(doc, i) : posOfChild(doc, i - 1) + doc.child(i - 1).nodeSize;
+    }
+  }
+  return closest;
+}
+
+// ── SVG icons ────────────────────────────────────────────────────
+
+const PLUS_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>`;
+
+const GRIP_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="6" cy="4" r="1.2" fill="currentColor"/>
+  <circle cx="10" cy="4" r="1.2" fill="currentColor"/>
+  <circle cx="6" cy="8" r="1.2" fill="currentColor"/>
+  <circle cx="10" cy="8" r="1.2" fill="currentColor"/>
+  <circle cx="6" cy="12" r="1.2" fill="currentColor"/>
+  <circle cx="10" cy="12" r="1.2" fill="currentColor"/>
+</svg>`;
+
+// ── Slug / Block ID helpers ──────────────────────────────────────
+
+/**
+ * Generate a URL-friendly slug from heading text content.
+ * Lowercases, replaces spaces with hyphens, strips non-alphanumeric chars.
+ * Falls back to a random ID if the result would be empty.
+ */
+export function generateSlug(text: string): string {
+  const slug = text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return slug || `heading-${generateBlockId()}`;
+}
+
+/**
+ * Generate a short random block ID (8 hex chars).
+ */
+export function generateBlockId(): string {
+  const arr = new Uint8Array(4);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Get or generate a link anchor for the block at the given position.
+ * - Headings: slug from text content (e.g. #my-heading)
+ * - Other blocks: read existing blockId attr, or generate + set one via transaction
+ * Returns the anchor string (without leading #).
+ */
+export function getBlockAnchor(
+  view: EditorView,
+  blockPos: number
+): string | null {
+  const node = view.state.doc.nodeAt(blockPos);
+  if (!node) return null;
+
+  if (node.type.name === "heading") {
+    const baseSlug = generateSlug(node.textContent);
+    // Deduplicate: count earlier headings with the same slug
+    let count = 0;
+    view.state.doc.forEach((child, offset) => {
+      if (offset >= blockPos) return;
+      if (child.type.name === "heading" && generateSlug(child.textContent) === baseSlug) {
+        count++;
+      }
+    });
+    return count > 0 ? `${baseSlug}-${count}` : baseSlug;
+  }
+
+  // For non-heading blocks, use/generate a blockId attribute
+  const existing = node.attrs.blockId;
+  if (existing) return existing;
+
+  const id = generateBlockId();
+  const tr = view.state.tr.setNodeMarkup(blockPos, undefined, {
+    ...node.attrs,
+    blockId: id,
+  });
+  view.dispatch(tr);
+  return id;
+}
+
+// ── Block commands (unchanged) ───────────────────────────────────
+
+function getActiveBlockPos(state: EditorState): number | null {
+  const { $head } = state.selection;
+  if ($head.depth < 1) return null;
+  return $head.before(1);
+}
+
 export function moveBlockUp(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const pos = getActiveBlockPos(state);
   if (pos === null) return false;
@@ -61,21 +190,15 @@ export function moveBlockUp(state: EditorState, dispatch?: (tr: Transaction) => 
     const node = doc.child(idx);
     const prevNode = doc.child(idx - 1);
     const tr = state.tr;
-    // Delete current node
     tr.delete(pos, pos + node.nodeSize);
-    // Insert before previous
     const insertPos = pos - prevNode.nodeSize;
     tr.insert(insertPos, node);
-    // Place cursor in the moved block
     tr.setSelection(TextSelection.near(tr.doc.resolve(insertPos + 1)));
     dispatch(tr.scrollIntoView());
   }
   return true;
 }
 
-/**
- * Move a top-level block down by one position.
- */
 export function moveBlockDown(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const pos = getActiveBlockPos(state);
   if (pos === null) return false;
@@ -87,9 +210,7 @@ export function moveBlockDown(state: EditorState, dispatch?: (tr: Transaction) =
     const node = doc.child(idx);
     const nextNode = doc.child(idx + 1);
     const tr = state.tr;
-    // Delete current node
     tr.delete(pos, pos + node.nodeSize);
-    // Insert after next node (accounting for the deletion shift)
     const insertPos = pos + nextNode.nodeSize;
     const mappedPos = tr.mapping.map(insertPos);
     tr.insert(mappedPos, node);
@@ -99,9 +220,6 @@ export function moveBlockDown(state: EditorState, dispatch?: (tr: Transaction) =
   return true;
 }
 
-/**
- * Duplicate the current top-level block.
- */
 export function duplicateBlock(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const pos = getActiveBlockPos(state);
   if (pos === null) return false;
@@ -120,24 +238,18 @@ export function duplicateBlock(state: EditorState, dispatch?: (tr: Transaction) 
   return true;
 }
 
-/**
- * Delete the current top-level block.
- */
 export function deleteBlock(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const pos = getActiveBlockPos(state);
   if (pos === null) return false;
   const doc = state.doc;
   const idx = indexOfPos(doc, pos);
   if (idx < 0) return false;
-
-  // Don't delete the last block
   if (doc.childCount <= 1) return false;
 
   if (dispatch) {
     const node = doc.child(idx);
     const tr = state.tr;
     tr.delete(pos, pos + node.nodeSize);
-    // Place cursor in the block above, or below if deleting first
     const target = Math.min(pos, tr.doc.content.size - 1);
     if (target > 0) {
       tr.setSelection(TextSelection.near(tr.doc.resolve(target)));
@@ -147,37 +259,33 @@ export function deleteBlock(state: EditorState, dispatch?: (tr: Transaction) => 
   return true;
 }
 
-/**
- * Get the position of the top-level block containing the cursor.
- */
-function getActiveBlockPos(state: EditorState): number | null {
-  const { $head } = state.selection;
-  // Walk up to depth 1 (direct child of doc)
-  if ($head.depth < 1) return null;
-  const pos = $head.before(1);
-  return pos;
-}
+// ── Plugin ───────────────────────────────────────────────────────
 
-/**
- * Create the block handles plugin.
- * Shows a ⋮⋮ handle on the left side of hovered blocks.
- */
 export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
-  let lastMouseY = 0;
   let throttleTimer: ReturnType<typeof setTimeout> | null = null;
+  let dragThrottleTimer: ReturnType<typeof setTimeout> | null = null;
 
   return new Plugin<BlockHandlesState>({
     key: blockHandlesKey,
     state: {
       init(): BlockHandlesState {
-        return { hoveredPos: null, menuPos: null };
+        return { hoveredPos: null, menuPos: null, dragSourcePos: null, dropTargetPos: null };
       },
       apply(tr, value): BlockHandlesState {
         const meta = tr.getMeta(blockHandlesKey);
         if (meta) return { ...value, ...meta };
-        if (tr.docChanged && value.hoveredPos !== null) {
-          const mapped = tr.mapping.map(value.hoveredPos);
-          return { ...value, hoveredPos: mapped };
+        if (tr.docChanged) {
+          let next = { ...value };
+          if (value.hoveredPos !== null) {
+            next.hoveredPos = tr.mapping.map(value.hoveredPos);
+          }
+          if (value.dragSourcePos !== null) {
+            next.dragSourcePos = tr.mapping.map(value.dragSourcePos);
+          }
+          if (value.dropTargetPos !== null) {
+            next.dropTargetPos = tr.mapping.map(value.dropTargetPos);
+          }
+          return next;
         }
         return value;
       },
@@ -185,22 +293,96 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
     props: {
       decorations(state) {
         const pluginState = blockHandlesKey.getState(state);
-        if (!pluginState || pluginState.hoveredPos === null) return DecorationSet.empty;
+        if (!pluginState) return DecorationSet.empty;
 
-        const pos = pluginState.hoveredPos;
-        // Validate pos is valid
-        if (pos < 0 || pos >= state.doc.content.size) return DecorationSet.empty;
+        const decos: Decoration[] = [];
 
-        const widget = Decoration.widget(pos, () => {
-          const handle = document.createElement("div");
-          handle.className = "lm-block-handle";
-          handle.textContent = "⋮⋮";
-          handle.setAttribute("draggable", "true");
-          handle.title = "Drag to move, click for options";
-          return handle;
-        }, { side: -1, key: `handle-${pos}` });
+        // Handle gutter for hovered block
+        if (pluginState.hoveredPos !== null) {
+          const pos = pluginState.hoveredPos;
+          if (pos >= 0 && pos < state.doc.content.size) {
+            const widget = Decoration.widget(pos, (view) => {
+              const gutter = document.createElement("div");
+              gutter.className = "lm-block-gutter";
+              gutter.dataset.blockPos = String(pos);
 
-        return DecorationSet.create(state.doc, [widget]);
+              // Plus button
+              const plus = document.createElement("button");
+              plus.className = "lm-block-plus";
+              plus.innerHTML = PLUS_SVG;
+              plus.title = "Add block";
+              plus.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const rect = plus.getBoundingClientRect();
+                // Dispatch custom event for BlockTypePicker (avoids polling)
+                view.dom.dispatchEvent(new CustomEvent("lm-plus-click", {
+                  bubbles: true,
+                  detail: { blockPos: pos, rect },
+                }));
+              });
+
+              // Grip handle
+              const grip = document.createElement("div");
+              grip.className = "lm-block-grip";
+              grip.innerHTML = GRIP_SVG;
+              grip.setAttribute("draggable", "true");
+              grip.dataset.blockPos = String(pos);
+              grip.title = "Drag to move, click for options";
+
+              // Drag start
+              grip.addEventListener("dragstart", (e) => {
+                if (!e.dataTransfer) return;
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", "");
+
+                // Create drag image from the block DOM
+                try {
+                  const blockDOM = view.nodeDOM(pos) as HTMLElement | null;
+                  if (blockDOM) {
+                    const clone = blockDOM.cloneNode(true) as HTMLElement;
+                    clone.style.width = blockDOM.offsetWidth + "px";
+                    clone.style.opacity = "0.6";
+                    clone.style.position = "absolute";
+                    clone.style.top = "-9999px";
+                    clone.style.pointerEvents = "none";
+                    document.body.appendChild(clone);
+                    e.dataTransfer.setDragImage(clone, 0, 0);
+                    requestAnimationFrame(() => clone.remove());
+                  }
+                } catch {
+                  // fall through — default drag image
+                }
+
+                view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
+                  dragSourcePos: pos,
+                  dropTargetPos: null,
+                }));
+              });
+
+              gutter.appendChild(plus);
+              gutter.appendChild(grip);
+              return gutter;
+            }, { side: -1, key: `gutter-${pos}` });
+
+            decos.push(widget);
+          }
+        }
+
+        // Drop indicator
+        if (pluginState.dropTargetPos !== null) {
+          const dropPos = pluginState.dropTargetPos;
+          if (dropPos >= 0 && dropPos <= state.doc.content.size) {
+            const indicator = Decoration.widget(dropPos, () => {
+              const el = document.createElement("div");
+              el.className = "lm-drop-indicator";
+              return el;
+            }, { side: -1, key: `drop-${dropPos}` });
+            decos.push(indicator);
+          }
+        }
+
+        return decos.length > 0 ? DecorationSet.create(state.doc, decos) : DecorationSet.empty;
       },
 
       handleDOMEvents: {
@@ -208,24 +390,105 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
           if (throttleTimer) return false;
           throttleTimer = setTimeout(() => { throttleTimer = null; }, 60);
 
-          lastMouseY = event.clientY;
-          const pos = topLevelBlockAtCoords(view, event.clientY);
           const currentState = blockHandlesKey.getState(view.state);
-
-          // Don't show handle when cursor is inside the block (selection is there)
-          const activePos = getActiveBlockPos(view.state);
+          const pos = topLevelBlockAtCoords(view, event.clientY);
 
           if (pos !== currentState?.hoveredPos) {
-            // Don't show handle on the block the cursor is currently editing
-            const showPos = pos !== null && pos === activePos ? null : pos;
-            view.dispatch(view.state.tr.setMeta(blockHandlesKey, { hoveredPos: showPos }));
+            // Show handles on ALL blocks — no active-block restriction
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, { hoveredPos: pos }));
           }
           return false;
         },
+
         mouseleave(view) {
           const currentState = blockHandlesKey.getState(view.state);
-          if (currentState?.hoveredPos !== null) {
+          if (currentState?.hoveredPos != null && currentState?.dragSourcePos == null) {
             view.dispatch(view.state.tr.setMeta(blockHandlesKey, { hoveredPos: null }));
+          }
+          return false;
+        },
+
+        dragover(view, event) {
+          const currentState = blockHandlesKey.getState(view.state);
+          if (currentState?.dragSourcePos == null) return false;
+
+          event.preventDefault();
+          if (event.dataTransfer) {
+            event.dataTransfer.dropEffect = "move";
+          }
+
+          // Throttle boundary computation — dragover fires every ~16ms
+          if (dragThrottleTimer) return false;
+          dragThrottleTimer = setTimeout(() => { dragThrottleTimer = null; }, 40);
+
+          const dropPos = nearestBlockBoundary(view, event.clientY);
+          if (dropPos !== null && dropPos !== currentState.dropTargetPos) {
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, { dropTargetPos: dropPos }));
+          }
+          return false;
+        },
+
+        drop(view, event) {
+          const currentState = blockHandlesKey.getState(view.state);
+          if (currentState?.dragSourcePos == null || currentState?.dropTargetPos == null) return false;
+
+          event.preventDefault();
+          const sourcePos = currentState.dragSourcePos;
+          const targetPos = currentState.dropTargetPos;
+
+          // Find source block
+          const doc = view.state.doc;
+          const srcIdx = indexOfPos(doc, sourcePos);
+          if (srcIdx < 0) {
+            // Clear drag state on failure
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
+              dragSourcePos: null, dropTargetPos: null, hoveredPos: null,
+            }));
+            return false;
+          }
+
+          const node = doc.child(srcIdx);
+          const srcEnd = sourcePos + node.nodeSize;
+
+          // Skip if dropping at same position — just clear state
+          if (targetPos === sourcePos || targetPos === srcEnd) {
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
+              dragSourcePos: null, dropTargetPos: null, hoveredPos: null,
+            }));
+            return true;
+          }
+
+          // Single transaction: clear drag state + move block
+          const tr = view.state.tr;
+          tr.setMeta(blockHandlesKey, {
+            dragSourcePos: null, dropTargetPos: null, hoveredPos: null,
+          });
+
+          if (targetPos < sourcePos) {
+            // Moving up: insert first, then delete
+            tr.insert(targetPos, node);
+            const newSrcPos = tr.mapping.map(sourcePos);
+            tr.delete(newSrcPos, newSrcPos + node.nodeSize);
+            tr.setSelection(TextSelection.near(tr.doc.resolve(targetPos + 1)));
+          } else {
+            // Moving down: delete first, then insert
+            tr.delete(sourcePos, srcEnd);
+            const mappedTarget = tr.mapping.map(targetPos);
+            tr.insert(mappedTarget, node);
+            tr.setSelection(TextSelection.near(tr.doc.resolve(mappedTarget + 1)));
+          }
+
+          view.dispatch(tr.scrollIntoView());
+          return true;
+        },
+
+        dragend(view) {
+          const currentState = blockHandlesKey.getState(view.state);
+          if (currentState?.dragSourcePos != null || currentState?.dropTargetPos != null) {
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
+              dragSourcePos: null,
+              dropTargetPos: null,
+            }));
           }
           return false;
         },

@@ -168,9 +168,79 @@ export const markdownParser = new MarkdownParser(schema, md, {
   td: { block: "table_cell" },
 });
 
+const BLOCK_ID_RE = /^<!-- id: (\w+) -->\s*$/;
+
 /**
  * Parse a Markdown string into a ProseMirror document node.
+ * Handles `<!-- id: xxx -->` comments by stripping them and
+ * attaching the ID as a `blockId` attr to the following block.
  */
 export function parseMarkdown(content: string) {
-  return markdownParser.parse(content);
+  // Extract blockId comments and strip them from source
+  const pendingIds: string[] = [];
+  const lines = content.split("\n");
+  const cleanLines: string[] = [];
+  const idForLineIndex: Map<number, string> = new Map();
+  let pendingId: string | null = null;
+
+  for (const line of lines) {
+    const match = line.match(BLOCK_ID_RE);
+    if (match) {
+      pendingId = match[1];
+      continue;
+    }
+    if (pendingId !== null) {
+      idForLineIndex.set(cleanLines.length, pendingId);
+      pendingId = null;
+    }
+    cleanLines.push(line);
+  }
+
+  const doc = markdownParser.parse(cleanLines.join("\n"));
+  if (!doc || idForLineIndex.size === 0) return doc;
+
+  // Map line numbers to token positions is complex; instead use a simpler
+  // approach: apply blockIds in document order to the blocks that had them
+  // We parse the cleaned content, then re-parse original to get token map.
+  // Simpler: just set blockIds on the N-th top-level block.
+  // The comments appear before specific blocks, so track which block index.
+  const tokenLines = md.parse(cleanLines.join("\n"), {});
+  let blockIdx = -1;
+  let depth = 0;
+  const blockIdMap = new Map<number, string>();
+
+  for (const tok of tokenLines) {
+    if (depth === 0 && (tok.nesting === 1 || (tok.nesting === 0 && tok.type !== "inline"))) {
+      blockIdx++;
+      if (tok.map && idForLineIndex.has(tok.map[0])) {
+        blockIdMap.set(blockIdx, idForLineIndex.get(tok.map[0])!);
+      }
+    }
+    depth += tok.nesting;
+  }
+
+  if (blockIdMap.size === 0) return doc;
+
+  // Apply blockIds to the parsed document
+  // Count top-level blocks (skip frontmatter at index 0 if present)
+  const hasFrontmatter = doc.firstChild?.type.name === "frontmatter";
+  const fragments: import("prosemirror-model").Node[] = [];
+  let topIdx = 0;
+  doc.forEach((node) => {
+    if (hasFrontmatter && topIdx === 0) {
+      fragments.push(node);
+      topIdx++;
+      return;
+    }
+    const mappedIdx = hasFrontmatter ? topIdx - 1 : topIdx;
+    const id = blockIdMap.get(mappedIdx);
+    if (id && node.type.spec.attrs && "blockId" in node.type.spec.attrs) {
+      fragments.push(node.type.create({ ...node.attrs, blockId: id }, node.content, node.marks));
+    } else {
+      fragments.push(node);
+    }
+    topIdx++;
+  });
+
+  return schema.node("doc", doc.attrs, fragments);
 }

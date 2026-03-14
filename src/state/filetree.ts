@@ -40,10 +40,17 @@ async function loadDirectory(path: string): Promise<FileTreeNode[]> {
 }
 
 async function openFolder(path: string) {
+  setExpandedPaths(new Set<string>());
   setRootPath(path);
   const entries = await loadDirectory(path);
   setRootEntries(entries);
   setSidebarVisible(true);
+
+  // Listen for fs changes before starting watch to avoid gap
+  if (unlisten) unlisten();
+  unlisten = (await listen("fs-change", async () => {
+    await refreshTree();
+  })) as unknown as () => void;
 
   // Start watching
   try {
@@ -51,12 +58,6 @@ async function openFolder(path: string) {
   } catch {
     // Watch is optional
   }
-
-  // Listen for fs changes
-  if (unlisten) unlisten();
-  unlisten = (await listen("fs-change", async () => {
-    await refreshTree();
-  })) as unknown as () => void;
 }
 
 async function closeFolder() {
@@ -144,5 +145,6 @@ export const fileTreeState = {
   refreshTree,
   toggleSidebar() {
     setSidebarVisible(!sidebarVisible());
+    import("./preferences").then(({ preferencesState }) => preferencesState.savePreferences());
   },
 };

@@ -215,6 +215,67 @@ $$
 
 ---
 
+## Tabs
+
+LiveMark supports **multi-tab editing** — open multiple files and switch between them with tabs at the top of the window. Each tab preserves its own editor state (cursor position, scroll, undo history). Close a tab with `Cmd+W` or by clicking the close button on the tab.
+
+---
+
+## Sidebar
+
+Press `Cmd+\` to toggle the **file tree sidebar**. It shows files in the current directory so you can quickly navigate and open them. You can also drag and drop files from the sidebar into the editor area.
+
+---
+
+## Block Handles
+
+Hover over any block (paragraph, heading, list, code block, etc.) to reveal a **grip handle** on the left side. The handle provides:
+
+- **Drag to move** — grab the handle and drag to reorder blocks
+- **Context menu** — right-click (or click) the handle for options: move up/down, duplicate, delete, and copy link to block
+- **Plus button** — click the `+` icon to insert a new block above. A picker lets you choose the block type: paragraph, heading (H1–H3), bullet list, ordered list, task list, blockquote, code block, horizontal rule, or math block
+
+---
+
+## Mermaid Diagrams
+
+Create diagrams using [Mermaid](https://mermaid.js.org/) syntax inside fenced code blocks with the `mermaid` language tag:
+
+```mermaid
+graph TD
+    A[Start] --> B{Decision}
+    B -->|Yes| C[Do something]
+    B -->|No| D[Do something else]
+    C --> E[End]
+    D --> E
+```
+
+Mermaid is lazy-loaded — the library only downloads when you first use a diagram. Supported diagram types include flowcharts, sequence diagrams, class diagrams, state diagrams, and more.
+
+---
+
+## YAML Frontmatter
+
+LiveMark supports **YAML frontmatter** at the top of your document. Wrap metadata in triple dashes:
+
+```
+---
+title: My Document
+date: 2024-01-15
+tags: [markdown, tutorial]
+---
+```
+
+Frontmatter is displayed in a styled card in the editor and preserved when saving. It's commonly used for static site generators, blog posts, and document metadata.
+
+---
+
+## Mind Map
+
+Press `Cmd+T` to open the **mind map view**. It renders your document's heading structure as an interactive diagram using Mermaid, giving you a visual overview of the document outline.
+
+---
+
 ## Keyboard Shortcuts
 
 LiveMark supports a full set of keyboard shortcuts for power users:
@@ -232,9 +293,12 @@ LiveMark supports a full set of keyboard shortcuts for power users:
 | `Cmd+S` | Save file |
 | `Cmd+Shift+S` | Save as |
 | `Cmd+N` | New file |
+| `Cmd+W` | Close tab |
 | `Cmd+F` | Find & replace |
 | `Cmd+Shift+P` | Command palette |
 | `Cmd+/` | Toggle source view |
+| `Cmd+\` | Toggle sidebar |
+| `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
 | `Cmd+Shift+F` | Toggle focus mode |
 | `Cmd+Shift+T` | Cycle theme |
@@ -261,7 +325,8 @@ LiveMark can export your documents in multiple formats:
 - **HTML** — standalone HTML file with embedded styles
 - **PDF** — via the system print dialog
 - **Copy as HTML** — copy rendered HTML to clipboard
-- **Copy as Markdown** — copy raw Markdown to clipboard
+- **Copy as Markdown** — copy raw Markdown to clipboard (selection-aware: copies only the selected range if you have one)
+- **Copy as Beautiful Doc** — styled HTML clipboard copy for pasting into rich editors like Google Docs or Notion
 
 Access export options through the command palette (`Cmd+Shift+P`) or the menu.
 
@@ -316,6 +381,10 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 4. **Paste images** from your clipboard — they auto-save next to your file
 5. **Use the status bar** at the bottom to see word count, line/column, and toggle themes
 6. **Open files from the terminal** with `livemark path/to/file.md`
+7. **Hover block handles** to quickly reorder, duplicate, or delete blocks
+8. **Use the `+` button** on block handles to insert any block type without memorizing syntax
+9. **Open multiple files in tabs** to work on several documents at once
+10. **Toggle the sidebar** with `Cmd+\` for quick file navigation
 
 ---
 

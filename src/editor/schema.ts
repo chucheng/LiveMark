@@ -36,6 +36,7 @@ const nodes: Record<string, NodeSpec> = {
   paragraph: {
     content: "inline*",
     group: "block",
+    attrs: { blockId: { default: null } },
     parseDOM: [{ tag: "p" }],
     toDOM() {
       return ["p", 0];
@@ -64,6 +65,7 @@ const nodes: Record<string, NodeSpec> = {
     content: "block+",
     group: "block",
     defining: true,
+    attrs: { blockId: { default: null } },
     parseDOM: [{ tag: "blockquote" }],
     toDOM() {
       return ["blockquote", 0];
@@ -76,7 +78,7 @@ const nodes: Record<string, NodeSpec> = {
     group: "block",
     code: true,
     defining: true,
-    attrs: { language: { default: "" } },
+    attrs: { language: { default: "" }, blockId: { default: null } },
     parseDOM: [
       {
         tag: "pre",
@@ -86,7 +88,7 @@ const nodes: Record<string, NodeSpec> = {
           const code = el.querySelector("code");
           const className = code?.className || "";
           const match = className.match(/language-(\w+)/);
-          return { language: match ? match[1] : "" };
+          return { language: match ? match[1] : "", blockId: null };
         },
       },
     ],
@@ -106,6 +108,7 @@ const nodes: Record<string, NodeSpec> = {
     group: "block",
     code: true,
     defining: true,
+    attrs: { blockId: { default: null } },
     parseDOM: [
       {
         tag: "div.math-block",
@@ -119,6 +122,7 @@ const nodes: Record<string, NodeSpec> = {
 
   horizontal_rule: {
     group: "block",
+    attrs: { blockId: { default: null } },
     parseDOM: [{ tag: "hr" }],
     toDOM() {
       return ["hr"];
@@ -128,7 +132,7 @@ const nodes: Record<string, NodeSpec> = {
   bullet_list: {
     content: "list_item+",
     group: "block",
-    attrs: { tight: { default: false } },
+    attrs: { tight: { default: false }, blockId: { default: null } },
     parseDOM: [{ tag: "ul" }],
     toDOM(node) {
       return node.attrs.tight
@@ -140,13 +144,13 @@ const nodes: Record<string, NodeSpec> = {
   ordered_list: {
     content: "list_item+",
     group: "block",
-    attrs: { start: { default: 1 }, tight: { default: false } },
+    attrs: { start: { default: 1 }, tight: { default: false }, blockId: { default: null } },
     parseDOM: [
       {
         tag: "ol",
         getAttrs(node) {
           const el = node as HTMLElement;
-          return { start: el.hasAttribute("start") ? +el.getAttribute("start")! : 1 };
+          return { start: el.hasAttribute("start") ? +el.getAttribute("start")! : 1, blockId: null };
         },
       },
     ],
@@ -170,7 +174,7 @@ const nodes: Record<string, NodeSpec> = {
   task_list: {
     content: "task_list_item+",
     group: "block",
-    attrs: { tight: { default: false } },
+    attrs: { tight: { default: false }, blockId: { default: null } },
     parseDOM: [{ tag: "ul.task-list" }],
     toDOM(node) {
       const cls = node.attrs.tight ? "task-list lm-tight" : "task-list";

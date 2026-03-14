@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { createSignal } from "solid-js";
 import { themeState, type Theme } from "./theme";
+import { fileTreeState } from "./filetree";
 
 const [focusMode, setFocusMode] = createSignal(false);
 const [autoSave, setAutoSave] = createSignal(true);
@@ -25,6 +26,7 @@ interface Preferences {
   autoSave?: boolean;
   fontSize?: number;
   contentWidth?: number;
+  sidebarVisible?: boolean;
 }
 
 async function loadPreferences() {
@@ -36,6 +38,9 @@ async function loadPreferences() {
     if (prefs.autoSave !== undefined) setAutoSave(prefs.autoSave);
     if (prefs.fontSize !== undefined) setFontSize(prefs.fontSize);
     if (prefs.contentWidth !== undefined) setContentWidth(prefs.contentWidth);
+    if (prefs.sidebarVisible !== undefined) {
+      fileTreeState.setSidebarVisible(prefs.sidebarVisible);
+    }
   } catch {
     // Use defaults
   }
@@ -53,6 +58,7 @@ function savePreferences() {
       autoSave: autoSave(),
       fontSize: fontSize(),
       contentWidth: contentWidth(),
+      sidebarVisible: fileTreeState.sidebarVisible(),
     };
     try {
       await invoke("write_preferences", { json: JSON.stringify(prefs) });

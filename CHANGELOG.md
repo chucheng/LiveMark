@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.3.11
+
+- **Multi-tab support** — open multiple files in tabs with editor state preservation per tab
+- **Sidebar file tree** — navigate and open files from a sidebar with drag-and-drop
+- **Block handles** — hover any block for a grip handle (drag-to-move, context menu with move/duplicate/delete/copy-link) and a plus button (insert new block by type)
+- **Mermaid diagrams** — fenced code blocks with `mermaid` language render as diagrams (lazy-loaded)
+- **YAML frontmatter** — parse, edit, and serialize YAML frontmatter blocks
+- **Mind map view** — Cmd+T opens document structure as an interactive mind map via Mermaid
+- **Copy as Beautiful Doc** — styled HTML clipboard copy for pasting into rich editors
+- **Selection-aware Copy as Markdown** — copies only selected range as Markdown
+- **Large file lazy rendering** — IntersectionObserver-based viewport rendering for long documents
+- **CI/CD pipeline** — GitHub Actions for CI (cross-platform tests + typecheck) and release (auto-changelog, multi-platform builds)
+
+## v1.3.10
+
+- **CLAUDE.md** — added project guidance file for Claude Code
+- Updated `.gitignore` and `Cargo.lock`
+
+## v1.3.9
+
+- **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset editor font size (12–28px range, persisted)
+- **Scroll sync fix** — improved editor-to-source-view scroll synchronization
+- **Tutorial update** — refreshed docs/tutorial.md with latest features
+
 ## v1.3.8
 
 - **Rust edition 2024** — upgraded from edition 2021 to 2024 (Rust 1.85+)

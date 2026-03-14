@@ -1,5 +1,5 @@
 import { Node } from "prosemirror-model";
-import { EditorView, NodeView } from "prosemirror-view";
+import { EditorView, NodeView, type ViewMutationRecord } from "prosemirror-view";
 import { renderMermaid } from "../mermaid-loader";
 
 /**
@@ -16,6 +16,8 @@ export class MermaidView implements NodeView {
   private renderTimer: ReturnType<typeof setTimeout> | null = null;
   private lastRendered = "";
   private isActive = false;
+  private renderGeneration = 0;
+  private themeObserver: MutationObserver;
 
   constructor(
     private node: Node,
@@ -41,6 +43,18 @@ export class MermaidView implements NodeView {
     this.dom.appendChild(this.sourceContainer);
 
     this.contentDOM = this.sourceContainer;
+
+    // Re-render when theme changes (data-theme attribute on <html>)
+    this.themeObserver = new MutationObserver(() => {
+      this.lastRendered = ""; // Force re-render with new theme colors
+      if (!this.isActive) {
+        this.scheduleRender();
+      }
+    });
+    this.themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
 
     this.scheduleRender();
   }
@@ -89,21 +103,31 @@ export class MermaidView implements NodeView {
     }
     if (source === this.lastRendered) return;
 
+    const gen = ++this.renderGeneration;
     const result = await renderMermaid(source);
+    // Discard stale results from superseded renders
+    if (gen !== this.renderGeneration) return;
+
     if ("svg" in result) {
       this.renderContainer.innerHTML = result.svg;
       this.lastRendered = source;
     } else {
-      this.renderContainer.innerHTML = `<div class="lm-mermaid-error">${result.error}</div>`;
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "lm-mermaid-error";
+      errorDiv.textContent = result.error;
+      this.renderContainer.innerHTML = "";
+      this.renderContainer.appendChild(errorDiv);
       this.lastRendered = "";
     }
   }
 
-  ignoreMutation(mutation: MutationRecord): boolean {
+  ignoreMutation(mutation: ViewMutationRecord): boolean {
+    if (mutation.type === "selection") return false;
     return !this.contentDOM.contains(mutation.target);
   }
 
   destroy() {
     if (this.renderTimer) clearTimeout(this.renderTimer);
+    this.themeObserver.disconnect();
   }
 }

@@ -2,6 +2,15 @@ import { MarkdownSerializer, MarkdownSerializerState } from "prosemirror-markdow
 import { Node, Mark } from "prosemirror-model";
 
 /**
+ * Helper: write a `<!-- id: blockId -->` comment before a block if it has a blockId attr.
+ */
+function writeBlockId(state: MarkdownSerializerState, node: Node) {
+  if (node.attrs.blockId) {
+    state.write(`<!-- id: ${node.attrs.blockId} -->\n`);
+  }
+}
+
+/**
  * Serialize a ProseMirror document back to a Markdown string.
  *
  * Goal: round-trip fidelity. Opening a file and saving without edits
@@ -18,10 +27,12 @@ export const markdownSerializer = new MarkdownSerializer(
     },
 
     blockquote(state, node) {
+      writeBlockId(state, node);
       state.wrapBlock("> ", null, node, () => state.renderContent(node));
     },
 
     code_block(state, node) {
+      writeBlockId(state, node);
       const lang = node.attrs.language || "";
       state.write(`\`\`\`${lang}\n`);
       state.text(node.textContent, false);
@@ -31,6 +42,7 @@ export const markdownSerializer = new MarkdownSerializer(
     },
 
     math_block(state, node) {
+      writeBlockId(state, node);
       state.write("$$\n");
       state.text(node.textContent, false);
       state.ensureNewLine();
@@ -133,6 +145,7 @@ export const markdownSerializer = new MarkdownSerializer(
     },
 
     paragraph(state, node) {
+      writeBlockId(state, node);
       state.renderInline(node);
       state.closeBlock(node);
     },

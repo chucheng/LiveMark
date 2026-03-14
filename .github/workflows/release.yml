@@ -9,8 +9,36 @@ permissions:
   contents: write
 
 jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog from commits
+        id: changelog
+        run: |
+          # Find the previous tag
+          PREV_TAG=$(git tag --sort=-creatordate | head -2 | tail -1)
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV_TAG}..HEAD"
+          fi
+          # Generate changelog body
+          CHANGELOG=$(git log "$RANGE" --format="- %s" --no-merges | head -50)
+          # Export as multiline output
+          echo "changelog<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGELOG" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
   release:
     name: Release (${{ matrix.platform }})
+    needs: changelog
     strategy:
       fail-fast: false
       matrix:
@@ -64,7 +92,7 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "LiveMark ${{ github.ref_name }}"
-          releaseBody: ""
+          releaseBody: ${{ needs.changelog.outputs.changelog }}
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.rust-targets }}
