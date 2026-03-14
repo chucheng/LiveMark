@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.3
+
+- **Show Tutorial command** — open the bundled tutorial in a new tab via the command palette (Cmd+Shift+P → "Show Tutorial")
+
 ## v2.1.2
 
 - **macOS close fix** — clicking the window close button (X) now properly quits the app instead of leaving it running in the dock with no way to reopen

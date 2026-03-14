@@ -247,6 +247,26 @@ export function registerAllCommands() {
     category: "View",
     execute: () => { uiState.setAboutOpen(true); },
   });
+  registerCommand({
+    id: "help.tutorial",
+    label: "Show Tutorial",
+    category: "View",
+    execute: async () => {
+      const tutorialMd = (await import("../../docs/tutorial.md?raw")).default;
+      const { getEditorRef } = await import("./file-commands");
+      const { tabsState } = await import("../state/tabs");
+      const editor = getEditorRef();
+      if (!editor) return;
+      // Snapshot current tab
+      const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+      tabsState.snapshotActiveTab(editor.view, scroller);
+      // Open tutorial in a new tab
+      const tab = tabsState.createTab();
+      if (!tab) { uiState.showStatus("Too many tabs open"); return; }
+      editor.setMarkdown(tutorialMd);
+      tabsState.updateTab(tab.id, { fileName: "Tutorial" });
+    },
+  });
 
   // Chord commands (Cmd+J prefix)
   registerCommand({
