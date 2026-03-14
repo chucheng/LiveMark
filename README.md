@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.8.2-blue)
+![Version](https://img.shields.io/badge/version-2.8.3-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -252,6 +252,7 @@ src-tauri/
 | v2.8.0 | Feature cleanup — removed mind map, review panel, block handles, block transform, copy as beautiful doc, sentence focus; Cmd+T now toggles focus mode (off/block); simplified focus mode to 2-stage |
 | v2.8.1 | Auto-save safety — off by default with confirmation dialog on enable, auto-disables after 3 consecutive failures; tab dirty indicator changed to `*`; bundled JetBrains Mono font |
 | v2.8.2 | Warm paper light theme — off-white canvas with warm tones for reduced eye strain; smart theme toggle (auto → opposite, explicit → auto); persist theme on status bar click |
+| v2.8.3 | macOS file association fix — double-clicking .md files in Finder now opens them in LiveMark instead of launching an empty window |
 
 ## Documentation
 

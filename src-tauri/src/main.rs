@@ -85,15 +85,35 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while running LiveMark");
 
-    app.run(|_app_handle, event| {
-        // On macOS, quit when the main window is closed (instead of staying in dock)
-        #[cfg(target_os = "macos")]
-        if let tauri::RunEvent::WindowEvent {
-            event: tauri::WindowEvent::Destroyed,
-            ..
-        } = event
-        {
-            _app_handle.exit(0);
+    app.run(|app_handle, event| {
+        match event {
+            // macOS: when a file is double-clicked in Finder (or opened via "Open With"),
+            // the OS sends an open-file event instead of CLI args.
+            tauri::RunEvent::Opened { urls } => {
+                let files: Vec<String> = urls
+                    .iter()
+                    .filter_map(|url| {
+                        // file:// URLs → path
+                        if url.scheme() == "file" {
+                            url.to_file_path().ok().map(|p| p.to_string_lossy().to_string())
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                if !files.is_empty() {
+                    let _ = app_handle.emit("open-files", files);
+                }
+            }
+            // On macOS, quit when the main window is closed (instead of staying in dock)
+            #[cfg(target_os = "macos")]
+            tauri::RunEvent::WindowEvent {
+                event: tauri::WindowEvent::Destroyed,
+                ..
+            } => {
+                app_handle.exit(0);
+            }
+            _ => {}
         }
     });
 }
