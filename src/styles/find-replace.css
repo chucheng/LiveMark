@@ -34,7 +34,8 @@
 }
 
 .lm-find-input:focus {
-  border-color: var(--lm-accent);
+  border-color: var(--lm-focus-ring);
+  box-shadow: var(--lm-focus-ring-shadow);
 }
 
 .lm-find-info {
@@ -81,16 +82,16 @@
 
 .lm-find-toggle-active {
   background: var(--lm-accent);
-  color: white;
+  color: var(--lm-text-on-emphasis);
   border-color: var(--lm-accent);
 }
 
 .lm-find-match {
-  background: rgba(255, 200, 0, 0.25);
+  background: var(--lm-find-match);
   border-radius: 2px;
 }
 
 .lm-find-current {
-  background: rgba(255, 140, 0, 0.4);
+  background: var(--lm-find-current);
   border-radius: 2px;
 }

@@ -38,6 +38,11 @@
   background: var(--lm-hover);
 }
 
+.lm-statusbar-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus-ring-shadow);
+}
+
 .lm-statusbar-autosave {
   opacity: 1;
   transition: opacity 0.3s ease;

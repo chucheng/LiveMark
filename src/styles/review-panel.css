@@ -91,32 +91,17 @@
 
 .lm-review-count--issue {
   color: var(--lm-severity-issue);
-  background: rgba(192, 96, 88, 0.1);
+  background: var(--lm-severity-issue-muted);
 }
 
 .lm-review-count--warning {
   color: var(--lm-severity-warning);
-  background: rgba(176, 145, 58, 0.1);
+  background: var(--lm-severity-warning-muted);
 }
 
 .lm-review-count--suggestion {
   color: var(--lm-severity-suggestion);
-  background: rgba(106, 143, 184, 0.1);
-}
-
-[data-theme="dark"] .lm-review-count--issue {
-  color: var(--lm-severity-issue);
-  background: rgba(212, 138, 130, 0.1);
-}
-
-[data-theme="dark"] .lm-review-count--warning {
-  color: var(--lm-severity-warning);
-  background: rgba(200, 168, 92, 0.1);
-}
-
-[data-theme="dark"] .lm-review-count--suggestion {
-  color: var(--lm-severity-suggestion);
-  background: rgba(126, 170, 208, 0.1);
+  background: var(--lm-severity-suggestion-muted);
 }
 
 /* ── Body / list ── */

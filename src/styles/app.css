@@ -64,6 +64,10 @@
   overflow: hidden;
 }
 
+.lm-main-area > .lm-editor-wrapper {
+  min-width: 300px;
+}
+
 /* In fullscreen, add top padding so content isn't hidden behind the overlay chrome */
 .lm-fullscreen .lm-main-area {
   padding-top: 72px;

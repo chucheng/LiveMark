@@ -3,7 +3,7 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--lm-overlay-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +13,7 @@
   background: var(--lm-bg);
   border: 1px solid var(--lm-border);
   border-radius: var(--lm-radius-lg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--lm-shadow-lg);
   width: 80vw;
   max-width: 900px;
   height: 70vh;

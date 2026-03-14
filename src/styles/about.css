@@ -1,7 +1,7 @@
 .lm-about-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--lm-overlay-backdrop);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
@@ -49,16 +49,21 @@
 
 .lm-about-close {
   background: var(--lm-accent);
-  color: white;
+  color: var(--lm-text-on-emphasis);
   border: none;
   border-radius: var(--lm-radius-md);
   padding: 7px 28px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: opacity var(--lm-transition-fast);
+  transition: background var(--lm-transition-fast);
 }
 
 .lm-about-close:hover {
-  opacity: 0.88;
+  background: var(--lm-accent-emphasis);
+}
+
+.lm-about-close:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus-ring-shadow);
 }

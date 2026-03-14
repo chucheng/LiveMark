@@ -23,6 +23,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+:focus-visible {
+  outline: 2px solid var(--lm-focus-ring);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 #app {
   height: 100%;
   display: flex;
