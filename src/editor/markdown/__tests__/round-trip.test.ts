@@ -226,6 +226,40 @@ describe("Math round-trip", () => {
   });
 });
 
+describe("Callout round-trip", () => {
+  it("NOTE callout", () => {
+    expectStructuralRoundTrip("> [!NOTE]\n> This is a note.");
+  });
+
+  it("TIP callout", () => {
+    expectStructuralRoundTrip("> [!TIP]\n> Helpful tip here.");
+  });
+
+  it("WARNING callout", () => {
+    expectStructuralRoundTrip("> [!WARNING]\n> Be careful!");
+  });
+
+  it("CAUTION callout", () => {
+    expectStructuralRoundTrip("> [!CAUTION]\n> This is dangerous.");
+  });
+
+  it("IMPORTANT callout", () => {
+    expectStructuralRoundTrip("> [!IMPORTANT]\n> Don't miss this.");
+  });
+
+  it("callout with multiple paragraphs", () => {
+    expectStructuralRoundTrip("> [!NOTE]\n> First paragraph.\n>\n> Second paragraph.");
+  });
+
+  it("regular blockquote is not a callout", () => {
+    const doc = parseMarkdown("> Regular quote.");
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const bq = doc.firstChild;
+    expect(bq?.type.name).toBe("blockquote");
+    expect(bq?.attrs.calloutType).toBeNull();
+  });
+});
+
 describe("Markdown round-trip: structural fidelity", () => {
   it("complex document preserves structure through double round-trip", () => {
     const md = `## Heading

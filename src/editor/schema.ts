@@ -65,7 +65,7 @@ const nodes: Record<string, NodeSpec> = {
     content: "block+",
     group: "block",
     defining: true,
-    attrs: { blockId: { default: null } },
+    attrs: { blockId: { default: null }, calloutType: { default: null } },
     parseDOM: [{ tag: "blockquote" }],
     toDOM() {
       return ["blockquote", 0];

@@ -28,7 +28,14 @@ export const markdownSerializer = new MarkdownSerializer(
 
     blockquote(state, node) {
       writeBlockId(state, node);
-      state.wrapBlock("> ", null, node, () => state.renderContent(node));
+      if (node.attrs.calloutType) {
+        state.wrapBlock("> ", null, node, () => {
+          state.write(`[!${node.attrs.calloutType}]\n`);
+          state.renderContent(node);
+        });
+      } else {
+        state.wrapBlock("> ", null, node, () => state.renderContent(node));
+      }
     },
 
     code_block(state, node) {

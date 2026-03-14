@@ -166,6 +166,54 @@
   color: var(--lm-text-muted);
 }
 
+/* Hide left border when editing — the > hint replaces it */
+.lm-blockquote-wrapper.lm-active blockquote {
+  border-left-color: transparent;
+}
+
+/* --- Callout / Admonition --- */
+.lm-callout {
+  border-radius: var(--lm-radius-md);
+  padding: 8px 16px;
+  margin: 0.5em 0;
+}
+
+.lm-callout .lm-blockquote-hint {
+  display: none;
+}
+
+.lm-callout blockquote {
+  border-left: 3px solid;
+  color: var(--lm-text);
+}
+
+.lm-callout-NOTE blockquote      { border-color: #4493f8; background: rgba(68,147,248,0.06); }
+.lm-callout-TIP blockquote       { border-color: #3fb950; background: rgba(63,185,80,0.06); }
+.lm-callout-WARNING blockquote   { border-color: #d29922; background: rgba(210,153,34,0.06); }
+.lm-callout-CAUTION blockquote   { border-color: #f85149; background: rgba(248,81,73,0.06); }
+.lm-callout-IMPORTANT blockquote { border-color: #a371f7; background: rgba(163,113,247,0.06); }
+
+.lm-callout-NOTE .lm-callout-badge      { color: #4493f8; }
+.lm-callout-TIP .lm-callout-badge       { color: #3fb950; }
+.lm-callout-WARNING .lm-callout-badge   { color: #d29922; }
+.lm-callout-CAUTION .lm-callout-badge   { color: #f85149; }
+.lm-callout-IMPORTANT .lm-callout-badge { color: #a371f7; }
+
+.lm-callout-badge {
+  font-size: 0.85em;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  user-select: none;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .lm-callout-NOTE blockquote      { background: rgba(68,147,248,0.10); }
+[data-theme="dark"] .lm-callout-TIP blockquote       { background: rgba(63,185,80,0.10); }
+[data-theme="dark"] .lm-callout-WARNING blockquote   { background: rgba(210,153,34,0.10); }
+[data-theme="dark"] .lm-callout-CAUTION blockquote   { background: rgba(248,81,73,0.10); }
+[data-theme="dark"] .lm-callout-IMPORTANT blockquote { background: rgba(163,113,247,0.10); }
+
 /* --- Horizontal Rule NodeView --- */
 .lm-hr-wrapper {
   margin: 1.5em 0;

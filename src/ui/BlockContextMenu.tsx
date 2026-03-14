@@ -1,6 +1,10 @@
 import { createSignal, createEffect, onMount, onCleanup, Show } from "solid-js";
 import type { EditorView } from "prosemirror-view";
-import { moveBlockUp, moveBlockDown, duplicateBlock, deleteBlock, getBlockAnchor } from "../editor/plugins/block-handles";
+import {
+  moveBlockUp, moveBlockDown, duplicateBlock, deleteBlock, getBlockAnchor,
+  getTransformTargets, getTargetLabel, transformBlock,
+  type BlockTransformTarget,
+} from "../editor/plugins/block-handles";
 import { toggleHeadingCollapse, isHeadingCollapsed } from "../editor/plugins/heading-collapse";
 import { TextSelection } from "prosemirror-state";
 import { clampMenuPosition } from "../utils/viewport";
@@ -15,11 +19,13 @@ interface MenuState {
   blockPos: number;
   isHeading: boolean;
   isCollapsed: boolean;
+  transformTargets: BlockTransformTarget[];
 }
 
 export default function BlockContextMenu(props: BlockContextMenuProps) {
   const [menu, setMenu] = createSignal<MenuState | null>(null);
   const [clamped, setClamped] = createSignal<{ x: number; y: number } | null>(null);
+  const [turnIntoOpen, setTurnIntoOpen] = createSignal(false);
   let menuRef: HTMLDivElement | undefined;
 
   function handleClick(e: MouseEvent) {
@@ -41,13 +47,16 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
       const node = view.state.doc.nodeAt(blockPos);
       const isHeading = node?.type.name === "heading";
       const isCollapsed = isHeading && isHeadingCollapsed(view.state, blockPos);
+      const transformTargets = getTransformTargets(view.state, blockPos);
 
+      setTurnIntoOpen(false);
       setMenu({
         x: rect.left,
         y: rect.bottom + 4,
         blockPos,
         isHeading,
         isCollapsed,
+        transformTargets,
       });
     }
   }
@@ -119,6 +128,16 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
     view.focus();
   }
 
+  function handleTransform(target: BlockTransformTarget) {
+    const view = props.view();
+    if (!view) return;
+    const m = menu();
+    if (!m) return;
+    transformBlock(view, m.blockPos, target);
+    setMenu(null);
+    view.focus();
+  }
+
   function handleToggleCollapse() {
     const view = props.view();
     if (!view) return;
@@ -174,6 +193,30 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
           <button class="lm-bcm-item" role="menuitem" onClick={handleMoveDown}>Move Down</button>
           <button class="lm-bcm-item" role="menuitem" onClick={handleDuplicate}>Duplicate</button>
           <button class="lm-bcm-item" role="menuitem" onClick={handleDelete}>Delete</button>
+          <Show when={m().transformTargets.length > 0}>
+            <div class="lm-bcm-separator" />
+            <div
+              class="lm-bcm-item lm-bcm-submenu-trigger"
+              role="menuitem"
+              onMouseEnter={() => setTurnIntoOpen(true)}
+              onMouseLeave={() => setTurnIntoOpen(false)}
+            >
+              Turn Into ▸
+              <Show when={turnIntoOpen()}>
+                <div class="lm-bcm-submenu" role="menu">
+                  {m().transformTargets.map((target) => (
+                    <button
+                      class="lm-bcm-item"
+                      role="menuitem"
+                      onClick={() => handleTransform(target)}
+                    >
+                      {getTargetLabel(target)}
+                    </button>
+                  ))}
+                </div>
+              </Show>
+            </div>
+          </Show>
           <div class="lm-bcm-separator" />
           <button class="lm-bcm-item" role="menuitem" onClick={handleCopyLink}>Copy Link</button>
           <Show when={m().isHeading}>

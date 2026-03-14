@@ -1,5 +1,6 @@
 import { Plugin, PluginKey, EditorState } from "prosemirror-state";
-import { Decoration, DecorationSet } from "prosemirror-view";
+import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
+import { createEffect } from "solid-js";
 import { preferencesState } from "../../state/preferences";
 
 const sentenceFocusKey = new PluginKey("sentenceFocus");
@@ -117,7 +118,7 @@ export function sentenceFocusPlugin(): Plugin {
         return buildSentenceDecorations(state);
       },
       apply(tr, _prev, _oldState, newState) {
-        if (!tr.selectionSet && !tr.docChanged) return _prev;
+        // Always rebuild — the SolidJS signal may have changed without a doc/selection change
         return buildSentenceDecorations(newState);
       },
     },
@@ -125,6 +126,16 @@ export function sentenceFocusPlugin(): Plugin {
       decorations(state) {
         return sentenceFocusKey.getState(state);
       },
+    },
+    view(editorView: EditorView) {
+      // React to focus mode signal changes — dispatch a no-op transaction
+      // so the plugin state rebuilds decorations
+      createEffect(() => {
+        preferencesState.focusMode(); // track the signal
+        const { state } = editorView;
+        editorView.dispatch(state.tr);
+      });
+      return {};
     },
   });
 }

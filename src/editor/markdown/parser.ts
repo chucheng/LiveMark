@@ -6,6 +6,7 @@ import { taskListPlugin } from "./task-list-plugin";
 import { mathPlugin } from "./math-plugin";
 import { tightListPlugin } from "./tight-list-plugin";
 import { frontmatterPlugin } from "./frontmatter-plugin";
+import { calloutPlugin } from "./callout-plugin";
 
 export const md = MarkdownIt("commonmark", { html: false })
   .enable("strikethrough")
@@ -14,6 +15,7 @@ export const md = MarkdownIt("commonmark", { html: false })
   .use(taskListPlugin)
   .use(mathPlugin)
   .use(tightListPlugin)
+  .use(calloutPlugin)
   .use(stripTheadTbody)
   .use(trimCodeBlockTrailingNewline);
 
@@ -82,7 +84,10 @@ function stripTheadTbody(md: MarkdownItType): void {
  * for mapping tokens to the ProseMirror schema.
  */
 const markdownParser = new MarkdownParser(schema, md, {
-  blockquote: { block: "blockquote" },
+  blockquote: {
+    block: "blockquote",
+    getAttrs: (tok) => ({ calloutType: tok.attrGet("calloutType") || null }),
+  },
   paragraph: { block: "paragraph" },
   list_item: { block: "list_item" },
   bullet_list: {

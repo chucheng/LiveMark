@@ -184,6 +184,27 @@ body.lm-dragging * {
   margin: 4px 0;
 }
 
+/* ── Turn Into Submenu ──────────────────────────────────────────── */
+
+.lm-bcm-submenu-trigger {
+  position: relative;
+  cursor: default;
+}
+
+.lm-bcm-submenu {
+  position: absolute;
+  left: 100%;
+  top: -4px;
+  min-width: 140px;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  box-shadow: var(--lm-shadow-md);
+  padding: 4px;
+  font-size: 12.5px;
+  z-index: 1;
+}
+
 /* ── Block Type Picker ───────────────────────────────────────── */
 
 .lm-block-type-picker {
