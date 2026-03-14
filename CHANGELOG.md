@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.2
+
+- **Remove two-column layout** — removed the two-column layout mode for simplicity (setting, preference, CSS, and settings UI toggle all removed)
+
 ## v2.1.4
 
 - **CJK heading fix** — increase heading line-height from 1.3 to 1.5 to prevent Chinese/Japanese/Korean characters from being clipped
@@ -25,7 +29,7 @@
 
 ## v1.4.0
 
-- **Settings panel** — editor customization with font family, content max-width, line height, paragraph spacing, and two-column layout toggle
+- **Settings panel** — editor customization with font family, content max-width, line height, paragraph spacing
 - **Saveable presets** — save, load, and delete editor template presets
 - **Custom keyboard shortcuts** — reassign shortcuts for any command with conflict detection (OS-level and app-level)
 - **Chord keybindings** — Cmd+J prefix for two-keystroke shortcuts

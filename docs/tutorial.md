@@ -418,7 +418,6 @@ Press `Cmd+,` to open the **settings panel**. It gives you fine-grained control 
 - **Content width** — how wide the editing area is (in pixels)
 - **Paragraph spacing** — space between blocks (6 presets from compact to spacious)
 - **Editor padding** — horizontal and vertical padding around the editor area
-- **Two-column layout** — toggle a dual-pane view
 
 ### Presets
 

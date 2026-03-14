@@ -16,7 +16,7 @@ Future possibilities for LiveMark. These are **not commitments** — they are id
 - Would require designing a stable API surface and plugin distribution mechanism
 
 ### Editor Template Expansion
-Settings panel, font size zoom, font family, content max-width, line height, paragraph spacing, two-column layout, and saveable presets are shipped. Remaining:
+Settings panel, font size zoom, font family, content max-width, line height, paragraph spacing, and saveable presets are shipped. Remaining:
 - **Content margins** — adjust left/right padding independently from content width (currently fixed ~48px)
 
 ### Spell Checking

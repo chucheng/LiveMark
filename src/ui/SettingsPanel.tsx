@@ -365,18 +365,6 @@ export default function SettingsPanel() {
               format={(v) => `${v}px`}
             />
 
-            {/* Two-Column */}
-            <div class="lm-settings-row">
-              <span class="lm-settings-label">Two-Column Layout</span>
-              <label class="lm-settings-toggle">
-                <input
-                  type="checkbox"
-                  checked={preferencesState.twoColumn()}
-                  onChange={(e) => preferencesState.setTwoColumn(e.currentTarget.checked)}
-                />
-                <span class="lm-settings-toggle-track" />
-              </label>
-            </div>
           </section>
 
           {/* ── Section: Presets ── */}

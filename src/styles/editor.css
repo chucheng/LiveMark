@@ -167,9 +167,3 @@
   padding-top: 45vh;
   padding-bottom: 45vh;
 }
-
-/* Two-column layout */
-.lm-two-column .ProseMirror {
-  column-count: 2;
-  column-gap: 2em;
-}

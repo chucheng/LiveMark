@@ -287,7 +287,6 @@ interface Preferences {
   contentMaxWidth: number;      // px, 500-1200, 0 = full width
   lineHeight: number;           // 1.2-2.4
   paragraphSpacing: number;     // em, 0.5-2.0
-  twoColumnLayout: boolean;
   // New — custom shortcuts
   customShortcuts: Record<string, string>;  // commandId → shortcut string
   // New — sidebar

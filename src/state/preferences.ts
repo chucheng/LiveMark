@@ -15,7 +15,6 @@ const [lineHeight, setLineHeight] = createSignal(1.7);
 const [paragraphSpacing, setParagraphSpacing] = createSignal("0.8em");
 const [editorPaddingX, setEditorPaddingX] = createSignal(48);
 const [editorPaddingY, setEditorPaddingY] = createSignal(32);
-const [twoColumn, setTwoColumn] = createSignal(false);
 const [selectedPreset, setSelectedPreset] = createSignal("default");
 const [customShortcuts, setCustomShortcuts] = createSignal<Record<string, string>>({});
 const [hasSeenWelcome, setHasSeenWelcome] = createSignal(false);
@@ -71,7 +70,6 @@ interface Preferences {
   paragraphSpacing?: string;
   editorPaddingX?: number;
   editorPaddingY?: number;
-  twoColumn?: boolean;
   selectedPreset?: string;
   userPresets?: UserPreset[];
   customShortcuts?: Record<string, string>;
@@ -102,7 +100,6 @@ async function loadPreferences() {
     if (prefs.paragraphSpacing !== undefined) setParagraphSpacing(prefs.paragraphSpacing);
     if (prefs.editorPaddingX !== undefined) setEditorPaddingX(prefs.editorPaddingX);
     if (prefs.editorPaddingY !== undefined) setEditorPaddingY(prefs.editorPaddingY);
-    if (prefs.twoColumn !== undefined) setTwoColumn(prefs.twoColumn);
     if (prefs.selectedPreset !== undefined) setSelectedPreset(prefs.selectedPreset);
     if (prefs.userPresets !== undefined) setUserPresets(prefs.userPresets);
     if (prefs.customShortcuts !== undefined) setCustomShortcuts(prefs.customShortcuts);
@@ -132,7 +129,6 @@ function savePreferences() {
       paragraphSpacing: paragraphSpacing(),
       editorPaddingX: editorPaddingX(),
       editorPaddingY: editorPaddingY(),
-      twoColumn: twoColumn(),
       selectedPreset: selectedPreset(),
       userPresets: userPresets(),
       customShortcuts: customShortcuts(),
@@ -304,15 +300,6 @@ export const preferencesState = {
   },
   decreaseEditorPaddingY() {
     setEditorPaddingY(Math.max(editorPaddingY() - PADDING_STEP, PADDING_MIN));
-    savePreferences();
-  },
-  twoColumn,
-  setTwoColumn(value: boolean) {
-    setTwoColumn(value);
-    savePreferences();
-  },
-  toggleTwoColumn() {
-    setTwoColumn(!twoColumn());
     savePreferences();
   },
   // Font size setters that mark preset as custom

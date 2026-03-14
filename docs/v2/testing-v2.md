@@ -231,7 +231,6 @@ Visual and interaction tests that resist automation:
 | ET-02 | Happy path | Adjust content margins → editor padding changes live | e2e | P0 |
 | ET-03 | Happy path | Adjust max-width → writing column resizes live | e2e | P0 |
 | ET-04 | Happy path | Adjust line height → text spacing changes live | e2e | P0 |
-| ET-05 | Happy path | Toggle two-column layout → content reflows to two columns | e2e | P1 |
 | ET-06 | Persistence | Settings persisted and restored on next launch | unit | P0 |
 | ET-07 | Presets | Save preset → appears in preset list | unit | P1 |
 | ET-08 | Presets | Load preset → all settings apply | unit | P1 |
