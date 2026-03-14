@@ -505,6 +505,60 @@
   background: rgba(248, 81, 73, 0.1);
 }
 
+/* --- Link Popover --- */
+.lm-link-popover {
+  position: fixed;
+  z-index: var(--z-popover);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  box-shadow: var(--lm-shadow);
+  font-size: 0.8em;
+  max-width: 480px;
+  white-space: nowrap;
+}
+
+.lm-link-popover-url {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--lm-font-mono);
+  color: var(--lm-text-secondary);
+  font-size: 0.92em;
+}
+
+.lm-link-popover-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--lm-border-subtle);
+  flex-shrink: 0;
+}
+
+.lm-link-popover-btn {
+  padding: 2px 8px;
+  border: none;
+  border-radius: var(--lm-radius-sm);
+  background: transparent;
+  color: var(--lm-text);
+  cursor: pointer;
+  font-size: 1em;
+  flex-shrink: 0;
+}
+
+.lm-link-popover-btn:hover {
+  background: var(--lm-hover);
+}
+
+.lm-link-popover-btn-danger:hover {
+  color: var(--lm-severity-issue, #f85149);
+  background: rgba(248, 81, 73, 0.1);
+}
+
 /* --- Code Block Syntax Highlighting --- */
 .ProseMirror .lm-code-block-wrapper .lm-code-highlight {
   position: absolute;

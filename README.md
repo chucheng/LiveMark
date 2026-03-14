@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.3.1-blue)
+![Version](https://img.shields.io/badge/version-2.4.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -26,6 +26,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Task list checkboxes** — clickable checkboxes that toggle state
 - **Image preview** — inline rendering, drag-and-drop or paste to insert, HTML `<img>` width preservation
 - **Block handles** — hover any block for drag-to-move, context menu (move/duplicate/delete/copy link), and insert-new-block picker
+- **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
 - **Clickable links** — Cmd/Ctrl+click opens in default browser
 - **Find & replace** — Cmd+F, regex and case-sensitive toggles, replace all
 - **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts (`# `, `> `, `- [ ] `), undo/redo
@@ -183,6 +184,7 @@ src/
       find-replace.ts     — Search decorations + match navigation
       placeholder.ts      — Empty doc placeholder
       link-click.ts       — Cmd+click opens links
+      link-popover.ts     — Link popover (Open, Copy, Edit, Unlink)
       image-drop-paste.ts — Image drag-drop/paste handler
       inline-decorations.ts — Inline mark decorations
       lazy-render.ts      — IntersectionObserver-based lazy rendering
@@ -278,6 +280,7 @@ src-tauri/
 | v2.2.2 | Remove two-column layout mode for simplicity |
 | v2.3.0 | Document outline — sidebar tab with heading tree, active heading tracking, click-to-navigate (Cmd+Shift+O) |
 | v2.3.1 | Add DOCX to welcome.md export list |
+| v2.4.0 | Link popover — click rendered links for compact URL preview with Open, Copy, Edit, Unlink actions |
 
 ## Documentation
 
