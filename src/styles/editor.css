@@ -146,6 +146,28 @@
   opacity: 1;
 }
 
+/* Sentence focus mode */
+.lm-focus-sentence .ProseMirror > * {
+  opacity: 0.25;
+  transition: opacity 250ms ease;
+}
+.lm-focus-sentence .ProseMirror > .lm-has-active-sentence {
+  opacity: 1;
+}
+.lm-focus-sentence .lm-has-active-sentence {
+  color: var(--lm-text-muted);
+}
+.lm-focus-sentence .lm-sentence-active {
+  color: var(--lm-text) !important;
+  opacity: 1 !important;
+}
+
+/* Typewriter mode — keep cursor vertically centered */
+.lm-typewriter-mode .ProseMirror {
+  padding-top: 45vh;
+  padding-bottom: 45vh;
+}
+
 /* Two-column layout */
 .lm-two-column .ProseMirror {
   column-count: 2;

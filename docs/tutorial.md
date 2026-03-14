@@ -368,7 +368,7 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 | `Cmd+W` | Close tab |
 | `Cmd+F` | Find & replace |
 | `Cmd+/` | Toggle source view |
-| `Cmd+\\` | Toggle sidebar |
+| `Cmd+\\\\` | Toggle sidebar |
 | `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
 | `Cmd+Shift+F` | Toggle focus mode |

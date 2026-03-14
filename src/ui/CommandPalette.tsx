@@ -83,6 +83,10 @@ export default function CommandPalette() {
           placeholder="Type a command…"
           value={query()}
           onInput={(e) => setQuery(e.currentTarget.value)}
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck={false}
           role="combobox"
           aria-expanded="true"
           aria-controls="lm-palette-listbox"

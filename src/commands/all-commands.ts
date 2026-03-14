@@ -125,9 +125,15 @@ export function registerAllCommands() {
   registerCommand({
     id: "view.focusMode",
     label: "Toggle Focus Mode",
-    shortcut: "Cmd+Shift+F",
+    shortcut: "Ctrl+J F",
     category: "View",
     execute: () => preferencesState.toggleFocusMode(),
+  });
+  registerCommand({
+    id: "view.typewriterMode",
+    label: "Toggle Typewriter Mode",
+    category: "View",
+    execute: () => preferencesState.toggleTypewriterMode(),
   });
   registerCommand({
     id: "view.commandPalette",

@@ -705,7 +705,9 @@ export default function App() {
         <div
           class="lm-editor-wrapper"
           classList={{
-            "lm-focus-mode": preferencesState.focusMode(),
+            "lm-focus-mode": preferencesState.focusMode() === "block",
+            "lm-focus-sentence": preferencesState.focusMode() === "sentence",
+            "lm-typewriter-mode": preferencesState.typewriterMode(),
             "lm-hidden": uiState.isSourceView(),
             "lm-two-column": preferencesState.twoColumn(),
           }}

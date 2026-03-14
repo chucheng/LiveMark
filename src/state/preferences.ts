@@ -3,7 +3,9 @@ import { createSignal } from "solid-js";
 import { themeState, type Theme } from "./theme";
 import { fileTreeState } from "./filetree";
 
-const [focusMode, setFocusMode] = createSignal(false);
+export type FocusLevel = "off" | "block" | "sentence";
+const [focusMode, setFocusMode] = createSignal<FocusLevel>("off");
+const [typewriterMode, setTypewriterMode] = createSignal(false);
 const [autoSave, setAutoSave] = createSignal(true);
 const [fontSize, setFontSize] = createSignal(16);
 const [contentWidth, setContentWidth] = createSignal(720);
@@ -56,7 +58,8 @@ let loaded = false;
 
 interface Preferences {
   theme?: Theme;
-  focusMode?: boolean;
+  focusMode?: boolean | FocusLevel;
+  typewriterMode?: boolean;
   autoSave?: boolean;
   fontSize?: number;
   contentWidth?: number;
@@ -77,7 +80,13 @@ async function loadPreferences() {
     const json = await invoke<string>("read_preferences");
     const prefs: Preferences = JSON.parse(json);
     if (prefs.theme) themeState.setTheme(prefs.theme);
-    if (prefs.focusMode !== undefined) setFocusMode(prefs.focusMode);
+    if (prefs.focusMode !== undefined) {
+      // Backwards compat: boolean → FocusLevel
+      if (prefs.focusMode === true) setFocusMode("block");
+      else if (prefs.focusMode === false) setFocusMode("off");
+      else setFocusMode(prefs.focusMode);
+    }
+    if (prefs.typewriterMode !== undefined) setTypewriterMode(prefs.typewriterMode);
     if (prefs.autoSave !== undefined) setAutoSave(prefs.autoSave);
     if (prefs.fontSize !== undefined) setFontSize(prefs.fontSize);
     if (prefs.contentWidth !== undefined) setContentWidth(prefs.contentWidth);
@@ -107,6 +116,7 @@ function savePreferences() {
     const prefs: Preferences = {
       theme: themeState.theme(),
       focusMode: focusMode(),
+      typewriterMode: typewriterMode(),
       autoSave: autoSave(),
       fontSize: fontSize(),
       contentWidth: contentWidth(),
@@ -180,12 +190,22 @@ export { PRESET_FONT_VALUES };
 
 export const preferencesState = {
   focusMode,
-  setFocusMode(value: boolean) {
+  setFocusMode(value: FocusLevel) {
     setFocusMode(value);
     savePreferences();
   },
   toggleFocusMode() {
-    setFocusMode(!focusMode());
+    const cycle: Record<FocusLevel, FocusLevel> = { off: "block", block: "sentence", sentence: "off" };
+    setFocusMode(cycle[focusMode()]);
+    savePreferences();
+  },
+  typewriterMode,
+  setTypewriterMode(value: boolean) {
+    setTypewriterMode(value);
+    savePreferences();
+  },
+  toggleTypewriterMode() {
+    setTypewriterMode(!typewriterMode());
     savePreferences();
   },
   autoSave,

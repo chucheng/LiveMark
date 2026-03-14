@@ -17,6 +17,8 @@ import { trailingParagraphPlugin } from "./plugins/trailing-paragraph";
 import { blockHandlesPlugin } from "./plugins/block-handles";
 import { headingCollapsePlugin } from "./plugins/heading-collapse";
 import { lazyRenderPlugin } from "./plugins/lazy-render";
+import { typewriterPlugin } from "./plugins/typewriter";
+import { sentenceFocusPlugin } from "./plugins/sentence-focus";
 import { tableEditing } from "prosemirror-tables";
 import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
@@ -83,6 +85,8 @@ export function createEditor(
       blockHandlesPlugin(),
       headingCollapsePlugin(),
       lazyRenderPlugin(),
+      typewriterPlugin(),
+      sentenceFocusPlugin(),
       gapCursor(),
       tableEditing(),
     ],

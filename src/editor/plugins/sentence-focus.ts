@@ -1,0 +1,130 @@
+import { Plugin, PluginKey, EditorState } from "prosemirror-state";
+import { Decoration, DecorationSet } from "prosemirror-view";
+import { preferencesState } from "../../state/preferences";
+
+const sentenceFocusKey = new PluginKey("sentenceFocus");
+
+/** Common abbreviations that should NOT be treated as sentence endings. */
+const ABBREVS = /(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|e\.g|i\.e|al|fig|vol|no|dept|inc|corp|ltd|approx)\.\s*$/i;
+
+/**
+ * Find sentence boundaries within a text string.
+ * Returns an array of [start, end] offsets for each sentence.
+ */
+function findSentences(text: string): Array<[number, number]> {
+  if (!text.length) return [];
+
+  const sentences: Array<[number, number]> = [];
+  let start = 0;
+
+  // Sentence-ending pattern: .!? followed by space or end, plus CJK terminators
+  const re = /[.!?。！？]+[\s]|[.!?。！？]+$/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(text)) !== null) {
+    const endPos = match.index + match[0].length;
+    // Check for abbreviation — look at text up to this point
+    const prefix = text.slice(start, endPos);
+    if (ABBREVS.test(prefix)) continue;
+
+    sentences.push([start, endPos]);
+    start = endPos;
+    // Skip leading whitespace for next sentence
+    while (start < text.length && /\s/.test(text[start])) start++;
+  }
+
+  // Remaining text is the last sentence
+  if (start < text.length) {
+    sentences.push([start, text.length]);
+  }
+
+  return sentences;
+}
+
+function getActiveBlockPos(state: EditorState): number | null {
+  const { $head } = state.selection;
+  if ($head.depth < 1) return null;
+  return $head.before(1);
+}
+
+function buildSentenceDecorations(state: EditorState): DecorationSet {
+  if (preferencesState.focusMode() !== "sentence") return DecorationSet.empty;
+
+  const blockPos = getActiveBlockPos(state);
+  if (blockPos === null) return DecorationSet.empty;
+
+  const node = state.doc.nodeAt(blockPos);
+  if (!node) return DecorationSet.empty;
+
+  // Only apply to text-bearing blocks (paragraph, heading)
+  if (!node.isTextblock) return DecorationSet.empty;
+
+  const text = node.textContent;
+  if (!text.length) return DecorationSet.empty;
+
+  const sentences = findSentences(text);
+  if (sentences.length === 0) return DecorationSet.empty;
+
+  // Find which sentence the cursor is in
+  const cursorOffset = state.selection.head - blockPos - 1; // offset within textContent
+  let activeSentence: [number, number] | null = null;
+  for (const [s, e] of sentences) {
+    if (cursorOffset >= s && cursorOffset <= e) {
+      activeSentence = [s, e];
+      break;
+    }
+  }
+  if (!activeSentence) {
+    // Fallback: last sentence if cursor is past all
+    activeSentence = sentences[sentences.length - 1];
+  }
+
+  const decos: Decoration[] = [];
+
+  // Mark the parent block as having an active sentence
+  decos.push(
+    Decoration.node(blockPos, blockPos + node.nodeSize, {
+      class: "lm-has-active-sentence",
+    })
+  );
+
+  // Map text offsets to PM positions within the block
+  // textContent offsets map to positions: blockPos + 1 + offset
+  const sentStart = blockPos + 1 + activeSentence[0];
+  const sentEnd = blockPos + 1 + activeSentence[1];
+
+  // Clamp to node boundaries
+  const maxPos = blockPos + node.nodeSize - 1;
+  const clampedStart = Math.max(blockPos + 1, Math.min(sentStart, maxPos));
+  const clampedEnd = Math.max(blockPos + 1, Math.min(sentEnd, maxPos));
+
+  if (clampedStart < clampedEnd) {
+    decos.push(
+      Decoration.inline(clampedStart, clampedEnd, {
+        class: "lm-sentence-active",
+      })
+    );
+  }
+
+  return DecorationSet.create(state.doc, decos);
+}
+
+export function sentenceFocusPlugin(): Plugin {
+  return new Plugin({
+    key: sentenceFocusKey,
+    state: {
+      init(_, state) {
+        return buildSentenceDecorations(state);
+      },
+      apply(tr, _prev, _oldState, newState) {
+        if (!tr.selectionSet && !tr.docChanged) return _prev;
+        return buildSentenceDecorations(newState);
+      },
+    },
+    props: {
+      decorations(state) {
+        return sentenceFocusKey.getState(state);
+      },
+    },
+  });
+}
