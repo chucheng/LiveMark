@@ -4,7 +4,8 @@ import { EditorView, NodeView } from "prosemirror-view";
 export class TaskListItemView implements NodeView {
   dom: HTMLElement;
   contentDOM: HTMLElement;
-  private checkbox: HTMLInputElement;
+  private checkboxEl: HTMLElement;
+  private handleMousedown: (e: Event) => void;
 
   constructor(
     private node: Node,
@@ -15,21 +16,24 @@ export class TaskListItemView implements NodeView {
     this.dom.className = "lm-task-item";
     if (node.attrs.checked) this.dom.classList.add("checked");
 
-    this.checkbox = document.createElement("input");
-    this.checkbox.type = "checkbox";
-    this.checkbox.checked = node.attrs.checked;
-    this.checkbox.contentEditable = "false";
-    // Block native click toggle — we drive checked state entirely
-    // through ProseMirror to keep DOM and doc in sync.
-    this.checkbox.addEventListener("click", (e) => {
-      e.preventDefault();
-    });
+    // Custom checkbox element (replaces native <input> for styling control)
+    this.checkboxEl = document.createElement("span");
+    this.checkboxEl.className = "lm-task-checkbox";
+    this.checkboxEl.setAttribute("role", "checkbox");
+    this.checkboxEl.setAttribute(
+      "aria-checked",
+      String(node.attrs.checked)
+    );
+    this.checkboxEl.contentEditable = "false";
+
+    // SVG checkmark — only visible when checked via CSS
+    this.checkboxEl.innerHTML = `<svg class="lm-task-check-icon" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L5 9L9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
     // Toggle on mousedown: preventDefault stops focus steal.
-    this.checkbox.addEventListener("mousedown", (e) => {
+    this.handleMousedown = (e: Event) => {
       e.preventDefault();
       const pos = this.getPos();
       if (pos === undefined) return;
-      // Read fresh node attrs from current editor state to avoid stale data
       const freshNode = this.view.state.doc.nodeAt(pos);
       if (!freshNode || freshNode.type.name !== "task_list_item") return;
       const tr = this.view.state.tr.setNodeMarkup(pos, undefined, {
@@ -37,19 +41,23 @@ export class TaskListItemView implements NodeView {
         checked: !freshNode.attrs.checked,
       });
       this.view.dispatch(tr);
-    });
+    };
+    this.checkboxEl.addEventListener("mousedown", this.handleMousedown);
 
     this.contentDOM = document.createElement("div");
     this.contentDOM.className = "lm-task-content";
 
-    this.dom.appendChild(this.checkbox);
+    this.dom.appendChild(this.checkboxEl);
     this.dom.appendChild(this.contentDOM);
   }
 
   update(node: Node): boolean {
     if (node.type.name !== "task_list_item") return false;
     this.node = node;
-    this.checkbox.checked = node.attrs.checked;
+    this.checkboxEl.setAttribute(
+      "aria-checked",
+      String(node.attrs.checked)
+    );
     if (node.attrs.checked) {
       this.dom.classList.add("checked");
     } else {
@@ -59,9 +67,7 @@ export class TaskListItemView implements NodeView {
   }
 
   destroy() {
-    // Event listeners on this.checkbox are cleaned up when
-    // the DOM node is removed and garbage collected.
-    // Null out references to help GC and prevent stale access.
+    this.checkboxEl.removeEventListener("mousedown", this.handleMousedown);
     (this as any).view = null;
     (this as any).getPos = null;
   }

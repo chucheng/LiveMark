@@ -217,16 +217,58 @@
   gap: 0.5em;
 }
 
-.lm-task-item input[type="checkbox"] {
-  margin-top: 0.35em;
-  cursor: pointer;
+/* ── Custom Checkbox ── */
+.lm-task-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.3em;
   flex-shrink: 0;
+  border-radius: 4px;
+  border: 1.5px solid var(--lm-border-emphasis);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  user-select: none;
+}
+
+.lm-task-checkbox:hover {
+  border-color: var(--lm-accent);
+  box-shadow: 0 0 0 3px var(--lm-accent-muted);
+}
+
+.lm-task-checkbox:active {
+  transform: scale(0.92);
+}
+
+.lm-task-check-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--lm-text-on-emphasis);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+/* Checked state */
+.lm-task-item.checked .lm-task-checkbox {
+  background: var(--lm-accent);
+  border-color: var(--lm-accent);
+}
+
+.lm-task-item.checked .lm-task-check-icon {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .lm-task-item.checked .lm-task-content,
 .lm-task-item.checked .lm-task-content p {
-  opacity: 0.5;
+  opacity: 0.45;
   text-decoration: line-through;
+  text-decoration-color: var(--lm-text-faint);
 }
 
 .lm-task-content {
