@@ -258,6 +258,49 @@ describe("Callout round-trip", () => {
     expect(bq?.type.name).toBe("blockquote");
     expect(bq?.attrs.calloutType).toBeNull();
   });
+
+  it("callout with inline formatting", () => {
+    expectStructuralRoundTrip("> [!TIP]\n> **Bold** and *italic* text.");
+  });
+
+  it("callout case insensitivity", () => {
+    const doc = parseMarkdown("> [!note]\n> lowercase type");
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const bq = doc.firstChild;
+    expect(bq?.type.name).toBe("blockquote");
+    expect(bq?.attrs.calloutType).toBe("NOTE"); // normalized to uppercase
+  });
+
+  it("callout with unknown type is regular blockquote", () => {
+    const doc = parseMarkdown("> [!CUSTOM]\n> should be regular blockquote");
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const bq = doc.firstChild;
+    expect(bq?.type.name).toBe("blockquote");
+    expect(bq?.attrs.calloutType).toBeNull();
+  });
+
+  it("callout empty body produces valid document", () => {
+    const doc = parseMarkdown("> [!NOTE]");
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const bq = doc.firstChild;
+    expect(bq?.type.name).toBe("blockquote");
+    expect(bq?.attrs.calloutType).toBe("NOTE");
+    // Must have at least one child (block+ requirement)
+    expect(bq?.childCount).toBeGreaterThanOrEqual(1);
+    // Round-trip should not crash
+    const serialized = serializeMarkdown(doc);
+    expect(serialized).toContain("[!NOTE]");
+  });
+
+  it("callout text on same line as type", () => {
+    const doc = parseMarkdown("> [!NOTE] Some text on same line");
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const bq = doc.firstChild;
+    expect(bq?.type.name).toBe("blockquote");
+    expect(bq?.attrs.calloutType).toBe("NOTE");
+    // The text after [!NOTE] should be preserved
+    expect(bq?.textContent).toContain("Some text on same line");
+  });
 });
 
 describe("Markdown round-trip: structural fidelity", () => {

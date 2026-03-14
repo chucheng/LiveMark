@@ -39,8 +39,31 @@ export function calloutPlugin(md: MarkdownIt): void {
               let pClose = j + 1;
               while (pClose < tokens.length && tokens[pClose].type !== "paragraph_close") pClose++;
 
-              // Remove paragraph_open, inline, paragraph_close
-              tokens.splice(pOpen, pClose - pOpen + 1);
+              // Check if this is the only paragraph inside the blockquote.
+              // If so, keep an empty paragraph to satisfy block+ content requirement.
+              let hasOtherContent = false;
+              let bqDepth = 1;
+              for (let k = i + 1; k < tokens.length && bqDepth > 0; k++) {
+                if (tokens[k].type === "blockquote_open") bqDepth++;
+                if (tokens[k].type === "blockquote_close") bqDepth--;
+                if (bqDepth === 1 && k !== j &&
+                    (tokens[k].type === "paragraph_open" || tokens[k].type === "heading_open" ||
+                     tokens[k].type === "fence" || tokens[k].type === "code_block" ||
+                     tokens[k].type === "bullet_list_open" || tokens[k].type === "ordered_list_open" ||
+                     tokens[k].type === "blockquote_open" || tokens[k].type === "hr" ||
+                     tokens[k].type === "table_open")) {
+                  hasOtherContent = true;
+                  break;
+                }
+              }
+
+              if (hasOtherContent) {
+                // Safe to remove — other content exists
+                tokens.splice(pOpen, pClose - pOpen + 1);
+              } else {
+                // Only content — keep paragraph but clear its text
+                tokens[j].content = "";
+              }
             } else {
               tokens[j].content = remaining;
             }

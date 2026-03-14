@@ -11,7 +11,7 @@ export function typewriterPlugin(): Plugin {
       return {
         update(view: EditorView, prevState) {
           if (!preferencesState.typewriterMode()) return;
-          if (view.state.selection.eq(prevState.selection) && !view.state.doc.eq(prevState.doc) === false) return;
+          if (view.state.selection.eq(prevState.selection) && view.state.doc.eq(prevState.doc)) return;
 
           const { head } = view.state.selection;
           try {

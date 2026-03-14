@@ -246,13 +246,14 @@ export default function App() {
       p: async () => {
         // Copy file path to clipboard
         const fp = documentState.filePath();
-        if (!fp) return;
+        if (!fp) { uiState.showStatus("No file open"); return; }
         try {
           const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
           await writeText(fp);
         } catch {
           await navigator.clipboard.writeText(fp);
         }
+        uiState.showStatus("Path copied");
       },
       w: () => {
         // Close all tabs
@@ -273,6 +274,15 @@ export default function App() {
         // Cycle theme
         themeState.cycleTheme();
         preferencesState.savePreferences();
+        const labels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
+        uiState.showStatus(`Theme: ${labels[themeState.theme()]}`);
+      },
+      f: () => {
+        // Toggle focus mode
+        preferencesState.toggleFocusMode();
+        const level = preferencesState.focusMode();
+        const labels: Record<string, string> = { off: "Off", block: "Block", sentence: "Sentence" };
+        uiState.showStatus(`Focus: ${labels[level]}`);
       },
     },
   };
@@ -393,15 +403,19 @@ export default function App() {
     } else if (e.key === "t" && !e.shiftKey && !e.altKey) {
       e.preventDefault();
       uiState.toggleMindMap();
+      uiState.showStatus(`Mind map: ${uiState.isMindMapOpen() ? "On" : "Off"}`);
     } else if (e.key === "T" && e.shiftKey) {
       e.preventDefault();
       themeState.cycleTheme();
       preferencesState.savePreferences();
+      const themeLabels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
+      uiState.showStatus(`Theme: ${themeLabels[themeState.theme()]}`);
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       if (uiState.isSourceView()) {
         uiState.toggleSourceView();
+        uiState.showStatus("Source view: Off");
         requestAnimationFrame(() => {
           if (editor && editorScroller) {
             scrollEditorToLine(editor.view, editorScroller, syncLine());
@@ -428,6 +442,7 @@ export default function App() {
           setSyncLine(getEditorTopLine(editor.view, editorScroller));
         }
         uiState.toggleSourceView();
+        uiState.showStatus("Source view: On");
       }
     } else if (e.key === "f" && !e.shiftKey) {
       e.preventDefault();
@@ -435,25 +450,27 @@ export default function App() {
     } else if (e.key === "H" && e.shiftKey) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("lm-toggle-replace"));
-    } else if (e.key === "F" && e.shiftKey) {
-      e.preventDefault();
-      preferencesState.toggleFocusMode();
     } else if (e.key === "R" && e.shiftKey) {
       e.preventDefault();
       uiState.toggleReview();
+      uiState.showStatus(`Review: ${uiState.isReviewOpen() ? "On" : "Off"}`);
     } else if (e.key === "=" || e.key === "+") {
       e.preventDefault();
       preferencesState.zoomIn();
+      uiState.showStatus(`Zoom: ${Math.round(preferencesState.fontSize() / 16 * 100)}%`);
     } else if (e.key === "-") {
       e.preventDefault();
       preferencesState.zoomOut();
+      uiState.showStatus(`Zoom: ${Math.round(preferencesState.fontSize() / 16 * 100)}%`);
     } else if (e.key === "0" && !e.shiftKey) {
       e.preventDefault();
       preferencesState.resetZoom();
+      uiState.showStatus(`Zoom: ${Math.round(preferencesState.fontSize() / 16 * 100)}%`);
     } else if (e.key === "\\") {
       // Cmd+\ — toggle sidebar
       e.preventDefault();
       fileTreeState.toggleSidebar();
+      uiState.showStatus(`Sidebar: ${fileTreeState.sidebarVisible() ? "On" : "Off"}`);
     } else if (e.key === "[" && e.shiftKey) {
       // Cmd+Shift+[ — previous tab
       e.preventDefault();

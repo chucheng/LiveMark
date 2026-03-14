@@ -49,7 +49,9 @@ export class BlockquoteView implements NodeView {
         this.badgeEl = document.createElement("span");
         this.badgeEl.className = "lm-callout-badge";
         this.badgeEl.contentEditable = "false";
-        this.contentDOM.insertBefore(this.badgeEl, this.contentDOM.firstChild);
+        // Insert badge in the wrapper div (before contentDOM), not inside contentDOM.
+        // Placing it inside contentDOM risks ProseMirror trying to parse/serialize it.
+        this.dom.insertBefore(this.badgeEl, this.contentDOM);
       }
       this.badgeEl.textContent = `${config.icon} ${config.label}`;
     } else {

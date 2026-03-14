@@ -108,6 +108,27 @@ Blockquotes can contain other elements:
 >
 > And a regular paragraph too.
 
+### Callout Admonitions
+
+Use GitHub-style callout syntax inside blockquotes for styled admonitions:
+
+> [!NOTE]
+> This is a note callout — useful for additional context.
+
+> [!TIP]
+> This is a tip — helpful advice for the reader.
+
+> [!WARNING]
+> This is a warning — something to watch out for.
+
+> [!CAUTION]
+> This is a caution — indicates potential danger.
+
+> [!IMPORTANT]
+> This is important — key information not to miss.
+
+Callout types are case-insensitive (`[!note]`, `[!Note]`, and `[!NOTE]` all work). Unknown types are treated as regular blockquotes.
+
 ---
 
 ## Code Blocks
@@ -302,7 +323,21 @@ Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your 
 
 ## Focus Mode
 
-Press `Cmd+J F` to toggle focus mode. In focus mode, only the paragraph you're currently editing is fully visible — surrounding blocks are dimmed. This helps you concentrate on the content you're actively writing.
+Press `Cmd+J F` to cycle through focus modes:
+
+1. **Off** — normal editing, all content visible
+2. **Block focus** — only the current block (paragraph, heading, list, etc.) is fully visible; surrounding blocks are dimmed
+3. **Sentence focus** — only the current sentence within the active block is highlighted; the rest is dimmed
+
+This helps you concentrate on exactly what you're writing, from block-level down to sentence-level granularity. Sentence focus works inside blockquotes, list items, and table cells too.
+
+---
+
+## Typewriter Mode
+
+Typewriter mode keeps your cursor vertically centered in the editor window as you type, so your eyes stay in one place. Combined with focus mode, it creates a distraction-free writing experience.
+
+Toggle it from the command palette (`Cmd+Shift+P` → "Toggle Typewriter Mode").
 
 ---
 
@@ -368,7 +403,7 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 | `Cmd+W` | Close tab |
 | `Cmd+F` | Find & replace |
 | `Cmd+/` | Toggle source view |
-| `Cmd+\\\\` | Toggle sidebar |
+| `Cmd+\\\\\\\\` | Toggle sidebar |
 | `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
 | `Cmd+J F` | Toggle focus mode |

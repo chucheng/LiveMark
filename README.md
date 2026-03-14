@@ -3,7 +3,7 @@
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
 ![CI](https://github.com/chucheng/LiveMark/actions/workflows/ci.yml/badge.svg)
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -48,7 +48,10 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Mind map view** — Cmd+T, document headings as an interactive mind map
 - **Command palette** — Cmd+Shift+P, fuzzy search across all actions
 - **Source view** — Cmd+/ toggles read-only raw Markdown
-- **Focus mode** — Cmd+Shift+F dims inactive blocks
+- **Focus mode** — Cmd+J F cycles off → block → sentence focus (dims inactive blocks or non-active sentences)
+- **Typewriter mode** — keeps cursor vertically centered as you type
+- **Callout admonitions** — `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!CAUTION]`, `> [!IMPORTANT]` with styled badges
+- **Block transform** — right-click any block handle → "Turn Into" to convert between paragraph, heading, blockquote, code block, and list types
 - **Review panel** — Cmd+Shift+R, document quality checks (headings, images, links, code blocks)
 - **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset (12–28px, persisted)
 - **Status bar** — line/column, selection count, word count, zoom %, encoding, theme toggle
@@ -70,6 +73,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 | `Cmd+K` | Insert Link |
 | `Cmd+Shift+H` | Toggle Find and Replace |
 | `Cmd+Shift+X` | Strikethrough |
+| `Cmd+J F` | Cycle Focus Mode (off → block → sentence) |
 | `Cmd+J P` | Copy File Path |
 | `Cmd+J W` | Close All Tabs |
 | `Cmd+J T` | Cycle Theme |
@@ -166,6 +170,7 @@ src/
       task-list-plugin.ts — Custom markdown-it plugin for task lists
       math-plugin.ts      — Custom markdown-it plugin for math ($, $$)
       frontmatter-plugin.ts — Custom markdown-it plugin for YAML frontmatter
+      callout-plugin.ts   — Custom markdown-it plugin for callout admonitions
     nodeviews/            — Cursor-aware NodeViews (heading, code-block, blockquote, math, mermaid, frontmatter, etc.)
     plugins/
       live-render.ts      — Active block detection + decorations
@@ -178,6 +183,8 @@ src/
       inline-decorations.ts — Inline mark decorations
       lazy-render.ts      — IntersectionObserver-based lazy rendering
       trailing-paragraph.ts — Ensures doc ends with paragraph
+      typewriter.ts       — Typewriter mode (cursor vertical centering)
+      sentence-focus.ts   — Sentence-level focus mode decorations
   ui/
     App.tsx               — Root component
     StatusBar.tsx         — Status bar (line/col, words, zoom, theme toggle)
@@ -248,6 +255,8 @@ src-tauri/
 | v1.3.11 | Multi-tab, sidebar file tree, block handles, mermaid diagrams, frontmatter, mind map, CI/CD pipeline |
 | v1.3.12 | Version sync script, v2 roadmap update, ideas cleanup |
 | v1.4.0 | Auto-update — in-app update banner via tauri-plugin-updater, settings panel UX improvements, chord keybinding fixes |
+| v2.0.0 | Typewriter mode, sentence focus, callout admonitions, block transform menu, block handles chord shortcuts |
+| v2.0.1 | Bug audit — fix sentence focus inside blockquotes/lists, inline atom offset mapping, callout empty body, badge DOM placement, remove dead shortcut |
 
 ## Documentation
 

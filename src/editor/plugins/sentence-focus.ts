@@ -1,5 +1,6 @@
 import { Plugin, PluginKey, EditorState } from "prosemirror-state";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
+import { Node } from "prosemirror-model";
 import { createEffect } from "solid-js";
 import { preferencesState } from "../../state/preferences";
 
@@ -42,23 +43,64 @@ function findSentences(text: string): Array<[number, number]> {
   return sentences;
 }
 
-function getActiveBlockPos(state: EditorState): number | null {
+/**
+ * Find the nearest textblock the cursor is in, returning its position.
+ * Walks up the depth tree to find the innermost textblock (works inside
+ * blockquotes, list items, table cells, etc.).
+ */
+function getActiveTextblockPos(state: EditorState): number | null {
   const { $head } = state.selection;
-  if ($head.depth < 1) return null;
-  return $head.before(1);
+  for (let d = $head.depth; d >= 1; d--) {
+    const node = $head.node(d);
+    if (node.isTextblock) {
+      return $head.before(d);
+    }
+  }
+  return null;
+}
+
+/**
+ * Map a textContent offset to an absolute PM position within a textblock node.
+ * Handles inline atoms (images, math_inline) whose nodeSize differs from their
+ * text contribution (they contribute empty string or replacement char to textContent).
+ */
+function textOffsetToPos(node: Node, blockPos: number, offset: number): number {
+  let textOffset = 0;
+  let pos = blockPos + 1; // inside the textblock
+
+  for (let i = 0; i < node.childCount; i++) {
+    const child = node.child(i);
+    if (child.isText) {
+      const textLen = child.text!.length;
+      if (textOffset + textLen >= offset) {
+        return pos + (offset - textOffset);
+      }
+      textOffset += textLen;
+      pos += child.nodeSize;
+    } else {
+      // Inline atom (image, math_inline, hard_break). They contribute
+      // empty or single-char to textContent but have nodeSize >= 1.
+      const contribution = child.textContent.length;
+      if (textOffset + contribution >= offset && contribution > 0) {
+        return pos;
+      }
+      textOffset += contribution;
+      pos += child.nodeSize;
+    }
+  }
+
+  // Past end — clamp to end of node content
+  return Math.min(pos, blockPos + node.nodeSize - 1);
 }
 
 function buildSentenceDecorations(state: EditorState): DecorationSet {
   if (preferencesState.focusMode() !== "sentence") return DecorationSet.empty;
 
-  const blockPos = getActiveBlockPos(state);
+  const blockPos = getActiveTextblockPos(state);
   if (blockPos === null) return DecorationSet.empty;
 
   const node = state.doc.nodeAt(blockPos);
-  if (!node) return DecorationSet.empty;
-
-  // Only apply to text-bearing blocks (paragraph, heading)
-  if (!node.isTextblock) return DecorationSet.empty;
+  if (!node || !node.isTextblock) return DecorationSet.empty;
 
   const text = node.textContent;
   if (!text.length) return DecorationSet.empty;
@@ -66,8 +108,25 @@ function buildSentenceDecorations(state: EditorState): DecorationSet {
   const sentences = findSentences(text);
   if (sentences.length === 0) return DecorationSet.empty;
 
-  // Find which sentence the cursor is in
-  const cursorOffset = state.selection.head - blockPos - 1; // offset within textContent
+  // Find cursor offset within textContent
+  const cursorPos = state.selection.head;
+  // Walk node children to compute textContent offset from PM position
+  let cursorOffset = 0;
+  {
+    let pos = blockPos + 1;
+    for (let i = 0; i < node.childCount; i++) {
+      const child = node.child(i);
+      if (cursorPos <= pos + child.nodeSize) {
+        if (child.isText) {
+          cursorOffset += Math.max(0, Math.min(cursorPos - pos, child.text!.length));
+        }
+        break;
+      }
+      cursorOffset += child.isText ? child.text!.length : child.textContent.length;
+      pos += child.nodeSize;
+    }
+  }
+
   let activeSentence: [number, number] | null = null;
   for (const [s, e] of sentences) {
     if (cursorOffset >= s && cursorOffset <= e) {
@@ -76,7 +135,6 @@ function buildSentenceDecorations(state: EditorState): DecorationSet {
     }
   }
   if (!activeSentence) {
-    // Fallback: last sentence if cursor is past all
     activeSentence = sentences[sentences.length - 1];
   }
 
@@ -89,10 +147,9 @@ function buildSentenceDecorations(state: EditorState): DecorationSet {
     })
   );
 
-  // Map text offsets to PM positions within the block
-  // textContent offsets map to positions: blockPos + 1 + offset
-  const sentStart = blockPos + 1 + activeSentence[0];
-  const sentEnd = blockPos + 1 + activeSentence[1];
+  // Map text offsets to PM positions
+  const sentStart = textOffsetToPos(node, blockPos, activeSentence[0]);
+  const sentEnd = textOffsetToPos(node, blockPos, activeSentence[1]);
 
   // Clamp to node boundaries
   const maxPos = blockPos + node.nodeSize - 1;
