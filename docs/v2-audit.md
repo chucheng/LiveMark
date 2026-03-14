@@ -152,24 +152,24 @@
 
 ## UX Improvements (16)
 
-| ID | Title | Impact | Effort |
-|----|-------|--------|--------|
-| UX-001 | Mermaid diagram flicker on theme change (300ms gap) | Medium | M |
-| UX-002 | Chord keybinding timeout lacks visual feedback | Medium | S |
-| UX-003 | insertLink cursor placed incorrectly after mark | Low | S |
-| UX-004 | Settings: no visual feedback for empty custom font | Medium | S |
-| UX-005 | Settings: no duplicate preset name warning in UI | Low | S |
-| UX-006 | Zoom % only shown when non-100% | Medium | S |
-| UX-007 | Status bar hardcodes "UTF-8" | Low | S |
-| UX-008 | Chord status message formatting awkward | Low | S |
-| UX-009 | Settings: no focus trap on open | Medium | M |
-| UX-010 | Sidebar doesn't auto-expand to current file | Medium | M |
-| UX-011 | Dirty indicator (●) may flicker during rapid edits | Medium | S |
-| UX-012 | Find/Replace focus style inconsistent with settings | Low | S |
-| UX-013 | Sidebar resize handle barely visible | Low | S |
-| UX-014 | Disabled button opacity too low in dark mode | Medium | S |
-| UX-015 | Settings toggle input missing focus state | Medium | S |
-| UX-016 | Source view code block lacks background distinction | Low | S |
+| ID | Title | Impact | Effort | Status |
+|----|-------|--------|--------|--------|
+| UX-001 | Mermaid diagram flicker on theme change (300ms→50ms) | Medium | M | FIXED |
+| UX-002 | Chord keybinding timeout lacks visual feedback | Medium | S | SKIPPED (acceptable) |
+| UX-003 | insertLink cursor placed incorrectly after mark | Low | S | FIXED |
+| UX-004 | Settings: no visual feedback for empty custom font | Medium | S | FIXED |
+| UX-005 | Settings: no duplicate preset name warning in UI | Low | S | FIXED |
+| UX-006 | Zoom % only shown when non-100% | Medium | S | FIXED |
+| UX-007 | Status bar hardcodes "UTF-8" | Low | S | SKIPPED (acceptable for MD editor) |
+| UX-008 | Chord status message formatting awkward | Low | S | FIXED |
+| UX-009 | Settings: no focus trap on open | Medium | M | FIXED |
+| UX-010 | Sidebar doesn't auto-expand to current file | Medium | M | FIXED |
+| UX-011 | Dirty indicator (●) may flicker during rapid edits | Medium | S | SKIPPED (SolidJS signals are sync) |
+| UX-012 | Find/Replace focus style inconsistent with settings | Low | S | FIXED |
+| UX-013 | Sidebar resize handle barely visible | Low | S | FIXED |
+| UX-014 | Disabled button opacity too low in dark mode | Medium | S | FIXED |
+| UX-015 | Settings toggle input missing focus state | Medium | S | FIXED |
+| UX-016 | Source view code block lacks background distinction | Low | S | FIXED |
 
 ---
 
@@ -202,25 +202,25 @@ All previously-reported bugs from TODO.md are **confirmed fixed**:
 | 3 | TAB-001 | Add snapshotActiveTab() after Save As | High | S | FIXED |
 | 4 | TAB-005 | Guard null editorState in file-watch reload | High | S | FIXED |
 | 5 | FILE-001 | Convert relative image paths to absolute in export | High | M | FIXED |
-| 6 | CSS-004 | Establish z-index hierarchy for overlays | High | S | |
-| 7 | CSS-003 | Add :focus-visible to all interactive elements | High | M | |
-| 8 | CSS-002 | Make update banner theme-aware | High | S | |
-| 9 | CMD-002 | Split Cmd+Shift+F dual behavior or document it | High | M | |
-| 10 | SETTINGS-004 | Validate custom font before persisting | Medium | S | |
-| 11 | SETTINGS-001 | Sync customFont signal with preferences | Medium | S | |
-| 12 | TAB-004 | Snapshot editor state after saveFile() | Medium | S | |
-| 13 | EDITOR-001 | Add selectNode/deselectNode to heading/blockquote | Medium | S | |
-| 14 | CSS-005 | Fix review panel scrollbar in dark mode | Medium | S | |
-| 15 | EDITOR-002 | Improve link insertion UX | Medium | S | |
-| 16 | TAB-002 | Guard file-watch during tab switch | Medium | M | |
-| 17 | SETTINGS-006 | Add preset name uniqueness check | Medium | S | |
-| 18 | EDITOR-008 | Fix task list input rule position mapping | Medium | M | |
-| 19 | CMD-003 | Protect custom shortcuts from re-registration | Medium | S | |
-| 20 | SETTINGS-005 | Fix settings overlay keyboard event capture | Medium | S | |
-| 21 | TAB-003 | Design solution for Cmd+1-6 tab vs heading | Medium | M | |
-| 22 | TAB-006 | Add current file highlight in sidebar | Low | S | |
-| 23 | CMD-004 | Improve fuzzy search scoring | Low | M | |
-| 24 | EDITOR-003-009 | Minor NodeView cleanup (4 items) | Low | S | |
+| 6 | CSS-004 | Establish z-index hierarchy for overlays | High | S | FIXED |
+| 7 | CSS-003 | Add :focus-visible to all interactive elements | High | M | FIXED |
+| 8 | CSS-002 | Make update banner theme-aware | High | S | FIXED |
+| 9 | CMD-002 | Split Cmd+Shift+F dual behavior or document it | High | M | FIXED |
+| 10 | SETTINGS-004 | Validate custom font before persisting | Medium | S | FIXED |
+| 11 | SETTINGS-001 | Sync customFont signal with preferences | Medium | S | FIXED |
+| 12 | TAB-004 | Snapshot editor state after saveFile() | Medium | S | FIXED |
+| 13 | EDITOR-001 | Add selectNode/deselectNode to heading/blockquote | Medium | S | FIXED |
+| 14 | CSS-005 | Fix review panel scrollbar in dark mode | Medium | S | FIXED |
+| 15 | EDITOR-002 | Improve link insertion UX | Medium | S | FIXED |
+| 16 | TAB-002 | Guard file-watch during tab switch | Medium | M | FIXED |
+| 17 | SETTINGS-006 | Add preset name uniqueness check | Medium | S | FIXED |
+| 18 | EDITOR-008 | Fix task list input rule position mapping | Medium | M | FIXED |
+| 19 | CMD-003 | Protect custom shortcuts from re-registration | Medium | S | FIXED |
+| 20 | SETTINGS-005 | Fix settings overlay keyboard event capture | Medium | S | FIXED |
+| 21 | TAB-003 | Design solution for Cmd+1-6 tab vs heading | Medium | M | KEPT (headings on Cmd+1-6 per Typora convention) |
+| 22 | TAB-006 | Add current file highlight in sidebar | Low | S | FIXED |
+| 23 | CMD-004 | Improve fuzzy search scoring | Low | M | FIXED |
+| 24 | EDITOR-003-009 | Minor NodeView cleanup (4 items) | Low | S | FIXED |
 
 ---
 
