@@ -3,7 +3,7 @@
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
 ![CI](https://github.com/chucheng/LiveMark/actions/workflows/ci.yml/badge.svg)
-![Version](https://img.shields.io/badge/version-1.3.11-blue)
+![Version](https://img.shields.io/badge/version-1.3.12-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -223,6 +223,7 @@ src-tauri/
 | v1.3.9 | Font size zoom — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset editor font size (persisted) |
 | v1.3.10 | CLAUDE.md project guidance, dependency updates |
 | v1.3.11 | Multi-tab, sidebar file tree, block handles, mermaid diagrams, frontmatter, mind map, CI/CD pipeline |
+| v1.3.12 | Version sync script, v2 roadmap update, ideas cleanup |
 
 ## Documentation
 
@@ -237,9 +238,19 @@ src-tauri/
 - [User Flows](docs/v1/user-flows.md) — Detailed user interaction flows
 - [Testing](docs/v1/testing.md) — UI test plan and test cases
 
+### V2 Planning
+
+- [PRD](docs/v2/prd-v2.md) — V2 product requirements
+- [Roadmap](docs/v2/roadmap-v2.md) — V2 milestones and progress (M1–M5 complete)
+- [Architecture](docs/v2/architecture-v2.md) — V2 architecture design
+- [Design System](docs/v2/design-system-light-theme.md) — Light theme design system
+- [UX](docs/v2/ux-v2.md) — V2 UX specifications
+- [Testing](docs/v2/testing-v2.md) — V2 test plan
+- [Cross-Review](docs/v2/cross-review.md) — Cross-review notes
+
 ### Future Work
 
-- [Ideas](docs/future/ideas.md) — Feature ideas, improvements, possible V2 directions
+- [Ideas](docs/future/ideas.md) — Feature ideas, improvements, possible directions
 
 ### Archive
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.12
+
+- **Version sync script** — `pnpm version:sync [version]` updates package.json, tauri.conf.json, and Cargo.toml in one command
+- **Roadmap update** — marked all M1–M5 milestones as complete in v2 roadmap
+- **Ideas cleanup** — removed 8 implemented features from ideas backlog (block handles, mind map, multi-tab, file tree, mermaid, frontmatter, beautiful doc, selection copy)
+
 ## v1.3.11
 
 - **Multi-tab support** — open multiple files in tabs with editor state preservation per tab
