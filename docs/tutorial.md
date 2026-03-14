@@ -215,28 +215,6 @@ $$
 
 ---
 
-## Tabs
-
-LiveMark supports **multi-tab editing** — open multiple files and switch between them with tabs at the top of the window. Each tab preserves its own editor state (cursor position, scroll, undo history). Close a tab with `Cmd+W` or by clicking the close button on the tab.
-
----
-
-## Sidebar
-
-Press `Cmd+\` to toggle the **file tree sidebar**. It shows files in the current directory so you can quickly navigate and open them. You can also drag and drop files from the sidebar into the editor area.
-
----
-
-## Block Handles
-
-Hover over any block (paragraph, heading, list, code block, etc.) to reveal a **grip handle** on the left side. The handle provides:
-
-- **Drag to move** — grab the handle and drag to reorder blocks
-- **Context menu** — right-click (or click) the handle for options: move up/down, duplicate, delete, and copy link to block
-- **Plus button** — click the `+` icon to insert a new block above. A picker lets you choose the block type: paragraph, heading (H1–H3), bullet list, ordered list, task list, blockquote, code block, horizontal rule, or math block
-
----
-
 ## Mermaid Diagrams
 
 Create diagrams using [Mermaid](https://mermaid.js.org/) syntax inside fenced code blocks with the `mermaid` language tag:
@@ -270,71 +248,63 @@ Frontmatter is displayed in a styled card in the editor and preserved when savin
 
 ---
 
+---
+
+# App Features
+
+LiveMark is more than a Markdown editor — it comes with a full set of productivity features. The quickest way to discover them all is the **command palette**: press `Cmd+Shift+P` to open it, then start typing to fuzzy-search for any action — file operations, formatting, export, theme switching, and more.
+
+---
+
+## Command Palette
+
+Press `Cmd+Shift+P` to open the command palette. Every action in LiveMark is registered here, so it doubles as a cheat sheet. Just start typing to filter commands — no need to memorize shortcuts.
+
+---
+
+## Tabs
+
+LiveMark supports **multi-tab editing** — open multiple files and switch between them with tabs at the top of the window. Each tab preserves its own editor state (cursor position, scroll, undo history). Close a tab with `Cmd+W` or by clicking the close button on the tab.
+
+---
+
+## Sidebar
+
+Press `Cmd+\` to toggle the **file tree sidebar**. It shows files in the current directory so you can quickly navigate and open them. You can also drag and drop files from the sidebar into the editor area.
+
+---
+
+## Block Handles
+
+Hover over any block (paragraph, heading, list, code block, etc.) to reveal a **grip handle** on the left side. The handle provides:
+
+- **Drag to move** — grab the handle and drag to reorder blocks
+- **Context menu** — right-click (or click) the handle for options: move up/down, duplicate, delete, and copy link to block
+- **Plus button** — click the `+` icon to insert a new block above. A picker lets you choose the block type: paragraph, heading (H1–H3), bullet list, ordered list, task list, blockquote, code block, horizontal rule, or math block
+
+---
+
 ## Mind Map
 
 Press `Cmd+T` to open the **mind map view**. It renders your document's heading structure as an interactive diagram using Mermaid, giving you a visual overview of the document outline.
 
 ---
 
-## Keyboard Shortcuts
+## Find & Replace
 
-LiveMark supports a full set of keyboard shortcuts for power users:
-
-| Shortcut | Action |
-| --- | --- |
-| `Cmd+B` | Toggle **bold** |
-| `Cmd+I` | Toggle *italic* |
-| `Cmd+Shift+X` | Toggle ~~strikethrough~~ |
-| `` Cmd+` `` | Toggle `inline code` |
-| `Cmd+1` through `Cmd+6` | Set heading level |
-| `Cmd+Z` | Undo |
-| `Cmd+Shift+Z` | Redo |
-| `Cmd+O` | Open file |
-| `Cmd+S` | Save file |
-| `Cmd+Shift+S` | Save as |
-| `Cmd+N` | New file |
-| `Cmd+W` | Close tab |
-| `Cmd+F` | Find & replace |
-| `Cmd+Shift+P` | Command palette |
-| `Cmd+/` | Toggle source view |
-| `Cmd+\` | Toggle sidebar |
-| `Cmd+T` | Toggle mind map |
-| `Cmd+Shift+R` | Toggle review panel |
-| `Cmd+Shift+F` | Toggle focus mode |
-| `Cmd+Shift+T` | Cycle theme |
-| `Cmd+=` | Zoom in |
-| `Cmd+-` | Zoom out |
-| `Cmd+0` | Reset zoom |
-| `Cmd+Shift+E` | Export as HTML |
-| `Cmd+P` | Print / Export PDF |
-| `Cmd+Shift+C` | Copy as HTML |
-| `Cmd+Alt+C` | Copy as Markdown |
+Press `Cmd+F` to open the find & replace bar. It supports case-sensitive matching and replaces across the entire document.
 
 ---
 
-## Command Palette
+## Source View
 
-Press `Cmd+Shift+P` to open the command palette. From there you can access every action in LiveMark — file operations, formatting, export, theme switching, and more. Just start typing to fuzzy-search for commands.
-
----
-
-## Export
-
-LiveMark can export your documents in multiple formats:
-
-- **HTML** — standalone HTML file with embedded styles
-- **PDF** — via the system print dialog
-- **Copy as HTML** — copy rendered HTML to clipboard
-- **Copy as Markdown** — copy raw Markdown to clipboard (selection-aware: copies only the selected range if you have one)
-- **Copy as Beautiful Doc** — styled HTML clipboard copy for pasting into rich editors like Google Docs or Notion
-
-Access export options through the command palette (`Cmd+Shift+P`) or the menu.
+Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your document in a read-only view. Toggle back to return to the live-preview editor. Your scroll position is preserved when switching between views — scroll to any section, toggle, and you'll land in the same place.
 
 ---
 
-## Themes
+## Focus Mode
 
-LiveMark supports **Light** and **Dark** themes, plus a **System** option that follows your OS preference. Toggle with `Cmd+Shift+T`, from the status bar, or the command palette.
+Press `Cmd+Shift+F` to toggle focus mode. In focus mode, only the paragraph you're currently editing is fully visible — surrounding blocks are dimmed. This helps you concentrate on the content you're actively writing.
 
 ---
 
@@ -355,21 +325,63 @@ Click any item in the panel to jump to that location in the editor. The panel up
 
 ---
 
-## Focus Mode
+## Export
 
-Press `Cmd+Shift+F` to toggle focus mode. In focus mode, only the paragraph you're currently editing is fully visible — surrounding blocks are dimmed. This helps you concentrate on the content you're actively writing.
+LiveMark can export your documents in multiple formats:
+
+- **HTML** — standalone HTML file with embedded styles
+- **PDF** — via the system print dialog
+- **Copy as HTML** — copy rendered HTML to clipboard
+- **Copy as Markdown** — copy raw Markdown to clipboard (selection-aware: copies only the selected range if you have one)
+- **Copy as Beautiful Doc** — styled HTML clipboard copy for pasting into rich editors like Google Docs or Notion
+
+Access export options through the command palette (`Cmd+Shift+P`) or keyboard shortcuts.
 
 ---
 
-## Source View
+## Themes
 
-Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your document in a read-only view. Toggle back to return to the live-preview editor. Your scroll position is preserved when switching between views — scroll to any section, toggle, and you'll land in the same place.
+LiveMark supports **Light** and **Dark** themes, plus a **System** option that follows your OS preference. Toggle with `Cmd+Shift+T`, from the status bar, or the command palette.
 
 ---
 
 ## Auto-Save
 
 LiveMark automatically saves your file 30 seconds after your last edit (when the file has a path on disk). You can toggle auto-save on or off from the status bar button at the bottom-right. When auto-save triggers, a brief "Auto-saved" indicator appears in the status bar.
+
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| `Cmd+Shift+P` | **Command palette** (find any action) |
+| `Cmd+B` | Toggle **bold** |
+| `Cmd+I` | Toggle *italic* |
+| `Cmd+Shift+X` | Toggle ~~strikethrough~~ |
+| `` Cmd+` `` | Toggle `inline code` |
+| `Cmd+1` through `Cmd+6` | Set heading level |
+| `Cmd+Z` | Undo |
+| `Cmd+Shift+Z` | Redo |
+| `Cmd+O` | Open file |
+| `Cmd+S` | Save file |
+| `Cmd+Shift+S` | Save as |
+| `Cmd+N` | New file |
+| `Cmd+W` | Close tab |
+| `Cmd+F` | Find & replace |
+| `Cmd+/` | Toggle source view |
+| `Cmd+\` | Toggle sidebar |
+| `Cmd+T` | Toggle mind map |
+| `Cmd+Shift+R` | Toggle review panel |
+| `Cmd+Shift+F` | Toggle focus mode |
+| `Cmd+Shift+T` | Cycle theme |
+| `Cmd+=` | Zoom in |
+| `Cmd+-` | Zoom out |
+| `Cmd+0` | Reset zoom |
+| `Cmd+Shift+E` | Export as HTML |
+| `Cmd+P` | Print / Export PDF |
+| `Cmd+Shift+C` | Copy as HTML |
+| `Cmd+Alt+C` | Copy as Markdown |
 
 ---
 
