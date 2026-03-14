@@ -1,14 +1,15 @@
 .lm-source-view {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   background: var(--lm-bg);
 }
 
-.lm-source-pre {
+.lm-source-textarea {
   width: 100%;
   max-width: var(--lm-content-width);
+  height: 100%;
   padding: var(--lm-editor-padding-y) var(--lm-editor-padding-x);
   margin: 0;
   font-family: var(--lm-font-mono);
@@ -18,10 +19,9 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   background: var(--lm-code-bg);
-  user-select: text;
+  border: none;
+  outline: none;
+  resize: none;
   letter-spacing: 0.01em;
-}
-
-.lm-source-line {
-  display: inline;
+  overflow-y: auto;
 }

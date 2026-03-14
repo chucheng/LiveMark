@@ -93,8 +93,10 @@ export default function App() {
   });
   const [syncLine, setSyncLine] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
-  let savedSelectionAnchor = 0;
-  let savedSelectionHead = 0;
+  /** Tracks edited source text while source view is open. null = no edits. */
+  let sourceEditedText: string | null = null;
+  /** Tracks textarea cursor offset while source view is open. */
+  let sourceCursorOffset = 0;
   /** Format a file path for the title bar — abbreviate home dir with ~/ */
   function displayPath(): string {
     const fp = documentState.filePath();
@@ -315,28 +317,72 @@ export default function App() {
     if (chordTimer) { clearTimeout(chordTimer); chordTimer = null; }
   }
 
+  /** Convert a fractional markdown line to a character offset in the text. */
+  function mdLineToOffset(text: string, line: number): number {
+    const lines = text.split("\n");
+    const lineIdx = Math.min(Math.floor(line), lines.length - 1);
+    const frac = line - Math.floor(line);
+    let offset = 0;
+    for (let i = 0; i < lineIdx; i++) {
+      offset += lines[i].length + 1; // +1 for \n
+    }
+    offset += Math.round(frac * lines[lineIdx].length);
+    return Math.min(offset, text.length);
+  }
+
+  /** Convert a character offset in markdown text to a fractional line number. */
+  function offsetToMdLine(text: string, offset: number): number {
+    let pos = 0;
+    const lines = text.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const lineEnd = pos + lines[i].length;
+      if (offset <= lineEnd) {
+        const frac = lines[i].length > 0 ? (offset - pos) / lines[i].length : 0;
+        return i + frac;
+      }
+      pos = lineEnd + 1; // +1 for \n
+    }
+    return lines.length - 1;
+  }
+
+  /** Apply source-view edits back to ProseMirror and reset tracking. */
+  function applySourceEdits() {
+    if (sourceEditedText != null && editor) {
+      editor.setMarkdown(sourceEditedText);
+      documentState.setDirty();
+      updateWordCount();
+    }
+    sourceEditedText = null;
+  }
+
+  /** Restore PM cursor from the textarea cursor offset after exiting source view. */
+  function restoreCursorFromSource() {
+    if (!editor) return;
+    try {
+      const md = editor.getMarkdown();
+      const mdLine = offsetToMdLine(md, sourceCursorOffset);
+      const map = buildSyncMap(editor.view.state.doc);
+      const pos = mdLineToPmPos(map, mdLine, editor.view.state.doc.content.size);
+      const sel = TextSelection.create(editor.view.state.doc, pos, pos);
+      editor.view.dispatch(editor.view.state.tr.setSelection(sel));
+    } catch { /* ignore */ }
+    editor.view.focus();
+  }
+
   function handleKeydown(e: KeyboardEvent) {
     const mod = e.metaKey || e.ctrlKey;
 
     // Esc exits source view
     if (e.key === "Escape" && uiState.isSourceView() && !mod) {
       e.preventDefault();
+      applySourceEdits();
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       uiState.toggleSourceView();
       requestAnimationFrame(() => {
         if (editor && editorScroller) {
           scrollEditorToLine(editor.view, editorScroller, syncLine());
         }
-        if (editor) {
-          try {
-            const maxPos = editor.view.state.doc.content.size;
-            const anchor = Math.min(savedSelectionAnchor, maxPos);
-            const head = Math.min(savedSelectionHead, maxPos);
-            const sel = TextSelection.create(editor.view.state.doc, anchor, head);
-            editor.view.dispatch(editor.view.state.tr.setSelection(sel));
-          } catch { /* ignore */ }
-          editor.view.focus();
-        }
+        restoreCursorFromSource();
       });
       return;
     }
@@ -434,33 +480,27 @@ export default function App() {
       e.preventDefault();
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       if (uiState.isSourceView()) {
+        applySourceEdits();
         uiState.toggleSourceView();
         uiState.showStatus("Source view: Off");
         requestAnimationFrame(() => {
           if (editor && editorScroller) {
             scrollEditorToLine(editor.view, editorScroller, syncLine());
           }
-          // Restore cursor position
-          if (editor) {
-            try {
-              const maxPos = editor.view.state.doc.content.size;
-              const anchor = Math.min(savedSelectionAnchor, maxPos);
-              const head = Math.min(savedSelectionHead, maxPos);
-              const sel = TextSelection.create(editor.view.state.doc, anchor, head);
-              editor.view.dispatch(editor.view.state.tr.setSelection(sel));
-            } catch { /* ignore */ }
-            editor.view.focus();
-          }
+          restoreCursorFromSource();
         });
       } else {
+        // Compute initial textarea cursor offset from PM cursor
         if (editor) {
-          // Save cursor position before entering source view
-          savedSelectionAnchor = editor.view.state.selection.anchor;
-          savedSelectionHead = editor.view.state.selection.head;
+          const md = editor.getMarkdown();
+          const map = buildSyncMap(editor.view.state.doc);
+          const mdLine = pmPosToMdLine(map, editor.view.state.selection.anchor);
+          sourceCursorOffset = mdLineToOffset(md, mdLine);
         }
         if (editor && editorScroller) {
           setSyncLine(getEditorTopLine(editor.view, editorScroller));
         }
+        sourceEditedText = null; // Reset on enter
         uiState.toggleSourceView();
         uiState.showStatus("Source view: On");
       }
@@ -763,7 +803,7 @@ export default function App() {
           <div ref={editorRef} class="lm-editor-mount" />
         </div>
         <Show when={uiState.isSourceView()}>
-          <SourceView markdown={() => editor?.getMarkdown() ?? ""} initialLine={syncLine} onTopLineChange={setSyncLine} />
+          <SourceView markdown={() => editor?.getMarkdown() ?? ""} initialLine={syncLine} initialCursorOffset={() => sourceCursorOffset} onTopLineChange={setSyncLine} onChange={(text) => { sourceEditedText = text; }} onCursorChange={(offset) => { sourceCursorOffset = offset; }} />
         </Show>
 
         <Show when={uiState.isReviewOpen()}>
