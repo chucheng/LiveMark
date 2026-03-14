@@ -489,6 +489,17 @@
   height: auto;
 }
 
+/* Isolate mermaid foreignObject content from ProseMirror styles */
+.lm-mermaid-render foreignObject p,
+.lm-mermaid-render foreignObject div,
+.lm-mermaid-render foreignObject span {
+  margin: 0 !important;
+  padding: 0 !important;
+  position: static !important;
+  line-height: 1.5 !important;
+  background: none !important;
+}
+
 /* Override mermaid SVG styles for dark mode compatibility */
 [data-theme="dark"] .lm-mermaid-render .nodeLabel,
 [data-theme="dark"] .lm-mermaid-render .label text,
