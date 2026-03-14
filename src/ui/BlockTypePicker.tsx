@@ -2,6 +2,7 @@ import { createSignal, createEffect, onCleanup, Show, For } from "solid-js";
 import type { EditorView } from "prosemirror-view";
 import { TextSelection } from "prosemirror-state";
 import { schema } from "../editor/schema";
+import { clampMenuPosition } from "../utils/viewport";
 
 interface BlockTypePickerProps {
   view: () => EditorView | undefined;
@@ -71,8 +72,10 @@ function createBlockNode(label: string) {
 
 export default function BlockTypePicker(props: BlockTypePickerProps) {
   const [position, setPosition] = createSignal<{ x: number; y: number } | null>(null);
+  const [clamped, setClamped] = createSignal<{ x: number; y: number } | null>(null);
   const [blockPos, setBlockPos] = createSignal<number | null>(null);
   const [activeIndex, setActiveIndex] = createSignal(0);
+  let pickerRef: HTMLDivElement | undefined;
 
   // Listen for the custom "lm-plus-click" event dispatched by the block handle plus button
   createEffect(() => {
@@ -123,16 +126,16 @@ export default function BlockTypePicker(props: BlockTypePickerProps) {
     }
   }
 
+  function handleClickOutside(e: MouseEvent) {
+    if (!(e.target as HTMLElement).closest(".lm-block-type-picker")) {
+      dismiss();
+    }
+  }
+
   // Global keydown, click-outside, and scroll dismiss
   createEffect(() => {
     if (position()) {
       window.addEventListener("keydown", handleKeyDown, true);
-
-      const handleClickOutside = (e: MouseEvent) => {
-        if (!(e.target as HTMLElement).closest(".lm-block-type-picker")) {
-          dismiss();
-        }
-      };
       window.addEventListener("mousedown", handleClickOutside);
       window.addEventListener("scroll", dismiss, true);
 
@@ -144,17 +147,35 @@ export default function BlockTypePicker(props: BlockTypePickerProps) {
     }
   });
 
+  // Clamp picker position to viewport after first paint
+  createEffect(() => {
+    const pos = position();
+    if (pos && pickerRef) {
+      requestAnimationFrame(() => {
+        if (!pickerRef) return;
+        const rect = pickerRef.getBoundingClientRect();
+        setClamped(clampMenuPosition(pos.x, pos.y, rect.width, rect.height));
+      });
+    } else {
+      setClamped(null);
+    }
+  });
+
   return (
     <Show when={position()}>
       {(pos) => (
         <div
+          ref={pickerRef}
           class="lm-block-type-picker"
-          style={{ left: `${pos().x}px`, top: `${pos().y}px` }}
+          role="listbox"
+          style={{ left: `${(clamped() ?? pos()).x}px`, top: `${(clamped() ?? pos()).y}px` }}
         >
           <For each={BLOCK_TYPES}>
             {(option, i) => (
               <button
                 class="lm-btp-item"
+                role="option"
+                aria-selected={i() === activeIndex()}
                 classList={{ "lm-btp-active": i() === activeIndex() }}
                 onClick={() => handleSelect(option)}
                 onMouseEnter={() => setActiveIndex(i())}

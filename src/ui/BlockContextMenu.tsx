@@ -1,8 +1,9 @@
-import { createSignal, onMount, onCleanup, Show } from "solid-js";
+import { createSignal, createEffect, onMount, onCleanup, Show } from "solid-js";
 import type { EditorView } from "prosemirror-view";
 import { moveBlockUp, moveBlockDown, duplicateBlock, deleteBlock, getBlockAnchor } from "../editor/plugins/block-handles";
 import { toggleHeadingCollapse, isHeadingCollapsed } from "../editor/plugins/heading-collapse";
 import { TextSelection } from "prosemirror-state";
+import { clampMenuPosition } from "../utils/viewport";
 
 interface BlockContextMenuProps {
   view: () => EditorView | undefined;
@@ -18,6 +19,8 @@ interface MenuState {
 
 export default function BlockContextMenu(props: BlockContextMenuProps) {
   const [menu, setMenu] = createSignal<MenuState | null>(null);
+  const [clamped, setClamped] = createSignal<{ x: number; y: number } | null>(null);
+  let menuRef: HTMLDivElement | undefined;
 
   function handleClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
@@ -142,22 +145,38 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
     window.removeEventListener("scroll", handleDismiss, true);
   });
 
+  // Clamp menu position to viewport after first paint
+  createEffect(() => {
+    const m = menu();
+    if (m && menuRef) {
+      requestAnimationFrame(() => {
+        if (!menuRef) return;
+        const rect = menuRef.getBoundingClientRect();
+        setClamped(clampMenuPosition(m.x, m.y, rect.width, rect.height));
+      });
+    } else {
+      setClamped(null);
+    }
+  });
+
   return (
     <Show when={menu()}>
       {(m) => (
         <div
+          ref={menuRef}
           class="lm-block-context-menu"
-          style={{ left: `${m().x}px`, top: `${m().y}px` }}
+          role="menu"
+          style={{ left: `${(clamped() ?? m()).x}px`, top: `${(clamped() ?? m()).y}px` }}
         >
-          <button class="lm-bcm-item" onClick={handleMoveUp}>Move Up</button>
-          <button class="lm-bcm-item" onClick={handleMoveDown}>Move Down</button>
-          <button class="lm-bcm-item" onClick={handleDuplicate}>Duplicate</button>
-          <button class="lm-bcm-item" onClick={handleDelete}>Delete</button>
+          <button class="lm-bcm-item" role="menuitem" onClick={handleMoveUp}>Move Up</button>
+          <button class="lm-bcm-item" role="menuitem" onClick={handleMoveDown}>Move Down</button>
+          <button class="lm-bcm-item" role="menuitem" onClick={handleDuplicate}>Duplicate</button>
+          <button class="lm-bcm-item" role="menuitem" onClick={handleDelete}>Delete</button>
           <div class="lm-bcm-separator" />
-          <button class="lm-bcm-item" onClick={handleCopyLink}>Copy Link</button>
+          <button class="lm-bcm-item" role="menuitem" onClick={handleCopyLink}>Copy Link</button>
           <Show when={m().isHeading}>
             <div class="lm-bcm-separator" />
-            <button class="lm-bcm-item" onClick={handleToggleCollapse}>
+            <button class="lm-bcm-item" role="menuitem" onClick={handleToggleCollapse}>
               {m().isCollapsed ? "Expand" : "Collapse"}
             </button>
           </Show>

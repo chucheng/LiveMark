@@ -2,6 +2,7 @@ import { For, Show, createSignal, onCleanup } from "solid-js";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { fileTreeState, type FileTreeNode } from "../state/filetree";
 import { isOpenableFile } from "../commands/file-commands";
+import { isMac } from "../utils/platform";
 
 interface SidebarProps {
   onFileClick: (path: string) => void;
@@ -114,7 +115,7 @@ export default function Sidebar(props: SidebarProps) {
             <button class="lm-sidebar-open-btn" onClick={handleOpenFolder}>
               Open Folder
             </button>
-            <p class="lm-sidebar-empty-hint">⌘⇧O</p>
+            <p class="lm-sidebar-empty-hint">{isMac ? "⌘⇧O" : "Ctrl+Shift+O"}</p>
           </div>
         }>
           <div class="lm-sidebar-tree">

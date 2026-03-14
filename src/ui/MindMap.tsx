@@ -44,13 +44,13 @@ export default function MindMap(props: MindMapProps) {
     const view = props.view();
     if (!view) return;
 
+    let timer: ReturnType<typeof setTimeout>;
+
     const handler = () => {
       // Debounce re-renders
       clearTimeout(timer);
       timer = setTimeout(renderMap, 500);
     };
-
-    let timer: ReturnType<typeof setTimeout>;
 
     // Listen for doc changes via MutationObserver on the editor DOM
     const observer = new MutationObserver(handler);
@@ -100,7 +100,7 @@ export default function MindMap(props: MindMapProps) {
 
   return (
     <div class="lm-mindmap-overlay" onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}>
-      <div class="lm-mindmap-panel">
+      <div class="lm-mindmap-panel" role="dialog" aria-modal="true" aria-label="Mind Map">
         <div class="lm-mindmap-header">
           <span class="lm-mindmap-title">Mind Map</span>
           <button class="lm-mindmap-close" onClick={props.onClose} title="Close (Esc)">

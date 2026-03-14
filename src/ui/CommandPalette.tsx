@@ -59,7 +59,7 @@ export default function CommandPalette() {
 
   return (
     <div class="lm-palette-overlay" onClick={handleBackdropClick}>
-      <div class="lm-palette" onKeyDown={handleKeydown}>
+      <div class="lm-palette" role="dialog" aria-modal="true" aria-label="Command Palette" onKeyDown={handleKeydown}>
         <input
           ref={inputRef}
           class="lm-palette-input"
@@ -67,12 +67,18 @@ export default function CommandPalette() {
           placeholder="Type a command…"
           value={query()}
           onInput={(e) => setQuery(e.currentTarget.value)}
+          role="combobox"
+          aria-expanded="true"
+          aria-controls="lm-palette-listbox"
+          aria-autocomplete="list"
         />
-        <div class="lm-palette-list" ref={listRef}>
+        <div class="lm-palette-list" ref={listRef} id="lm-palette-listbox" role="listbox">
           <For each={results()}>
             {(cmd, idx) => (
               <div
                 class={`lm-palette-item ${idx() === selectedIdx() ? "lm-palette-item-active" : ""}`}
+                role="option"
+                aria-selected={idx() === selectedIdx()}
                 onMouseEnter={() => setSelectedIdx(idx())}
                 onClick={() => {
                   setSelectedIdx(idx());
