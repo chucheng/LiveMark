@@ -66,7 +66,10 @@ export default function TabBar(props: TabBarProps) {
                 class="lm-tab"
                 role="tab"
                 aria-selected={tab.id === tabsState.activeTabId()}
-                classList={{ "lm-tab-active": tab.id === tabsState.activeTabId() }}
+                classList={{
+                  "lm-tab-active": tab.id === tabsState.activeTabId(),
+                  "lm-tab-deleted": tab.isDeleted,
+                }}
                 data-tab-id={tab.id}
                 onMouseDown={(e) => {
                   if (e.button === 1) {
@@ -78,8 +81,8 @@ export default function TabBar(props: TabBarProps) {
                   }
                 }}
               >
-                <span class="lm-tab-label">
-                  {tab.isModified ? "● " : ""}
+                <span class="lm-tab-label" title={tab.isDeleted ? "File has been deleted" : undefined}>
+                  {tab.isDeleted ? "⚠ " : tab.isModified ? "● " : ""}
                   {tab.fileName}
                 </span>
                 <button

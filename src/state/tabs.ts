@@ -8,6 +8,7 @@ export interface Tab {
   fileName: string;
   isModified: boolean;
   isReadOnly: boolean;
+  isDeleted: boolean;
   editorState: EditorState | null;
   scrollPosition: number;
 }
@@ -33,6 +34,7 @@ const filePath = createMemo(() => activeTab()?.filePath ?? null);
 const isModified = createMemo(() => activeTab()?.isModified ?? false);
 const fileName = createMemo(() => activeTab()?.fileName ?? "Untitled");
 const isReadOnly = createMemo(() => activeTab()?.isReadOnly ?? false);
+const isDeleted = createMemo(() => activeTab()?.isDeleted ?? false);
 
 function canCreateTab(): boolean {
   return tabs().length < MAX_TABS;
@@ -46,6 +48,7 @@ function createTab(filePath?: string | null, isReadOnly?: boolean): Tab | null {
     fileName: extractFileName(filePath ?? null),
     isModified: false,
     isReadOnly: isReadOnly ?? false,
+    isDeleted: false,
     editorState: null,
     scrollPosition: 0,
   };
@@ -74,6 +77,7 @@ function closeTab(tabId: string): CloseTabResult {
       fileName: "Untitled",
       isModified: false,
       isReadOnly: false,
+      isDeleted: false,
       editorState: null,
       scrollPosition: 0,
     };
@@ -119,7 +123,7 @@ function findTabByPath(path: string): Tab | undefined {
   return tabs().find((t) => t.filePath === path);
 }
 
-function updateTab(tabId: string, updates: Partial<Pick<Tab, "filePath" | "fileName" | "isModified" | "isReadOnly" | "editorState" | "scrollPosition">>) {
+function updateTab(tabId: string, updates: Partial<Pick<Tab, "filePath" | "fileName" | "isModified" | "isReadOnly" | "isDeleted" | "editorState" | "scrollPosition">>) {
   setTabs((prev) =>
     prev.map((t) => {
       if (t.id !== tabId) return t;
@@ -157,7 +161,7 @@ function setActiveReadOnly(readonly: boolean) {
 
 function resetActive() {
   const id = activeTabId();
-  if (id) updateTab(id, { filePath: null, isModified: false, isReadOnly: false });
+  if (id) updateTab(id, { filePath: null, isModified: false, isReadOnly: false, isDeleted: false });
 }
 
 /**
@@ -191,6 +195,7 @@ export const tabsState = {
   filePath,
   isModified,
   isReadOnly,
+  isDeleted,
   fileName,
   MAX_TABS,
   canCreateTab,

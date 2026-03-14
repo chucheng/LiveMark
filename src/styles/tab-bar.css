@@ -87,6 +87,11 @@
   color: var(--lm-text);
 }
 
+.lm-tab-deleted .lm-tab-label {
+  color: var(--lm-text-faint);
+  font-style: italic;
+}
+
 .lm-tab-close {
   background: none;
   border: none;

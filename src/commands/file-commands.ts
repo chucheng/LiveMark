@@ -145,9 +145,10 @@ export async function openFileInTab(path: string) {
     fileTreeState.revealPath(path);
     onFileChangeCallback?.();
   } catch (err) {
-    const errStr = String(err);
-    const msg = errStr.includes("valid UTF-8")
-      ? `"${path.replace(/\\/g, "/").split("/").pop()}" appears to be a binary file and cannot be opened as text.`
+    const errStr = String(err).toLowerCase();
+    const name = path.replace(/\\/g, "/").split("/").pop();
+    const msg = errStr.includes("utf-8") || errStr.includes("utf8")
+      ? `"${name}" could not be opened — it may be a binary file or use an unsupported text encoding (only UTF-8 is supported).`
       : `Failed to open file:\n${err}`;
     await message(msg, {
       title: "Open Error",
@@ -232,6 +233,22 @@ export async function saveFile() {
         if (result === "Save As…") {
           await saveAsFile();
         }
+      } else if (errStr.includes("No space left") || errStr.includes("ENOSPC") || errStr.includes("no space")) {
+        const result = await message(
+          `Unable to save "${documentState.fileName()}" — your disk is full. Free up space or save to a different location.`,
+          {
+            title: "Disk Full",
+            kind: "error",
+            buttons: {
+              yes: "Save As…",
+              no: "Cancel",
+              cancel: "Cancel",
+            },
+          },
+        );
+        if (result === "Save As…") {
+          await saveAsFile();
+        }
       } else {
         await message(`Failed to save file:\n${err}`, {
           title: "Save Error",
@@ -246,23 +263,27 @@ export async function saveFile() {
   }
 }
 
-/** Silent save for auto-save — no error dialogs, returns success boolean. */
-export async function silentSave(): Promise<boolean> {
-  if (!editorRef) return false;
-  if (saveInProgress) return false;
-  const path = documentState.filePath();
-  if (!path) return false;
-  if (!documentState.isModified()) return false;
+/** Silent save result: "saved", "skipped" (expected), or "failed" (write error). */
+export type SilentSaveResult = "saved" | "skipped" | "failed";
 
-  // Don't auto-save over external changes — let file-watch handle it
-  if (await isExternallyModified(path)) return false;
+/** Silent save for auto-save — no error dialogs. */
+export async function silentSave(): Promise<SilentSaveResult> {
+  if (!editorRef) return "skipped";
+  if (saveInProgress) return "skipped";
+  const path = documentState.filePath();
+  if (!path) return "skipped";
+  if (!documentState.isModified()) return "skipped";
+
+  // Don't auto-save deleted files or over external changes
+  if (documentState.isDeleted()) return "skipped";
+  if (await isExternallyModified(path)) return "skipped";
 
   // Don't auto-save read-only files
   try {
-    if (await invoke<boolean>("is_file_readonly", { path })) return false;
+    if (await invoke<boolean>("is_file_readonly", { path })) return "skipped";
   } catch {
     // If check fails, skip auto-save to be safe
-    return false;
+    return "skipped";
   }
 
   saveInProgress = true;
@@ -271,9 +292,9 @@ export async function silentSave(): Promise<boolean> {
     await invoke("write_file", { path, content });
     documentState.setClean();
     await stampMtime(path);
-    return true;
+    return "saved";
   } catch {
-    return false;
+    return "failed";
   } finally {
     saveInProgress = false;
   }

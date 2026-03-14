@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.2.0-blue)
+![Version](https://img.shields.io/badge/version-2.2.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -271,6 +271,7 @@ src-tauri/
 | v2.1.6 | In-app feedback flow: Send Feedback command, enjoyment prompt after 7 launches |
 | v2.1.7 | Smart copy (Markdown as text/plain + styled HTML), callout type dropdown, HTML `<img>` width support |
 | v2.2.0 | DOCX export — Word document generation with headings, lists, tables, code blocks, math, images, and task lists |
+| v2.2.1 | Edge case hardening — auto-save failure feedback, external file deletion detection, disk-full error guidance, unsupported file drop feedback, improved encoding error messages |
 
 ## Documentation
 

@@ -49,8 +49,16 @@ async function checkForChanges(): Promise<void> {
       try {
         diskMtime = await invoke<number>("get_file_mtime", { path: tab.filePath });
       } catch {
-        // File deleted or inaccessible — skip
+        // File deleted or inaccessible — mark tab as deleted if not already
+        if (!tab.isDeleted) {
+          tabsState.updateTab(tab.id, { isDeleted: true });
+        }
         continue;
+      }
+
+      // File reappeared (e.g. restored from trash) — clear deleted flag
+      if (tab.isDeleted) {
+        tabsState.updateTab(tab.id, { isDeleted: false });
       }
 
       if (diskMtime <= stored) continue;

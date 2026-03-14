@@ -9,6 +9,7 @@ export const documentState = {
   setFilePath: tabsState.setActiveFilePath,
   isModified: tabsState.isModified,
   isReadOnly: tabsState.isReadOnly,
+  isDeleted: tabsState.isDeleted,
   setReadOnly: tabsState.setActiveReadOnly,
   fileName: tabsState.fileName,
   setClean: tabsState.setActiveClean,

@@ -130,11 +130,15 @@ export default function App() {
 
   async function performAutoSave() {
     if (autoSaveMaxTimer) { clearTimeout(autoSaveMaxTimer); autoSaveMaxTimer = null; }
-    const saved = await silentSave();
-    if (saved) {
+    const result = await silentSave();
+    if (result === "saved") {
       setAutoSaveStatus("Auto-saved");
       if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
       autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 2000);
+    } else if (result === "failed") {
+      setAutoSaveStatus("Auto-save failed");
+      if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+      autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 5000);
     }
   }
 
@@ -606,11 +610,24 @@ export default function App() {
     if (!e.dataTransfer?.files?.length) return;
     const files = Array.from(e.dataTransfer.files);
     // Check for non-image droppable files (images are handled by ProseMirror plugin)
-    const textFiles = files.filter(
-      (f) => !f.type.startsWith("image/") && f.name && isOpenableFile(f.name)
+    const nonImageFiles = files.filter(
+      (f) => !f.type.startsWith("image/") && f.name
     );
+    const textFiles = nonImageFiles.filter((f) => isOpenableFile(f.name));
+    const unsupported = nonImageFiles.filter((f) => !isOpenableFile(f.name));
+    if (unsupported.length > 0 && textFiles.length === 0) {
+      e.preventDefault();
+      const names = unsupported.map((f) => f.name);
+      const exts = [...new Set(names.map((n) => "." + (n.split(".").pop() ?? "")).filter((e) => e !== "."))];
+      uiState.showStatus(`Unsupported file type${exts.length === 1 ? " " + exts[0] : "s: " + exts.join(", ")}`);
+      return;
+    }
     if (textFiles.length === 0) return;
     e.preventDefault();
+    if (unsupported.length > 0) {
+      const exts = [...new Set(unsupported.map((f) => "." + (f.name.split(".").pop() ?? "")).filter((e) => e !== "."))];
+      uiState.showStatus(`Skipped unsupported file type${exts.length === 1 ? " " + exts[0] : "s: " + exts.join(", ")}`);
+    }
     if (textFiles.length > MAX_FILES_PER_DROP) {
       uiState.showStatus(`Opening first ${MAX_FILES_PER_DROP} of ${textFiles.length} files`);
     }
@@ -757,7 +774,14 @@ export default function App() {
       // Drag-and-drop file open via Tauri window event
       unlistenDragDrop = await appWindow.onDragDropEvent(async (event) => {
         if (event.payload.type === "drop") {
-          const paths = (event.payload.paths ?? []).filter(isOpenableFile);
+          const allPaths = event.payload.paths ?? [];
+          const paths = allPaths.filter(isOpenableFile);
+          const unsupported = allPaths.filter((p) => !isOpenableFile(p));
+          if (unsupported.length > 0) {
+            const exts = [...new Set(unsupported.map((p) => "." + (p.split("/").pop()?.split(".").pop() ?? "")).filter((e) => e !== "."))];
+            const label = paths.length > 0 ? "Skipped" : "Unsupported file type";
+            uiState.showStatus(`${label}${exts.length === 1 ? " " + exts[0] : "s: " + exts.join(", ")}`);
+          }
           if (paths.length > MAX_FILES_PER_DROP) {
             uiState.showStatus(`Opening first ${MAX_FILES_PER_DROP} of ${paths.length} files`);
           }
@@ -814,7 +838,7 @@ export default function App() {
         <div class="lm-titlebar">
           <div class="lm-titlebar-traffic-light-spacer" />
           <span class="lm-titlebar-title">
-            {uiState.isSourceView() ? "[Source] " : ""}{documentState.isReadOnly() ? "[Read Only] " : ""}{displayPath()}
+            {uiState.isSourceView() ? "[Source] " : ""}{documentState.isDeleted() ? "[Deleted] " : documentState.isReadOnly() ? "[Read Only] " : ""}{displayPath()}
             {documentState.isModified() ? " ●" : ""}
           </span>
           <div class="lm-titlebar-traffic-light-spacer" />
@@ -832,7 +856,6 @@ export default function App() {
             "lm-focus-sentence": preferencesState.focusMode() === "sentence",
             "lm-typewriter-mode": preferencesState.typewriterMode(),
             "lm-hidden": uiState.isSourceView(),
-            "lm-two-column": preferencesState.twoColumn(),
           }}
         >
           <Show when={uiState.isFindOpen()}>
