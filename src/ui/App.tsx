@@ -85,20 +85,13 @@ export default function App() {
   });
   const [syncLine, setSyncLine] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
-  const [homeDir, setHomeDir] = createSignal<string | null>(null);
-
-  // Fetch home dir once on mount for ~ display
-  invoke<string | null>("get_home_dir").then((dir) => {
-    if (dir) setHomeDir(dir);
-  });
-
-  /** Format a file path for the title bar: replace home dir with ~ */
+  /** Format a file path for the title bar — abbreviate home dir with ~/ */
   function displayPath(): string {
     const fp = documentState.filePath();
     if (!fp) return "Untitled";
-    const home = homeDir();
-    if (home && fp.startsWith(home)) {
-      return "~" + fp.slice(home.length);
+    const home = "/Users/" + fp.split("/")[2];
+    if (fp.startsWith(home + "/")) {
+      return "~/" + fp.slice(home.length + 1);
     }
     return fp;
   }
@@ -481,6 +474,7 @@ export default function App() {
             {displayPath()}
             {documentState.isModified() ? " ●" : ""}
           </span>
+          <div class="lm-titlebar-traffic-light-spacer" />
         </div>
 
         <TabBar onCloseTab={handleCloseTab} onSwitchTab={handleSwitchTab} />

@@ -26,13 +26,17 @@
 }
 
 .lm-titlebar-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  flex: 1;
+  min-width: 0;
+  text-align: center;
   font-size: 13px;
   color: var(--lm-text-muted);
   font-weight: 450;
   letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 12px;
 }
 
 /* Chrome bar (titlebar + tab bar) — normal flow by default */
