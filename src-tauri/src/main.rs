@@ -37,7 +37,7 @@ fn extract_file_args(args: &[String]) -> Vec<String> {
 }
 
 fn main() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())
@@ -80,6 +80,18 @@ fn main() {
             watch_directory,
             unwatch_directory
         ])
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("error while running LiveMark");
+
+    app.run(|_app_handle, event| {
+        // On macOS, quit when the main window is closed (instead of staying in dock)
+        #[cfg(target_os = "macos")]
+        if let tauri::RunEvent::WindowEvent {
+            event: tauri::WindowEvent::Destroyed,
+            ..
+        } = event
+        {
+            _app_handle.exit(0);
+        }
+    });
 }

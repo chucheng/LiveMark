@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.2
+
+- **macOS close fix** — clicking the window close button (X) now properly quits the app instead of leaving it running in the dock with no way to reopen
+
 ## v2.1.1
 
 - **Resilience hardening** — comprehensive abuse prevention across the entire app
