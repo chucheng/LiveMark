@@ -92,7 +92,7 @@ export default function StatusBar(props: StatusBarProps) {
         </button>
         <button
           class="lm-statusbar-btn"
-          onClick={() => themeState.cycleTheme()}
+          onClick={() => { themeState.cycleTheme(); preferencesState.savePreferences(); }}
           title="Toggle theme"
         >
           {themeIcon()}

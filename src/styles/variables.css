@@ -1,65 +1,65 @@
 :root {
-  /* ── Canvas / Background ── */
-  --lm-bg:              #ffffff;
-  --lm-bg-surface:      #f6f8fa;
+  /* ── Canvas / Background — warm paper tones ── */
+  --lm-bg:              #faf9f7;
+  --lm-bg-surface:      #f3f2ee;
   --lm-bg-elevated:     #ffffff;
-  --lm-bg-inset:        #f6f8fa;
+  --lm-bg-inset:        #f0efe9;
 
-  /* ── Foreground / Text ── */
-  --lm-text:            #1f2328;
-  --lm-text-muted:      #59636e;
-  --lm-text-faint:      #818b98;
+  /* ── Foreground / Text — warm near-blacks ── */
+  --lm-text:            #1c1b17;
+  --lm-text-muted:      #5c5a52;
+  --lm-text-faint:      #8a8780;
   --lm-text-on-emphasis: #ffffff;
 
   /* ── Accent / Primary ── */
-  --lm-accent:          #0969da;
-  --lm-accent-emphasis: #0550ae;
-  --lm-accent-muted:    #54aeff66;
+  --lm-accent:          #2563eb;
+  --lm-accent-emphasis: #1d4ed8;
+  --lm-accent-muted:    #3b82f666;
 
-  /* ── Border ── */
-  --lm-border:          #d1d9e0;
-  --lm-border-subtle:   #d1d9e0b3;
-  --lm-border-emphasis: #818b98;
+  /* ── Border — warm, soft ── */
+  --lm-border:          #e6e3dc;
+  --lm-border-subtle:   #e6e3dcb3;
+  --lm-border-emphasis: #8a8780;
 
-  /* ── Code (keep our style) ── */
-  --lm-code-bg:         #f2f2f6;
-  --lm-code-text:       #c4407d;
-  --lm-blockquote-border: #d0d4dc;
+  /* ── Code ── */
+  --lm-code-bg:         #f0efe9;
+  --lm-code-text:       #b83a6d;
+  --lm-blockquote-border: #d8d5cd;
 
   /* ── Selection & Interaction ── */
-  --lm-selection:       #0969da33;
-  --lm-hover:           #818b981a;
+  --lm-selection:       #2563eb28;
+  --lm-hover:           #8a87801a;
 
-  /* ── Shadows (Primer pattern) ── */
-  --lm-shadow-sm: 0 1px 1px rgba(31, 35, 40, 0.04);
-  --lm-shadow-md: 0 0 0 1px #d1d9e080, 0 6px 12px -3px rgba(37, 41, 46, 0.04), 0 6px 18px 0 rgba(37, 41, 46, 0.12);
-  --lm-shadow-lg: 0 0 0 1px #d1d9e080, 0 8px 16px -4px rgba(37, 41, 46, 0.08), 0 4px 32px -4px rgba(37, 41, 46, 0.08);
+  /* ── Shadows — warm-tinted ── */
+  --lm-shadow-sm: 0 1px 1px rgba(28, 27, 23, 0.04);
+  --lm-shadow-md: 0 0 0 1px #e6e3dc80, 0 6px 12px -3px rgba(28, 27, 23, 0.04), 0 6px 18px 0 rgba(28, 27, 23, 0.10);
+  --lm-shadow-lg: 0 0 0 1px #e6e3dc80, 0 8px 16px -4px rgba(28, 27, 23, 0.07), 0 4px 32px -4px rgba(28, 27, 23, 0.07);
 
-  /* ── Severity (Primer semantic palette) ── */
-  --lm-severity-issue:      #d1242f;
-  --lm-severity-warning:    #9a6700;
-  --lm-severity-suggestion: #0969da;
-  --lm-severity-issue-muted:      #ffebe9;
-  --lm-severity-warning-muted:    #fff8c5;
-  --lm-severity-suggestion-muted: #ddf4ff;
+  /* ── Severity ── */
+  --lm-severity-issue:      #dc2626;
+  --lm-severity-warning:    #a16207;
+  --lm-severity-suggestion: #2563eb;
+  --lm-severity-issue-muted:      #fef2f2;
+  --lm-severity-warning-muted:    #fefce8;
+  --lm-severity-suggestion-muted: #eff6ff;
 
   /* ── Find/Replace highlights ── */
-  --lm-find-match:   rgba(255, 200, 0, 0.3);
-  --lm-find-current: rgba(255, 140, 0, 0.45);
+  --lm-find-match:   rgba(250, 190, 0, 0.28);
+  --lm-find-current: rgba(245, 130, 0, 0.40);
 
   /* ── Focus ── */
-  --lm-focus-ring:        #0969da;
-  --lm-focus-ring-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
+  --lm-focus-ring:        #2563eb;
+  --lm-focus-ring-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 
   /* ── Overlay ── */
-  --lm-overlay-backdrop: #c8d1da66;
+  --lm-overlay-backdrop: #d8d5cd66;
 
   /* ── Button ── */
-  --lm-btn-bg:          #f6f8fa;
-  --lm-btn-bg-hover:    #eff2f5;
-  --lm-btn-bg-active:   #e6eaef;
-  --lm-btn-border:      #d1d9e0;
-  --lm-btn-shadow:      0 1px 0 rgba(31, 35, 40, 0.04);
+  --lm-btn-bg:          #f3f2ee;
+  --lm-btn-bg-hover:    #eceae4;
+  --lm-btn-bg-active:   #e3e1d9;
+  --lm-btn-border:      #e6e3dc;
+  --lm-btn-shadow:      0 1px 0 rgba(28, 27, 23, 0.04);
 
   /* ── Typography ── */
   --lm-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

@@ -39,9 +39,14 @@ function setTheme(t: Theme) {
 }
 
 function cycleTheme() {
-  const order: Theme[] = ["system", "dark", "light"];
-  const idx = order.indexOf(theme());
-  setTheme(order[(idx + 1) % order.length]);
+  const current = theme();
+  if (current === "system") {
+    // Jump to the opposite of what's currently showing
+    setTheme(resolvedTheme() === "dark" ? "light" : "dark");
+  } else {
+    // From an explicit override, return to system
+    setTheme("system");
+  }
 }
 
 // React to system preference changes
