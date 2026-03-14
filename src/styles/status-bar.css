@@ -47,3 +47,15 @@
   opacity: 1;
   transition: opacity 0.3s ease;
 }
+
+.lm-statusbar-chord {
+  color: var(--lm-accent);
+  font-weight: 500;
+  animation: lm-chord-fade 1.5s ease-out forwards;
+}
+
+@keyframes lm-chord-fade {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0.4; }
+}

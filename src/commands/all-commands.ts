@@ -192,6 +192,47 @@ export function registerAllCommands() {
     execute: () => { uiState.setAboutOpen(true); },
   });
 
+  // Chord commands (Cmd+J prefix)
+  registerCommand({
+    id: "file.copyPath",
+    label: "Copy File Path",
+    shortcut: "Cmd+J P",
+    category: "File",
+    execute: async () => {
+      const { documentState } = await import("../state/document");
+      const fp = documentState.filePath();
+      if (!fp) return;
+      try {
+        const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
+        await writeText(fp);
+      } catch {
+        await navigator.clipboard.writeText(fp);
+      }
+    },
+  });
+  registerCommand({
+    id: "file.closeAll",
+    label: "Close All Tabs",
+    shortcut: "Cmd+J W",
+    category: "File",
+    execute: async () => {
+      const { confirmAllUnsavedChanges } = await import("./file-commands");
+      const { tabsState } = await import("../state/tabs");
+      const ok = await confirmAllUnsavedChanges();
+      if (!ok) return;
+      const allTabs = tabsState.tabs();
+      for (const tab of allTabs) tabsState.closeTab(tab.id);
+      tabsState.createTab();
+    },
+  });
+  registerCommand({
+    id: "view.cycleTheme",
+    label: "Cycle Theme",
+    shortcut: "Cmd+J T",
+    category: "View",
+    execute: () => { themeState.cycleTheme(); preferencesState.savePreferences(); },
+  });
+
   // Block
   registerCommand({
     id: "block.copyLink",

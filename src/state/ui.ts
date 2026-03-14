@@ -8,6 +8,7 @@ const [isReviewOpen, setReviewOpen] = createSignal(false);
 const [isMindMapOpen, setMindMapOpen] = createSignal(false);
 const [isFullscreen, setFullscreen] = createSignal(false);
 const [chromeHidden, setChromeHidden] = createSignal(false);
+const [chordPending, setChordPending] = createSignal<string | null>(null);
 
 export const uiState = {
   isSourceView,
@@ -46,5 +47,10 @@ export const uiState = {
   },
   showChrome() {
     setChromeHidden(false);
+  },
+  chordPending,
+  setChordPending,
+  clearChord() {
+    setChordPending(null);
   },
 };

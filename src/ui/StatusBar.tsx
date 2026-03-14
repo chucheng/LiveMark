@@ -1,5 +1,6 @@
 import { type Accessor, Show } from "solid-js";
 import { themeState } from "../state/theme";
+import { uiState } from "../state/ui";
 import { preferencesState } from "../state/preferences";
 
 export interface CursorInfo {
@@ -33,6 +34,11 @@ export default function StatusBar(props: StatusBarProps) {
         )}
         <Show when={props.autoSaveStatus?.()}>
           <span class="lm-statusbar-autosave">{props.autoSaveStatus!()}</span>
+        </Show>
+        <Show when={uiState.chordPending()}>
+          <span class="lm-statusbar-chord">
+            ({uiState.chordPending()}) pressed — waiting for key…
+          </span>
         </Show>
       </div>
       <div class="lm-statusbar-right">

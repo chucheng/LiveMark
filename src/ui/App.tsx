@@ -153,8 +153,15 @@ export default function App() {
         const content = await invoke<string>("read_file", { path: tab.filePath });
         editor.setMarkdown(content);
       } catch {
-        // File may have been deleted — show empty
+        // File may have been deleted — notify user and show empty
         editor.setMarkdown("");
+        const name = tab.filePath.replace(/\\/g, "/").split("/").pop() ?? tab.filePath;
+        import("@tauri-apps/plugin-dialog").then(({ message: msg }) => {
+          msg(`"${name}" could not be loaded. The file may have been deleted or moved.`, {
+            title: "File Not Found",
+            kind: "warning",
+          });
+        });
       }
     } else {
       // New untitled tab
@@ -169,6 +176,9 @@ export default function App() {
     if (tabSwitching) return;
     tabSwitching = true;
     try {
+      // Dismiss open menus/overlays to prevent stale state across tabs
+      uiState.setFindOpen(false);
+      window.dispatchEvent(new CustomEvent("lm-tab-switch"));
       await restoreTabState();
     } finally {
       tabSwitching = false;
@@ -208,9 +218,95 @@ export default function App() {
     openFileInTab(path);
   }
 
+  // Chord keybindings: two-keystroke sequences (e.g. Cmd+J then T)
+  let chordTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const chordBindings: Record<string, Record<string, () => void>> = {
+    "Cmd+J": {
+      p: async () => {
+        // Copy file path to clipboard
+        const fp = documentState.filePath();
+        if (!fp) return;
+        try {
+          const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
+          await writeText(fp);
+        } catch {
+          await navigator.clipboard.writeText(fp);
+        }
+      },
+      w: () => {
+        // Close all tabs
+        confirmAllUnsavedChanges().then((ok) => {
+          if (!ok) return;
+          const allTabs = tabsState.tabs();
+          for (const tab of allTabs) {
+            tabsState.closeTab(tab.id);
+          }
+          tabsState.createTab();
+          if (editor) {
+            editor.setMarkdown("");
+            editor.view.focus();
+          }
+        });
+      },
+      t: () => {
+        // Cycle theme
+        themeState.cycleTheme();
+        preferencesState.savePreferences();
+      },
+    },
+  };
+
+  function clearChord() {
+    uiState.clearChord();
+    if (chordTimer) { clearTimeout(chordTimer); chordTimer = null; }
+  }
+
   function handleKeydown(e: KeyboardEvent) {
     const mod = e.metaKey || e.ctrlKey;
+
+    // Phase 1: If chord is pending, dispatch or cancel
+    if (uiState.chordPending()) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        clearChord();
+        return;
+      }
+
+      // Cmd/Ctrl combo while chord pending → cancel chord, fall through to normal handling
+      if (mod) {
+        clearChord();
+        // fall through
+      } else {
+        // Plain key — check if active element is input/textarea (skip chord dispatch)
+        const tag = document.activeElement?.tagName?.toLowerCase();
+        if (tag === "input" || tag === "textarea") {
+          clearChord();
+          return;
+        }
+
+        const prefix = uiState.chordPending()!;
+        const bindings = chordBindings[prefix];
+        const key = e.key.toLowerCase();
+        if (bindings && bindings[key]) {
+          e.preventDefault();
+          bindings[key]();
+        }
+        clearChord();
+        return;
+      }
+    }
+
     if (!mod) return;
+
+    // Phase 2: Chord prefix detection — Cmd+J
+    if (e.key === "j" && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      uiState.setChordPending("Cmd+J");
+      if (chordTimer) clearTimeout(chordTimer);
+      chordTimer = setTimeout(() => clearChord(), 1500);
+      return;
+    }
 
     if (e.key === "o" && e.shiftKey) {
       // Cmd+Shift+O — open folder
@@ -416,7 +512,11 @@ export default function App() {
       try {
         const initialFiles = await invoke<string[]>("get_initial_files");
         for (const file of initialFiles) {
-          await openFileInTab(file);
+          try {
+            await openFileInTab(file);
+          } catch {
+            // Continue opening remaining files even if one fails
+          }
         }
       } catch {
         // No initial files
@@ -447,6 +547,7 @@ export default function App() {
     stopFileWatch();
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+    if (chordTimer) clearTimeout(chordTimer);
     if (chromeHideTimer) clearTimeout(chromeHideTimer);
     if (chromeLeaveTimer) clearTimeout(chromeLeaveTimer);
     unlistenClose?.();

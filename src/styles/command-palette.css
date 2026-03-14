@@ -81,6 +81,11 @@
   font-family: var(--lm-font-mono);
 }
 
+.lm-palette-chord-sep {
+  display: inline-block;
+  width: 6px;
+}
+
 .lm-palette-empty {
   padding: 20px;
   text-align: center;

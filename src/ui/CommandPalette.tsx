@@ -88,7 +88,16 @@ export default function CommandPalette() {
                 <span class="lm-palette-category">{cmd.category}</span>
                 <span class="lm-palette-label">{cmd.label}</span>
                 {cmd.shortcut && (
-                  <span class="lm-palette-shortcut">{cmd.shortcut}</span>
+                  <span class="lm-palette-shortcut">
+                    {cmd.shortcut.includes(" ")
+                      ? cmd.shortcut.split(" ").map((part, i) => (
+                          <>
+                            {i > 0 && <span class="lm-palette-chord-sep" />}
+                            {part}
+                          </>
+                        ))
+                      : cmd.shortcut}
+                  </span>
                 )}
               </div>
             )}
