@@ -408,7 +408,24 @@ export function registerAllCommands() {
     label: "Find & Replace",
     shortcut: "Cmd+F",
     category: "Edit",
-    execute: () => uiState.toggleFind(),
+    execute: async () => {
+      if (uiState.isFindOpen()) {
+        // Already open — re-focus and select the find input
+        window.dispatchEvent(new CustomEvent("lm-find-focus"));
+        return;
+      }
+      // Pre-fill with selected text
+      const { getEditorRef } = await import("./file-commands");
+      const editor = getEditorRef();
+      let selectedText = "";
+      if (editor) {
+        const { from, to } = editor.view.state.selection;
+        if (from !== to) {
+          selectedText = editor.view.state.doc.textBetween(from, to, " ");
+        }
+      }
+      uiState.openFind(selectedText);
+    },
   });
 
   registerCommand({

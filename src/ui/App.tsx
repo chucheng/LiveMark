@@ -514,7 +514,16 @@ export default function App() {
       }
     } else if (e.key === "f" && !e.shiftKey) {
       e.preventDefault();
-      uiState.toggleFind();
+      if (uiState.isFindOpen()) {
+        window.dispatchEvent(new CustomEvent("lm-find-focus"));
+      } else {
+        let selectedText = "";
+        if (editor) {
+          const { from, to } = editor.view.state.selection;
+          if (from !== to) selectedText = editor.view.state.doc.textBetween(from, to, " ");
+        }
+        uiState.openFind(selectedText);
+      }
     } else if (e.key === "H" && e.shiftKey) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("lm-toggle-replace"));

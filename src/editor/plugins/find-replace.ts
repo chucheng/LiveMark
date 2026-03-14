@@ -130,6 +130,7 @@ interface SetSearchMeta {
   query: string;
   caseSensitive: boolean;
   isRegex: boolean;
+  cursorPos?: number; // used to find nearest match
 }
 interface NextMatchMeta {
   type: "next";
@@ -161,7 +162,13 @@ export function findReplacePlugin(): Plugin<FindReplaceState> {
           }
           if (meta.type === "setSearch") {
             const matches = findMatches(newState, meta.query, meta.caseSensitive, meta.isRegex);
-            const currentIndex = matches.length > 0 ? 0 : -1;
+            let currentIndex = -1;
+            if (matches.length > 0) {
+              // Find the nearest match at or after the cursor position
+              const cursor = meta.cursorPos ?? 0;
+              currentIndex = matches.findIndex((m) => m.from >= cursor);
+              if (currentIndex < 0) currentIndex = 0; // wrap to first if none after cursor
+            }
             return {
               query: meta.query,
               caseSensitive: meta.caseSensitive,
@@ -225,13 +232,17 @@ export function setSearchQuery(
   caseSensitive: boolean,
   isRegex: boolean
 ) {
+  const cursorPos = view.state.selection.from;
   const tr = view.state.tr.setMeta(findReplaceKey, {
     type: "setSearch",
     query,
     caseSensitive,
     isRegex,
+    cursorPos,
   } as SetSearchMeta);
   view.dispatch(tr);
+  // Scroll to the nearest match after search
+  if (query) scrollToCurrentMatch(view);
 }
 
 export function nextMatch(view: EditorView) {
@@ -267,6 +278,9 @@ export function replaceMatch(view: EditorView, replacement: string) {
     const tr = view.state.tr.delete(match.from, match.to);
     view.dispatch(tr);
   }
+  // Auto-advance: scroll to the next match (doc change triggers re-search,
+  // which keeps currentIndex, effectively pointing at the next match)
+  scrollToCurrentMatch(view);
 }
 
 export function replaceAll(view: EditorView, replacement: string) {

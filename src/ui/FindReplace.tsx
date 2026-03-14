@@ -25,10 +25,26 @@ export default function FindReplace(props: FindReplaceProps) {
   const [matchInfo, setMatchInfo] = createSignal({ current: 0, total: 0 });
 
   onMount(() => {
+    // Pre-fill with selected text if provided
+    const initial = uiState.findInitialQuery();
+    if (initial) {
+      setQuery(initial);
+      uiState.setFindInitialQuery(""); // consume it
+    }
     findInputRef.focus();
+    findInputRef.select();
+
     const toggleReplace = () => setShowReplace(!showReplace());
+    const focusFind = () => {
+      findInputRef.focus();
+      findInputRef.select();
+    };
     window.addEventListener("lm-toggle-replace", toggleReplace);
-    onCleanup(() => window.removeEventListener("lm-toggle-replace", toggleReplace));
+    window.addEventListener("lm-find-focus", focusFind);
+    onCleanup(() => {
+      window.removeEventListener("lm-toggle-replace", toggleReplace);
+      window.removeEventListener("lm-find-focus", focusFind);
+    });
   });
 
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -67,8 +83,7 @@ export default function FindReplace(props: FindReplaceProps) {
     const v = props.view();
     if (v) {
       replaceMatch(v, replacement());
-      // Re-run search after replace
-      setSearchQuery(v, query(), caseSensitive(), isRegex());
+      // Doc change triggers auto re-search in plugin; just update UI
       setMatchInfo(getMatchInfo(v));
     }
   }

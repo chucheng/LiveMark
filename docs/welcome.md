@@ -64,7 +64,7 @@ Perfect for when you need to check or fine-tune the exact syntax, then flip back
 - **Mind Map** (`Cmd+T`) — See your document's heading structure as an interactive mind map with zoom and pan
 - **Math** — Write LaTeX inline with `$E=mc^2$` or in display blocks with `$$`
 - **Mermaid Diagrams** — Fenced code blocks with `mermaid` render as live diagrams
-- **Find & Replace** (`Cmd+F`) — Regex support, case-sensitive toggle, replace all
+- **Find & Replace** (`Cmd+F`) — Jumps to nearest match, pre-fills from selection, regex support, replace all
 - **Multi-tab** — Open several files at once, each with its own editor state
 - **Sidebar File Tree** (`Cmd+\`) — Navigate your project without leaving the editor
 - **Document Outline** (`Cmd+Shift+O`) — Heading tree for quick navigation within your document

@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 const [isSourceView, setSourceView] = createSignal(false);
 const [isPaletteOpen, setPaletteOpen] = createSignal(false);
 const [isFindOpen, setFindOpen] = createSignal(false);
+const [findInitialQuery, setFindInitialQuery] = createSignal("");
 const [isAboutOpen, setAboutOpen] = createSignal(false);
 const [isReviewOpen, setReviewOpen] = createSignal(false);
 const [isMindMapOpen, setMindMapOpen] = createSignal(false);
@@ -32,8 +33,14 @@ export const uiState = {
   },
   isFindOpen,
   setFindOpen,
+  findInitialQuery,
+  setFindInitialQuery,
   toggleFind() {
     setFindOpen(!isFindOpen());
+  },
+  openFind(initialQuery?: string) {
+    setFindInitialQuery(initialQuery ?? "");
+    setFindOpen(true);
   },
   isAboutOpen,
   setAboutOpen,
