@@ -89,13 +89,27 @@ export default function MindMap(props: MindMapProps) {
     const view = props.view();
     if (!view) return;
 
-    // Jump to heading in editor
-    view.focus();
-    const tr = view.state.tr.setSelection(
-      TextSelection.near(view.state.doc.resolve(heading.pos + 1))
-    );
-    view.dispatch(tr.scrollIntoView());
+    // Close the mind map first, then navigate
     props.onClose();
+
+    // Jump to heading and scroll to ~28% from top (golden reading zone)
+    requestAnimationFrame(() => {
+      view.focus();
+      const tr = view.state.tr.setSelection(
+        TextSelection.near(view.state.doc.resolve(heading.pos + 1))
+      );
+      view.dispatch(tr);
+
+      // Scroll heading to 28% from top of the editor wrapper
+      const coords = view.coordsAtPos(heading.pos + 1);
+      const wrapper = view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+      if (wrapper) {
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const targetY = wrapperRect.top + wrapperRect.height * 0.28;
+        const delta = coords.top - targetY;
+        wrapper.scrollBy({ top: delta, behavior: "smooth" });
+      }
+    });
   }
 
   function handleKeydown(e: KeyboardEvent) {
