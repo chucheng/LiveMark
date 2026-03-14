@@ -447,6 +447,14 @@
   padding: 0;
 }
 
+.lm-frontmatter-active {
+  border-color: var(--lm-accent);
+}
+
+.lm-frontmatter-active .lm-frontmatter-content {
+  color: var(--lm-text);
+}
+
 /* Mermaid diagram */
 .lm-mermaid-wrapper {
   position: relative;
@@ -479,6 +487,44 @@
 .lm-mermaid-render svg {
   max-width: 100%;
   height: auto;
+}
+
+/* Override mermaid SVG styles for dark mode compatibility */
+[data-theme="dark"] .lm-mermaid-render .nodeLabel,
+[data-theme="dark"] .lm-mermaid-render .label text,
+[data-theme="dark"] .lm-mermaid-render .edgeLabel text,
+[data-theme="dark"] .lm-mermaid-render text.nodeLabel {
+  fill: #d0d4dc !important;
+  color: #d0d4dc !important;
+}
+
+[data-theme="dark"] .lm-mermaid-render .node rect,
+[data-theme="dark"] .lm-mermaid-render .node polygon,
+[data-theme="dark"] .lm-mermaid-render .node circle,
+[data-theme="dark"] .lm-mermaid-render .node ellipse {
+  fill: #2a3040 !important;
+  stroke: #3a4050 !important;
+}
+
+[data-theme="dark"] .lm-mermaid-render .edgePath .path,
+[data-theme="dark"] .lm-mermaid-render .flowchart-link {
+  stroke: #505868 !important;
+}
+
+[data-theme="dark"] .lm-mermaid-render .marker,
+[data-theme="dark"] .lm-mermaid-render marker path {
+  fill: #505868 !important;
+  stroke: #505868 !important;
+}
+
+[data-theme="dark"] .lm-mermaid-render .edgeLabel .label rect {
+  fill: #1e2128 !important;
+  opacity: 0.9;
+}
+
+[data-theme="dark"] .lm-mermaid-render .cluster rect {
+  fill: #1a1f28 !important;
+  stroke: #2a3040 !important;
 }
 
 .lm-mermaid-source {

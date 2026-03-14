@@ -133,12 +133,10 @@ export function generateBlockId(): string {
 }
 
 /**
- * Get or generate a link anchor for the block at the given position.
- * - Headings: slug from text content (e.g. #my-heading)
- * - Other blocks: read existing blockId attr, or generate + set one via transaction
- * Returns the anchor string (without leading #).
+ * Read-only: get the anchor for a block without mutating state.
+ * Returns null for non-heading blocks that have no blockId yet.
  */
-export function getBlockAnchor(
+export function readBlockAnchor(
   view: EditorView,
   blockPos: number
 ): string | null {
@@ -147,7 +145,6 @@ export function getBlockAnchor(
 
   if (node.type.name === "heading") {
     const baseSlug = generateSlug(node.textContent);
-    // Deduplicate: count earlier headings with the same slug
     let count = 0;
     view.state.doc.forEach((child, offset) => {
       if (offset >= blockPos) return;
@@ -158,9 +155,25 @@ export function getBlockAnchor(
     return count > 0 ? `${baseSlug}-${count}` : baseSlug;
   }
 
-  // For non-heading blocks, use/generate a blockId attribute
-  const existing = node.attrs.blockId;
+  return node.attrs.blockId ?? null;
+}
+
+/**
+ * Get or generate a link anchor for the block at the given position.
+ * - Headings: slug from text content (read-only)
+ * - Other blocks: read existing blockId attr, or generate + persist one via transaction
+ * Returns the anchor string (without leading #).
+ */
+export function getBlockAnchor(
+  view: EditorView,
+  blockPos: number
+): string | null {
+  const existing = readBlockAnchor(view, blockPos);
   if (existing) return existing;
+
+  // Non-heading block without an ID — generate and persist
+  const node = view.state.doc.nodeAt(blockPos);
+  if (!node) return null;
 
   const id = generateBlockId();
   const tr = view.state.tr.setNodeMarkup(blockPos, undefined, {

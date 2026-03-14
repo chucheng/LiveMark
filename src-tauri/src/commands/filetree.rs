@@ -33,12 +33,21 @@ pub fn list_directory(path: String) -> Result<Vec<FileEntry>, String> {
             continue;
         }
         // Skip node_modules, target, dist
-        if matches!(name.as_str(), "node_modules" | "target" | "dist" | ".git") {
+        if matches!(name.as_str(), "node_modules" | "target" | "dist") {
+            continue;
+        }
+
+        // Skip symlinks to avoid potential directory loops
+        let file_type = match entry.file_type() {
+            Ok(ft) => ft,
+            Err(_) => continue,
+        };
+        if file_type.is_symlink() {
             continue;
         }
 
         let path_str = entry.path().to_string_lossy().to_string();
-        let entry_type = if entry.path().is_dir() {
+        let entry_type = if file_type.is_dir() {
             "directory"
         } else {
             "file"
@@ -65,7 +74,7 @@ pub struct WatcherState(pub Mutex<Option<notify_debouncer_mini::Debouncer<notify
 #[tauri::command]
 pub fn watch_directory(app: tauri::AppHandle, path: String) -> Result<(), String> {
     let state = app.state::<WatcherState>();
-    let mut guard = state.0.lock().map_err(|e| format!("Lock error: {e}"))?;
+    let mut guard = state.0.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
 
     let app_handle = app.clone();
     let mut debouncer = new_debouncer(Duration::from_millis(500), move |res: Result<Vec<notify_debouncer_mini::DebouncedEvent>, notify::Error>| {
@@ -90,7 +99,7 @@ pub fn watch_directory(app: tauri::AppHandle, path: String) -> Result<(), String
 #[tauri::command]
 pub fn unwatch_directory(app: tauri::AppHandle) -> Result<(), String> {
     let state = app.state::<WatcherState>();
-    let mut guard = state.0.lock().map_err(|e| format!("Lock error: {e}"))?;
+    let mut guard = state.0.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
     *guard = None;
     Ok(())
 }

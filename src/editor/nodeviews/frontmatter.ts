@@ -33,7 +33,16 @@ export class FrontmatterView implements NodeView {
     return true;
   }
 
+  selectNode() {
+    this.dom.classList.add("lm-frontmatter-active");
+  }
+
+  deselectNode() {
+    this.dom.classList.remove("lm-frontmatter-active");
+  }
+
   ignoreMutation(mutation: ViewMutationRecord): boolean {
-    return mutation.type !== "selection";
+    if (mutation.type === "selection") return false;
+    return !this.contentDOM.contains(mutation.target);
   }
 }

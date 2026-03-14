@@ -1,4 +1,4 @@
-import { For, Show, createSignal } from "solid-js";
+import { For, Show, createSignal, onCleanup } from "solid-js";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { fileTreeState, type FileTreeNode } from "../state/filetree";
 import { isOpenableFile } from "../commands/file-commands";
@@ -52,6 +52,7 @@ function TreeNode(props: { node: FileTreeNode; depth: number; onFileClick: (path
 
 export default function Sidebar(props: SidebarProps) {
   const [isResizing, setIsResizing] = createSignal(false);
+  let resizeCleanup: (() => void) | null = null;
 
   async function handleOpenFolder() {
     const selected = await openDialog({
@@ -80,11 +81,20 @@ export default function Sidebar(props: SidebarProps) {
       setIsResizing(false);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      resizeCleanup = null;
     }
 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
+    resizeCleanup = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
   }
+
+  onCleanup(() => {
+    resizeCleanup?.();
+  });
 
   return (
     <Show when={fileTreeState.sidebarVisible()}>

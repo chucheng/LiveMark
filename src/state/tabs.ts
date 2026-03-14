@@ -44,16 +44,21 @@ function createTab(filePath?: string | null): Tab {
   return tab;
 }
 
-function closeTab(tabId: string): Tab | null {
+export type CloseTabResult =
+  | { type: "not_found" }
+  | { type: "replaced"; newTab: Tab }
+  | { type: "switched" };
+
+function closeTab(tabId: string): CloseTabResult {
   const current = tabs();
   const idx = current.findIndex((t) => t.id === tabId);
-  if (idx < 0) return null;
+  if (idx < 0) return { type: "not_found" };
 
   const remaining = current.filter((t) => t.id !== tabId);
 
   if (remaining.length === 0) {
     // Last tab — create new untitled
-    const newTab = {
+    const newTab: Tab = {
       id: generateTabId(),
       filePath: null,
       fileName: "Untitled",
@@ -63,7 +68,7 @@ function closeTab(tabId: string): Tab | null {
     };
     setTabs([newTab]);
     setActiveTabId(newTab.id);
-    return newTab;
+    return { type: "replaced", newTab };
   }
 
   setTabs(remaining);
@@ -74,7 +79,7 @@ function closeTab(tabId: string): Tab | null {
     setActiveTabId(remaining[newIdx].id);
   }
 
-  return null;
+  return { type: "switched" };
 }
 
 function switchTab(tabId: string) {

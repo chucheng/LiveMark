@@ -285,9 +285,11 @@ function performCloseTab(tabId: string): boolean {
   const closingTab = tabsState.tabs().find((t) => t.id === tabId);
   if (closingTab?.filePath) clearMtime(closingTab.filePath);
 
-  const newTab = tabsState.closeTab(tabId);
+  const result = tabsState.closeTab(tabId);
 
-  if (newTab) {
+  if (result.type === "not_found") return false;
+
+  if (result.type === "replaced") {
     // Last tab was closed, new untitled created
     editorRef.setMarkdown("");
     onFileChangeCallback?.();
