@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.1.1
+
+- **Resilience hardening** — comprehensive abuse prevention across the entire app
+  - **P0 (crash prevention):** max 50 open tabs, 50 MB file size limit, 20 MB image size limit, 5 MB paste text limit, undo history capped at 500 steps, dangerous URL scheme filtering (javascript:, data:, vbscript:)
+  - **P1 (UX degradation prevention):** max 10 files per drag-drop, max 10 images per paste, debounced word count (1s), debounced search (150ms), auto-save max-wait (5 min forced save during continuous editing)
+  - **P2 (polish):** throttled theme toggle (500ms), export-in-progress guard, large document PDF warning (500+ blocks), increased mermaid render debounce (300ms)
+- **Mind map zoom & pan** — scroll wheel zoom (centered on cursor, 25%–300%), click+drag pan, arrow key pan, +/-/0 keyboard zoom, header bar zoom controls
+- **Mind map colors** — custom Mermaid palette with softer desaturated tones matching LiveMark's design system (light and dark mode)
+- **Mind map click-to-navigate** — click a node to close mind map and scroll to heading at 28% from top
+- **Mind map foreignObject fix** — handle Mermaid v11 markdown label rendering
+
 ## v1.4.0
 
 - **Settings panel** — editor customization with font family, content max-width, line height, paragraph spacing, and two-column layout toggle

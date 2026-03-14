@@ -3,7 +3,7 @@
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
 ![CI](https://github.com/chucheng/LiveMark/actions/workflows/ci.yml/badge.svg)
-![Version](https://img.shields.io/badge/version-2.0.2-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -45,7 +45,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 ### UI
 - **Sidebar file tree** — navigate and open files from a sidebar
 - **Light & dark themes** — system-follow or manual toggle (Cmd+Shift+T), persisted
-- **Mind map view** — Cmd+T, document headings as an interactive mind map
+- **Mind map view** — Cmd+T, document headings as an interactive mind map with zoom/pan (scroll wheel, drag, keyboard)
 - **Command palette** — Cmd+Shift+P, fuzzy search across all actions
 - **Source view** — Cmd+/ toggles read-only raw Markdown
 - **Focus mode** — Cmd+J F cycles off → block → sentence focus (dims inactive blocks or non-active sentences)
@@ -257,7 +257,8 @@ src-tauri/
 | v1.4.0 | Auto-update — in-app update banner via tauri-plugin-updater, settings panel UX improvements, chord keybinding fixes |
 | v2.0.0 | Typewriter mode, sentence focus, callout admonitions, block transform menu, block handles chord shortcuts |
 | v2.0.1 | Bug audit — fix sentence focus inside blockquotes/lists, inline atom offset mapping, callout empty body, badge DOM placement, remove dead shortcut |
-| v2.0.2 | Fix PDF export (open in browser instead of broken iframe print), 50 MB file size guard, export reentrancy lock, mind map click-to-navigate and zoom controls |
+| v2.0.2 | Fix PDF export (open in browser instead of broken iframe print), 50 MB file size guard, export reentrancy lock |
+| v2.1.0 | Mind map zoom/pan (scroll wheel, drag, keyboard, header controls), custom Mermaid color palette, click-to-navigate scroll positioning, resilience hardening (tab/file/image limits, debouncing, URL filtering) |
 
 ## Documentation
 
