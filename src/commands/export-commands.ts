@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { save, message } from "@tauri-apps/plugin-dialog";
+import { open as shellOpen } from "@tauri-apps/plugin-shell";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { documentState } from "../state/document";
 import { generateHTML, renderHTMLBody, type TemplateSettings } from "../export/html-template";
@@ -10,6 +11,7 @@ import { markdownSerializer } from "../editor/markdown/serializer";
 import type { EditorInstance } from "../editor/editor";
 
 let editorRef: EditorInstance | null = null;
+let exportInProgress = false;
 
 export function setExportEditorRef(editor: EditorInstance) {
   editorRef = editor;
@@ -30,8 +32,10 @@ function currentTemplate(): TemplateSettings {
  * Cmd+Shift+E
  */
 export async function exportHTML() {
-  if (!editorRef) return;
+  if (!editorRef || exportInProgress) return;
+  exportInProgress = true;
 
+  try {
   const markdown = editorRef.getMarkdown();
   const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
   const filePath = documentState.filePath();
@@ -56,15 +60,31 @@ export async function exportHTML() {
       kind: "error",
     });
   }
+  } finally {
+    exportInProgress = false;
+  }
 }
 
 /**
- * Export the current document to PDF via system print dialog.
- * Uses a hidden iframe approach for cross-platform compatibility.
+ * Export the current document to PDF via the system browser's print dialog.
+ * Writes a temp HTML file and opens it in the default browser where
+ * the user can use Cmd+P / Ctrl+P to print or save as PDF.
  * Cmd+P
  */
 export async function exportPDF() {
-  if (!editorRef) return;
+  if (!editorRef || exportInProgress) return;
+  exportInProgress = true;
+
+  try {
+  // Warn for very large documents
+  const blockCount = editorRef.view.state.doc.childCount;
+  if (blockCount > 500) {
+    const result = await message(
+      `This document has ${blockCount} blocks. PDF export may be slow or cause high memory usage. Continue?`,
+      { title: "Large Document", kind: "warning", buttons: { yes: "Continue", no: "Cancel", cancel: "Cancel" } },
+    );
+    if (result !== "Continue") return;
+  }
 
   const markdown = editorRef.getMarkdown();
   const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
@@ -72,45 +92,22 @@ export async function exportPDF() {
   const docDir = filePath ? filePath.replace(/[/\\][^/\\]+$/, "") : undefined;
   const html = generateHTML(markdown, title, currentTemplate(), docDir);
 
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.left = "-9999px";
-  iframe.style.top = "-9999px";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  document.body.appendChild(iframe);
-
-  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-  if (!iframeDoc) {
-    document.body.removeChild(iframe);
-    return;
+  try {
+    const tempPath = await invoke<string>("write_temp_html", {
+      content: html,
+      name: title + ".html",
+    });
+    await shellOpen("file://" + tempPath);
+    uiState.showStatus("Opened in browser — use ⌘P to print/save as PDF");
+  } catch (err) {
+    await message(`Failed to export PDF:\n${err}`, {
+      title: "Export Error",
+      kind: "error",
+    });
   }
-
-  iframeDoc.open();
-  iframeDoc.write(html);
-  iframeDoc.close();
-
-  let printed = false;
-
-  function printAndCleanup() {
-    if (printed) return;
-    printed = true;
-    try {
-      iframe.contentWindow?.print();
-    } finally {
-      setTimeout(() => {
-        if (iframe.parentNode) {
-          document.body.removeChild(iframe);
-        }
-      }, 1000);
-    }
+  } finally {
+    exportInProgress = false;
   }
-
-  // Wait for content to render before printing
-  iframe.onload = printAndCleanup;
-
-  // Fallback: if onload doesn't fire (content already loaded via write)
-  setTimeout(printAndCleanup, 200);
 }
 
 /**

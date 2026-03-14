@@ -11,6 +11,8 @@ export interface Tab {
   scrollPosition: number;
 }
 
+const MAX_TABS = 50;
+
 let nextId = 1;
 function generateTabId(): string {
   return `tab-${nextId++}`;
@@ -30,7 +32,12 @@ const filePath = createMemo(() => activeTab()?.filePath ?? null);
 const isModified = createMemo(() => activeTab()?.isModified ?? false);
 const fileName = createMemo(() => activeTab()?.fileName ?? "Untitled");
 
-function createTab(filePath?: string | null): Tab {
+function canCreateTab(): boolean {
+  return tabs().length < MAX_TABS;
+}
+
+function createTab(filePath?: string | null): Tab | null {
+  if (!canCreateTab()) return null;
   const tab: Tab = {
     id: generateTabId(),
     filePath: filePath ?? null,
@@ -175,6 +182,8 @@ export const tabsState = {
   filePath,
   isModified,
   fileName,
+  MAX_TABS,
+  canCreateTab,
   createTab,
   closeTab,
   switchTab,

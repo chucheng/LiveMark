@@ -3,7 +3,7 @@
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
 ![CI](https://github.com/chucheng/LiveMark/actions/workflows/ci.yml/badge.svg)
-![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Version](https://img.shields.io/badge/version-2.0.2-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -58,7 +58,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 
 ### Export
 - HTML export (Cmd+Shift+E) — standalone file with embedded styles
-- PDF export (Cmd+P) — via system print dialog
+- PDF export (Cmd+P) — opens in browser for print/save-as-PDF
 - Copy as HTML (Cmd+Shift+C)
 - Copy as Markdown (Cmd+Alt+C) — selection-aware
 - Copy as Beautiful Doc — styled HTML for pasting into rich editors
@@ -257,6 +257,7 @@ src-tauri/
 | v1.4.0 | Auto-update — in-app update banner via tauri-plugin-updater, settings panel UX improvements, chord keybinding fixes |
 | v2.0.0 | Typewriter mode, sentence focus, callout admonitions, block transform menu, block handles chord shortcuts |
 | v2.0.1 | Bug audit — fix sentence focus inside blockquotes/lists, inline atom offset mapping, callout empty body, badge DOM placement, remove dead shortcut |
+| v2.0.2 | Fix PDF export (open in browser instead of broken iframe print), 50 MB file size guard, export reentrancy lock, mind map click-to-navigate and zoom controls |
 
 ## Documentation
 

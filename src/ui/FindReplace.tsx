@@ -31,15 +31,20 @@ export default function FindReplace(props: FindReplaceProps) {
     onCleanup(() => window.removeEventListener("lm-toggle-replace", toggleReplace));
   });
 
+  let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
   createEffect(() => {
     const v = props.view();
     const q = query();
     const cs = caseSensitive();
     const re = isRegex();
-    if (v) {
-      setSearchQuery(v, q, cs, re);
-      setMatchInfo(getMatchInfo(v));
-    }
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      if (v) {
+        setSearchQuery(v, q, cs, re);
+        setMatchInfo(getMatchInfo(v));
+      }
+    }, 150);
   });
 
   function doNext() {

@@ -3,8 +3,19 @@ use std::io::Write;
 use std::path::Path;
 use std::time::UNIX_EPOCH;
 
+/// Maximum file size we will read (50 MB).
+const MAX_FILE_SIZE: u64 = 50 * 1024 * 1024;
+
 #[tauri::command]
 pub fn read_file(path: String) -> Result<String, String> {
+    let meta = fs::metadata(&path).map_err(|e| format!("Failed to read file: {e}"))?;
+    if meta.len() > MAX_FILE_SIZE {
+        let size_mb = meta.len() as f64 / (1024.0 * 1024.0);
+        return Err(format!(
+            "File too large ({:.1} MB). LiveMark supports files up to 50 MB.",
+            size_mb
+        ));
+    }
     fs::read_to_string(&path).map_err(|e| format!("Failed to read file: {e}"))
 }
 
@@ -40,6 +51,20 @@ pub fn write_file(path: String, content: String) -> Result<(), String> {
     })?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub fn write_temp_html(content: String, name: String) -> Result<String, String> {
+    let dir = std::env::temp_dir().join("livemark-export");
+    fs::create_dir_all(&dir).map_err(|e| format!("Failed to create temp dir: {e}"))?;
+    let safe_name = Path::new(&name)
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("export.html");
+    let target = dir.join(safe_name);
+    fs::write(&target, content.as_bytes())
+        .map_err(|e| format!("Failed to write temp HTML: {e}"))?;
+    Ok(target.to_string_lossy().to_string())
 }
 
 #[tauri::command]

@@ -80,8 +80,11 @@ export default function App() {
   let editor: EditorInstance | undefined;
   let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
   let autoSaveFadeTimer: ReturnType<typeof setTimeout> | null = null;
+  let autoSaveMaxTimer: ReturnType<typeof setTimeout> | null = null;
+  let wordCountTimer: ReturnType<typeof setTimeout> | null = null;
   let tabSwitching = false;
   const AUTO_SAVE_DELAY = 30_000;
+  const AUTO_SAVE_MAX_DELAY = 5 * 60_000; // 5 minutes max-wait
   const [wordCount, setWordCount] = createSignal(0);
   const [cursorInfo, setCursorInfo] = createSignal<CursorInfo>({
     line: 1,
@@ -121,17 +124,24 @@ export default function App() {
     applyCustomShortcuts(preferencesState.customShortcuts());
   });
 
+  async function performAutoSave() {
+    if (autoSaveMaxTimer) { clearTimeout(autoSaveMaxTimer); autoSaveMaxTimer = null; }
+    const saved = await silentSave();
+    if (saved) {
+      setAutoSaveStatus("Auto-saved");
+      if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+      autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 2000);
+    }
+  }
+
   function resetAutoSaveTimer() {
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (!preferencesState.autoSave()) return;
-    autoSaveTimer = setTimeout(async () => {
-      const saved = await silentSave();
-      if (saved) {
-        setAutoSaveStatus("Auto-saved");
-        if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
-        autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 2000);
-      }
-    }, AUTO_SAVE_DELAY);
+    autoSaveTimer = setTimeout(performAutoSave, AUTO_SAVE_DELAY);
+    // Max-wait: force save after 5 minutes of continuous editing
+    if (!autoSaveMaxTimer) {
+      autoSaveMaxTimer = setTimeout(performAutoSave, AUTO_SAVE_MAX_DELAY);
+    }
   }
 
   function countWords(text: string): number {
@@ -145,6 +155,11 @@ export default function App() {
     if (!editor) return;
     const text = editor.getDoc().textContent;
     setWordCount(countWords(text));
+  }
+
+  function scheduleWordCount() {
+    if (wordCountTimer) clearTimeout(wordCountTimer);
+    wordCountTimer = setTimeout(updateWordCount, 1000);
   }
 
   /**
@@ -238,6 +253,18 @@ export default function App() {
     openFileInTab(path);
   }
 
+  // Throttle theme toggle to prevent rapid cycling
+  let lastThemeToggle = 0;
+  function throttledCycleTheme() {
+    const now = Date.now();
+    if (now - lastThemeToggle < 500) return;
+    lastThemeToggle = now;
+    themeState.cycleTheme();
+    preferencesState.savePreferences();
+    const labels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
+    uiState.showStatus(`Theme: ${labels[themeState.theme()]}`);
+  }
+
   // Chord keybindings: two-keystroke sequences (e.g. Cmd+J then T)
   let chordTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -271,11 +298,7 @@ export default function App() {
         });
       },
       t: () => {
-        // Cycle theme
-        themeState.cycleTheme();
-        preferencesState.savePreferences();
-        const labels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
-        uiState.showStatus(`Theme: ${labels[themeState.theme()]}`);
+        throttledCycleTheme();
       },
       f: () => {
         // Toggle focus mode
@@ -406,10 +429,7 @@ export default function App() {
       uiState.showStatus(`Mind map: ${uiState.isMindMapOpen() ? "On" : "Off"}`);
     } else if (e.key === "T" && e.shiftKey) {
       e.preventDefault();
-      themeState.cycleTheme();
-      preferencesState.savePreferences();
-      const themeLabels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
-      uiState.showStatus(`Theme: ${themeLabels[themeState.theme()]}`);
+      throttledCycleTheme();
     } else if (e.key === "/" && !e.shiftKey) {
       e.preventDefault();
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
@@ -538,6 +558,8 @@ export default function App() {
     }
   }
 
+  const MAX_FILES_PER_DROP = 10;
+
   function handleFileDrop(e: DragEvent) {
     if (!e.dataTransfer?.files?.length) return;
     const files = Array.from(e.dataTransfer.files);
@@ -547,7 +569,11 @@ export default function App() {
     );
     if (textFiles.length === 0) return;
     e.preventDefault();
-    for (const f of textFiles) {
+    if (textFiles.length > MAX_FILES_PER_DROP) {
+      uiState.showStatus(`Opening first ${MAX_FILES_PER_DROP} of ${textFiles.length} files`);
+    }
+    const toOpen = textFiles.slice(0, MAX_FILES_PER_DROP);
+    for (const f of toOpen) {
       // In Tauri webview, dropped files have a path property
       const path = (f as File & { path?: string }).path;
       if (path) {
@@ -585,10 +611,9 @@ export default function App() {
     }
 
     editor = createEditor(editorRef, {
-      onChange(doc) {
+      onChange(_doc) {
         documentState.setDirty();
-        const text = doc.textContent;
-        setWordCount(countWords(text));
+        scheduleWordCount();
         resetAutoSaveTimer();
         scheduleHideChrome();
       },
@@ -654,11 +679,12 @@ export default function App() {
       // Drag-and-drop file open via Tauri window event
       unlistenDragDrop = await appWindow.onDragDropEvent(async (event) => {
         if (event.payload.type === "drop") {
-          const paths = event.payload.paths ?? [];
-          for (const p of paths) {
-            if (isOpenableFile(p)) {
-              await openFileInTab(p);
-            }
+          const paths = (event.payload.paths ?? []).filter(isOpenableFile);
+          if (paths.length > MAX_FILES_PER_DROP) {
+            uiState.showStatus(`Opening first ${MAX_FILES_PER_DROP} of ${paths.length} files`);
+          }
+          for (const p of paths.slice(0, MAX_FILES_PER_DROP)) {
+            await openFileInTab(p);
           }
         }
       });
@@ -682,6 +708,8 @@ export default function App() {
     stopFileWatch();
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+    if (autoSaveMaxTimer) clearTimeout(autoSaveMaxTimer);
+    if (wordCountTimer) clearTimeout(wordCountTimer);
     if (chordTimer) clearTimeout(chordTimer);
     if (chromeHideTimer) clearTimeout(chromeHideTimer);
     if (chromeLeaveTimer) clearTimeout(chromeLeaveTimer);

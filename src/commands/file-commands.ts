@@ -120,7 +120,14 @@ export async function openFileInTab(path: string) {
     tabsState.snapshotActiveTab(editorRef.view, scroller);
 
     // Create new tab
-    tabsState.createTab(path);
+    const newTab = tabsState.createTab(path);
+    if (!newTab) {
+      await message(
+        `Tab limit reached (${tabsState.MAX_TABS}). Please close some tabs to open new files.`,
+        { title: "Too Many Tabs", kind: "info" },
+      );
+      return;
+    }
 
     // Load content
     editorRef.setMarkdown(content);
@@ -257,7 +264,11 @@ export async function newFile() {
   tabsState.snapshotActiveTab(editorRef.view, scroller);
 
   // Create new tab
-  tabsState.createTab();
+  const newTab = tabsState.createTab();
+  if (!newTab) {
+    uiState.showStatus(`Tab limit reached (${tabsState.MAX_TABS})`);
+    return;
+  }
   editorRef.setMarkdown("");
   onFileChangeCallback?.();
 }

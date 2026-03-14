@@ -25,5 +25,26 @@ export default defineConfig({
     target: "esnext",
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     sourcemap: !!process.env.TAURI_DEBUG,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          katex: ["katex"],
+          hljs: ["highlight.js"],
+          prosemirror: [
+            "prosemirror-commands",
+            "prosemirror-gapcursor",
+            "prosemirror-history",
+            "prosemirror-inputrules",
+            "prosemirror-keymap",
+            "prosemirror-model",
+            "prosemirror-schema-list",
+            "prosemirror-state",
+            "prosemirror-tables",
+            "prosemirror-transform",
+            "prosemirror-view",
+          ],
+        },
+      },
+    },
   },
 });

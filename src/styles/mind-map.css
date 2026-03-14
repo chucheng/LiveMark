@@ -29,11 +29,60 @@
   justify-content: space-between;
   padding: 0.75em 1em;
   border-bottom: 1px solid var(--lm-border);
+  gap: 0.5em;
 }
 
 .lm-mindmap-title {
   font-weight: 600;
   font-size: 0.95em;
+}
+
+/* --- Zoom controls --- */
+.lm-mindmap-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  margin-right: 0.75em;
+}
+
+.lm-mindmap-btn {
+  background: var(--lm-btn-bg);
+  border: 1px solid var(--lm-btn-border);
+  border-radius: var(--lm-radius-sm);
+  color: var(--lm-text-muted);
+  font-size: 0.85em;
+  font-weight: 600;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--lm-transition-fast), color var(--lm-transition-fast);
+}
+
+.lm-mindmap-btn:hover {
+  background: var(--lm-btn-bg-hover);
+  color: var(--lm-text);
+}
+
+.lm-mindmap-zoom-label {
+  background: none;
+  border: none;
+  color: var(--lm-text-muted);
+  font-size: 0.75em;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5em;
+  text-align: center;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--lm-radius-sm);
+}
+
+.lm-mindmap-zoom-label:hover {
+  background: var(--lm-hover);
+  color: var(--lm-text);
 }
 
 .lm-mindmap-close {
@@ -55,26 +104,32 @@
   box-shadow: 0 0 0 2px var(--lm-focus-ring);
 }
 
+/* --- Pan / zoom canvas --- */
 .lm-mindmap-content {
   flex: 1;
-  overflow: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1em;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+}
+
+.lm-mindmap-content.lm-mindmap-grabbing {
+  cursor: grabbing;
 }
 
 .lm-mindmap-svg {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .lm-mindmap-svg svg {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: none;
+  max-height: none;
 }
 
 .lm-mindmap-svg .mindmap-node,
@@ -110,6 +165,11 @@
 
 .lm-mindmap-loading,
 .lm-mindmap-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--lm-text-muted);
   font-size: 0.9em;
 }

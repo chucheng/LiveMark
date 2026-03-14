@@ -307,6 +307,17 @@ Hover over any block (paragraph, heading, list, code block, etc.) to reveal a **
 
 Press `Cmd+T` to open the **mind map view**. It renders your document's heading structure as an interactive diagram using Mermaid, giving you a visual overview of the document outline.
 
+**Navigation:** Click any node to jump to that heading in the editor.
+
+**Zoom & Pan:**
+
+- **Scroll wheel / trackpad** — zoom in and out (centered on cursor)
+- **Click + drag** — pan the diagram
+- **Arrow keys** — pan with keyboard
+- **`+` / `-`** — zoom in / out by step
+- **`0`** — reset to fit
+- Zoom controls also available in the header bar
+
 ---
 
 ## Find & Replace

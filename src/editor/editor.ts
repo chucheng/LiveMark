@@ -74,7 +74,7 @@ export function createEditor(
       buildInputRules(),
       buildKeymaps(),
       keymap(baseKeymap),
-      history(),
+      history({ depth: 500 }),
       placeholderPlugin(),
       liveRenderPlugin(),
       inlineDecorationsPlugin(),
