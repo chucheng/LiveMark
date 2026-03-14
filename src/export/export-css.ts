@@ -19,7 +19,7 @@ export function getExportCSS(): string {
   --lm-code-text: #d63384;
   --lm-blockquote-border: #c0c8d8;
   --lm-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --lm-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", monospace;
+  --lm-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
   --lm-font-size: 16px;
   --lm-line-height: 1.7;
   --lm-content-width: 720px;

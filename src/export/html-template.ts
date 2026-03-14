@@ -23,7 +23,7 @@ function templateOverrides(settings?: TemplateSettings): string {
         fontCSS = '"Georgia", "Times New Roman", "Noto Serif", serif';
         break;
       case "mono":
-        fontCSS = '"JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", monospace';
+        fontCSS = '"JetBrains Mono", "SF Mono", "Cascadia Code", monospace';
         break;
       case "system":
         fontCSS = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
