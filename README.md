@@ -2,8 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![CI](https://github.com/chucheng/LiveMark/actions/workflows/ci.yml/badge.svg)
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.5-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -259,6 +258,11 @@ src-tauri/
 | v2.0.1 | Bug audit — fix sentence focus inside blockquotes/lists, inline atom offset mapping, callout empty body, badge DOM placement, remove dead shortcut |
 | v2.0.2 | Fix PDF export (open in browser instead of broken iframe print), 50 MB file size guard, export reentrancy lock |
 | v2.1.0 | Mind map zoom/pan (scroll wheel, drag, keyboard, header controls), custom Mermaid color palette, click-to-navigate scroll positioning, resilience hardening (tab/file/image limits, debouncing, URL filtering) |
+| v2.1.1 | Sync tauri.conf.json version, bump mermaid render debounce |
+| v2.1.2 | Quit app on macOS when window closed via X button, graceful read-only file handling |
+| v2.1.3 | Show Tutorial command in command palette, read-only indicator in status bar and title bar |
+| v2.1.4 | Fix CJK characters clipped in headings |
+| v2.1.5 | Source view is now editable with cursor position sync |
 
 ## Documentation
 
