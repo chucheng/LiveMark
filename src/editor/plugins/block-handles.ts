@@ -272,6 +272,177 @@ export function deleteBlock(state: EditorState, dispatch?: (tr: Transaction) => 
   return true;
 }
 
+// ── Block Transform ──────────────────────────────────────────────
+
+export type BlockTransformTarget =
+  | "paragraph"
+  | "heading1" | "heading2" | "heading3"
+  | "blockquote"
+  | "code_block"
+  | "bullet_list" | "ordered_list" | "task_list";
+
+/**
+ * Get valid transform targets for the block at the given position.
+ */
+export function getTransformTargets(state: EditorState, blockPos: number): BlockTransformTarget[] {
+  const node = state.doc.nodeAt(blockPos);
+  if (!node) return [];
+
+  const name = node.type.name;
+  const targets: BlockTransformTarget[] = [];
+
+  if (name === "paragraph") {
+    targets.push("heading1", "heading2", "heading3", "blockquote", "code_block", "bullet_list", "ordered_list", "task_list");
+  } else if (name === "heading") {
+    const level = node.attrs.level;
+    targets.push("paragraph");
+    if (level !== 1) targets.push("heading1");
+    if (level !== 2) targets.push("heading2");
+    if (level !== 3) targets.push("heading3");
+    targets.push("blockquote");
+  } else if (name === "blockquote") {
+    targets.push("paragraph");
+  } else if (name === "code_block") {
+    targets.push("paragraph");
+  } else if (name === "bullet_list") {
+    targets.push("ordered_list", "task_list");
+  } else if (name === "ordered_list") {
+    targets.push("bullet_list", "task_list");
+  } else if (name === "task_list") {
+    targets.push("bullet_list", "ordered_list");
+  }
+
+  return targets;
+}
+
+const TARGET_LABELS: Record<BlockTransformTarget, string> = {
+  paragraph: "Paragraph",
+  heading1: "Heading 1",
+  heading2: "Heading 2",
+  heading3: "Heading 3",
+  blockquote: "Blockquote",
+  code_block: "Code Block",
+  bullet_list: "Bullet List",
+  ordered_list: "Ordered List",
+  task_list: "Task List",
+};
+
+export function getTargetLabel(target: BlockTransformTarget): string {
+  return TARGET_LABELS[target];
+}
+
+/**
+ * Transform a top-level block at `blockPos` into a different block type.
+ */
+export function transformBlock(
+  view: EditorView,
+  blockPos: number,
+  target: BlockTransformTarget
+): void {
+  const { state } = view;
+  const node = state.doc.nodeAt(blockPos);
+  if (!node) return;
+
+  const { schema } = state;
+  const tr = state.tr;
+  const end = blockPos + node.nodeSize;
+
+  switch (target) {
+    case "paragraph": {
+      if (node.type.name === "blockquote") {
+        // Lift: replace blockquote with its first child paragraph content
+        const firstChild = node.firstChild;
+        if (firstChild) {
+          tr.replaceWith(blockPos, end, schema.nodes.paragraph.create(null, firstChild.content));
+        }
+      } else if (node.type.name === "code_block") {
+        tr.setBlockType(blockPos, end, schema.nodes.paragraph);
+      } else if (node.type.name === "heading") {
+        tr.setBlockType(blockPos, end, schema.nodes.paragraph);
+      }
+      break;
+    }
+    case "heading1":
+    case "heading2":
+    case "heading3": {
+      const level = parseInt(target.slice(-1));
+      if (node.type.name === "blockquote") {
+        // Extract first paragraph as heading
+        const firstChild = node.firstChild;
+        if (firstChild) {
+          tr.replaceWith(blockPos, end, schema.nodes.heading.create({ level }, firstChild.content));
+        }
+      } else {
+        tr.setBlockType(blockPos, end, schema.nodes.heading, { level });
+      }
+      break;
+    }
+    case "blockquote": {
+      // Wrap current content in blockquote
+      const content = node.type.name === "heading" || node.type.name === "paragraph"
+        ? schema.nodes.paragraph.create(null, node.content)
+        : node;
+      tr.replaceWith(blockPos, end, schema.nodes.blockquote.create(null, content));
+      break;
+    }
+    case "code_block": {
+      tr.setBlockType(blockPos, end, schema.nodes.code_block);
+      break;
+    }
+    case "bullet_list":
+    case "ordered_list":
+    case "task_list": {
+      const isList = ["bullet_list", "ordered_list", "task_list"].includes(node.type.name);
+      if (isList) {
+        // Convert between list types
+        const targetType = schema.nodes[target];
+        const isToTask = target === "task_list";
+        const isFromTask = node.type.name === "task_list";
+
+        // Build new children with correct item types
+        const items: import("prosemirror-model").Node[] = [];
+        node.forEach((child) => {
+          if (isToTask && !isFromTask) {
+            // list_item → task_list_item
+            items.push(schema.nodes.task_list_item.create({ checked: false }, child.content));
+          } else if (!isToTask && isFromTask) {
+            // task_list_item → list_item
+            items.push(schema.nodes.list_item.create(null, child.content));
+          } else {
+            items.push(child);
+          }
+        });
+
+        tr.replaceWith(blockPos, end, targetType.create({ tight: node.attrs.tight ?? false }, items));
+      } else {
+        // paragraph/heading → wrap in list
+        const itemContent = node.type.name === "paragraph"
+          ? node
+          : schema.nodes.paragraph.create(null, node.content);
+
+        if (target === "task_list") {
+          const item = schema.nodes.task_list_item.create({ checked: false }, itemContent);
+          tr.replaceWith(blockPos, end, schema.nodes.task_list.create(null, item));
+        } else {
+          const item = schema.nodes.list_item.create(null, itemContent);
+          tr.replaceWith(blockPos, end, schema.nodes[target].create(null, item));
+        }
+      }
+      break;
+    }
+  }
+
+  // Place cursor inside the new block
+  const mapped = tr.mapping.map(blockPos);
+  try {
+    tr.setSelection(TextSelection.near(tr.doc.resolve(mapped + 1)));
+  } catch {
+    // ignore
+  }
+
+  view.dispatch(tr.scrollIntoView());
+}
+
 // ── Plugin ───────────────────────────────────────────────────────
 
 export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
