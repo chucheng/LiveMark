@@ -526,7 +526,11 @@ export default function App() {
       // a .md file in Finder while the app is already running)
       unlistenOpenFiles = await listen<string[]>("open-files", async (event) => {
         for (const file of event.payload) {
-          await openFileInTab(file);
+          try {
+            await openFileInTab(file);
+          } catch {
+            // File may not exist or be inaccessible — skip
+          }
         }
       });
 

@@ -37,6 +37,8 @@ export default function MindMap(props: MindMapProps) {
 
   onMount(() => {
     renderMap();
+    window.addEventListener("keydown", handleKeydown);
+    onCleanup(() => window.removeEventListener("keydown", handleKeydown));
   });
 
   // Re-render when doc changes
@@ -102,11 +104,6 @@ export default function MindMap(props: MindMapProps) {
       props.onClose();
     }
   }
-
-  onMount(() => {
-    window.addEventListener("keydown", handleKeydown);
-    onCleanup(() => window.removeEventListener("keydown", handleKeydown));
-  });
 
   return (
     <div class="lm-mindmap-overlay" onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}>
