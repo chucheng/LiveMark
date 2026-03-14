@@ -23,7 +23,7 @@ function initMermaidTheme(mod: typeof import("mermaid")) {
   lastTheme = dark ? "dark" : "light";
 }
 
-export async function getMermaid(): Promise<typeof import("mermaid")> {
+async function getMermaid(): Promise<typeof import("mermaid")> {
   if (mermaidInstance) return mermaidInstance;
   if (loading) return loading;
 

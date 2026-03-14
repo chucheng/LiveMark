@@ -2,6 +2,7 @@ import { Plugin } from "prosemirror-state";
 import { schema } from "../schema";
 import { invoke } from "@tauri-apps/api/core";
 import { documentState } from "../../state/document";
+import { uiState } from "../../state/ui";
 
 /**
  * Plugin that handles image drag-and-drop and paste into the editor.
@@ -102,7 +103,7 @@ async function handleImageFile(file: File): Promise<string | null> {
     });
     return savedPath;
   } catch (err) {
-    console.error("Failed to save dropped/pasted image:", err);
+    uiState.showStatus("Failed to save image");
     return null;
   }
 }

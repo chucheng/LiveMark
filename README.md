@@ -40,7 +40,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - Unsaved changes protection on close
 
 ### App
-- **Auto-update** — checks for updates on launch, non-intrusive banner with download + restart (via `tauri-plugin-updater`)
+- **Auto-update** — planned (currently disabled)
 
 ### UI
 - **Sidebar file tree** — navigate and open files from a sidebar
@@ -59,6 +59,20 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - Copy as HTML (Cmd+Shift+C)
 - Copy as Markdown (Cmd+Alt+C) — selection-aware
 - Copy as Beautiful Doc — styled HTML for pasting into rich editors
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Cmd+W` | Close Tab |
+| `Cmd+\` | Toggle Sidebar |
+| `Cmd+,` | Settings |
+| `Cmd+K` | Insert Link |
+| `Cmd+Shift+H` | Toggle Find and Replace |
+| `Cmd+Shift+X` | Strikethrough |
+| `Cmd+J P` | Copy File Path |
+| `Cmd+J W` | Close All Tabs |
+| `Cmd+J T` | Cycle Theme |
 
 ## Tech Stack
 
@@ -161,6 +175,8 @@ src/
       placeholder.ts      — Empty doc placeholder
       link-click.ts       — Cmd+click opens links
       image-drop-paste.ts — Image drag-drop/paste handler
+      inline-decorations.ts — Inline mark decorations
+      lazy-render.ts      — IntersectionObserver-based lazy rendering
       trailing-paragraph.ts — Ensures doc ends with paragraph
   ui/
     App.tsx               — Root component
@@ -174,7 +190,7 @@ src/
     BlockContextMenu.tsx  — Block handle right-click context menu
     BlockTypePicker.tsx   — Block type insertion picker (+ button)
     MindMap.tsx           — Mind map view overlay (Cmd+T)
-    UpdateBanner.tsx      — Auto-update notification banner
+    SettingsPanel.tsx     — Settings panel (editor customization, shortcuts)
     Sidebar.tsx           — File tree sidebar
     TabBar.tsx            — Multi-tab bar
   state/
@@ -184,6 +200,8 @@ src/
     ui.ts                 — UI state signals
     tabs.ts               — Multi-tab state management
     filetree.ts           — File tree state and sidebar toggle
+    file-watch.ts         — File system watcher for external changes
+    shortcuts.ts          — Custom keyboard shortcut management
   commands/
     file-commands.ts      — File operation handlers
     export-commands.ts    — Export action handlers
@@ -203,6 +221,7 @@ src-tauri/
       file.rs             — Rust read_file/write_file (atomic writes)
       image.rs            — Rust save_image command
       preferences.rs      — Rust read/write preferences (atomic)
+      filetree.rs         — Rust file tree directory listing
 .github/
   workflows/
     ci.yml                — CI: cross-platform test + typecheck + build

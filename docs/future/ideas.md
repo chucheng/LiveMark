@@ -16,13 +16,8 @@ Future possibilities for LiveMark. These are **not commitments** — they are id
 - Would require designing a stable API surface and plugin distribution mechanism
 
 ### Editor Template Expansion
-Settings panel and font size zoom are shipped. Remaining:
-- **Font family** — choose preferred writing font
-- **Content margins** — adjust left/right padding (currently fixed ~48px)
-- **Content max-width** — wider or narrower writing column
-- **Line height and paragraph spacing**
-- **Two-column layout** — reflow document into two newspaper-style columns
-- **Saveable presets** — save/load/share template configurations
+Settings panel, font size zoom, font family, content max-width, line height, paragraph spacing, two-column layout, and saveable presets are shipped. Remaining:
+- **Content margins** — adjust left/right padding independently from content width (currently fixed ~48px)
 
 ### Spell Checking
 - Integrate spell checking (OS-level or library-based)
@@ -31,20 +26,18 @@ Settings panel and font size zoom are shipped. Remaining:
 
 ---
 
-## Command Palette & Keyboard Shortcuts
-
-### Shortcut conflict awareness in Command Palette
-When displaying commands in Cmd+Shift+P, if a shortcut is already taken by the OS or another app, indicate it visually — strikethrough, greyed out, or a "conflict" badge.
-
-### Custom hotkey assignment
-Allow users to reassign keyboard shortcuts for any command:
-- Check for conflicts within LiveMark's own keybindings
-- Check for conflicts with OS-level shortcuts (Cmd+Q, Cmd+Tab, etc.)
-- Show a warning if a conflict is detected, but still allow the user to proceed
-
 ---
 
 ## Editor Improvements
+
+### Link Hover Effects
+- Links should give visual feedback on hover (color shift, underline thickening)
+- Makes it obvious the link is clickable without needing Cmd+click hint
+
+### Code Block Copy Button
+- Show a copy-to-clipboard icon at the top-right of rendered code blocks
+- Only visible on hover — keeps the UI clean
+- Standard affordance in all quality Markdown renderers
 
 ### Incremental Markdown Parsing
 - Move parsing to Rust backend using pulldown-cmark for very large files
@@ -71,7 +64,7 @@ Allow users to reassign keyboard shortcuts for any command:
 ## Infrastructure & Distribution
 
 ### Release Pipeline Completion
-Auto-update mechanism is shipped. Remaining:
+Auto-update mechanism was added then reverted (`tauri-plugin-updater` removed due to missing endpoint config). Remaining:
 - macOS notarization (code signing)
 - Windows code signing
 - End-to-end release pipeline verification (tag → build → publish → update notification)
@@ -93,6 +86,29 @@ Auto-update mechanism is shipped. Remaining:
 - Document all `--lm-*` CSS custom properties
 - Create a theme specification for third-party themes
 - Consider a theme marketplace or community themes
+
+---
+
+## Big Changes
+
+### LLM-Powered Inline Editing
+Native integration with large language models for text revision — not generation, but refinement. No mainstream Markdown editor has this as a first-class feature.
+
+**UX concept:**
+1. Select text → shortcut or context menu → revision panel appears
+2. One-click presets: "More formal", "More concise", "Fix grammar", "Translate to English/Chinese"
+3. Free-form prompt input for custom instructions
+4. AI result displayed as inline diff on the original text (strikethrough + green insertion)
+5. Accept / Reject per change, or accept all
+
+**Status:** Idea phase — needs deeper UX design and implementation planning before starting. Do not implement yet.
+
+**Technical notes:**
+- ProseMirror decorations for inline diff preview; AI changes are undoable transactions
+- Streaming response to avoid perceived latency
+- Support multiple backends: Claude API, OpenAI, local models (Ollama) for privacy
+- API key management via Tauri secure storage
+- Consider free tier with usage limits + paid unlimited as business model
 
 ---
 

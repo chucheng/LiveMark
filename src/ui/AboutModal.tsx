@@ -2,7 +2,7 @@ import { onMount } from "solid-js";
 import { uiState } from "../state/ui";
 
 declare const __APP_VERSION__: string;
-export const APP_VERSION = __APP_VERSION__;
+const APP_VERSION = __APP_VERSION__;
 
 export default function AboutModal() {
   let dialogRef!: HTMLDivElement;

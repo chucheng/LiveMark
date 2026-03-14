@@ -240,26 +240,6 @@ export function registerAllCommands() {
     execute: () => { themeState.cycleTheme(); preferencesState.savePreferences(); },
   });
 
-  // App
-  registerCommand({
-    id: "app.checkForUpdates",
-    label: "Check for Updates",
-    category: "View",
-    execute: async () => {
-      try {
-        const { check } = await import("@tauri-apps/plugin-updater");
-        const update = await check();
-        if (update?.available) {
-          uiState.setUpdateAvailable({ version: update.version, notes: update.body ?? undefined });
-        } else {
-          uiState.showStatus("You're on the latest version.");
-        }
-      } catch {
-        uiState.showStatus("Could not check for updates.");
-      }
-    },
-  });
-
   // Block
   registerCommand({
     id: "block.copyLink",

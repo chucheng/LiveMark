@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 
-export interface FileEntry {
+interface FileEntry {
   name: string;
   path: string;
   type: "file" | "directory";

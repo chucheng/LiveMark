@@ -44,7 +44,7 @@ function createTab(filePath?: string | null): Tab {
   return tab;
 }
 
-export type CloseTabResult =
+type CloseTabResult =
   | { type: "not_found" }
   | { type: "replaced"; newTab: Tab }
   | { type: "switched" };

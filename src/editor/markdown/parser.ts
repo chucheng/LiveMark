@@ -81,7 +81,7 @@ function stripTheadTbody(md: MarkdownItType): void {
  * Uses markdown-it for tokenization and prosemirror-markdown
  * for mapping tokens to the ProseMirror schema.
  */
-export const markdownParser = new MarkdownParser(schema, md, {
+const markdownParser = new MarkdownParser(schema, md, {
   blockquote: { block: "blockquote" },
   paragraph: { block: "paragraph" },
   list_item: { block: "list_item" },

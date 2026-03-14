@@ -17,18 +17,6 @@ fn get_initial_files(state: tauri::State<InitialFiles>) -> Vec<String> {
     state.0.clone()
 }
 
-#[tauri::command]
-fn get_home_dir() -> Option<String> {
-    #[cfg(unix)]
-    {
-        std::env::var("HOME").ok()
-    }
-    #[cfg(windows)]
-    {
-        std::env::var("USERPROFILE").ok()
-    }
-}
-
 /// Extract file paths from CLI args (skip flags, match supported extensions).
 fn extract_file_args(args: &[String]) -> Vec<String> {
     args.iter()
@@ -83,7 +71,6 @@ fn main() {
             write_file,
             get_file_mtime,
             get_initial_files,
-            get_home_dir,
             save_image,
             read_preferences,
             write_preferences,

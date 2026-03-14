@@ -246,11 +246,12 @@ const insertLink: Command = (state, dispatch) => {
   if (dispatch) {
     const tr = state.tr;
     if (empty) {
-      // No selection — insert raw Markdown [text](url) and select "url" for easy typing
-      const raw = "[text](url)";
-      tr.insertText(raw, from);
-      // Select just "url" (positions: from + 7 to from + 10)
-      tr.setSelection(TextSelection.create(tr.doc, from + 7, from + 10));
+      // No selection — insert "link" text with a link mark (proper ProseMirror mark)
+      const linkText = "link";
+      const mark = linkMark.create({ href: "url" });
+      tr.insertText(linkText, from);
+      tr.addMark(from, from + linkText.length, mark);
+      tr.setSelection(TextSelection.create(tr.doc, from, from + linkText.length));
     } else {
       // Selection exists — wrap selected text in a link with placeholder URL
       const mark = linkMark.create({ href: "" });
@@ -294,7 +295,7 @@ export function buildKeymaps() {
   keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item), splitListItem(schema.nodes.task_list_item));
 
   // Block operations
-  keys["Mod-Shift-c"] = toCodeBlock;
+  keys["Mod-Alt-c"] = toCodeBlock;
   keys["Alt-ArrowUp"] = joinUp;
   keys["Alt-ArrowDown"] = joinDown;
   keys["Mod-["] = lift;

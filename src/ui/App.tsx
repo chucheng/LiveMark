@@ -44,7 +44,7 @@ import Sidebar from "./Sidebar";
 import BlockContextMenu from "./BlockContextMenu";
 import BlockTypePicker from "./BlockTypePicker";
 import MindMap from "./MindMap";
-import UpdateBanner from "./UpdateBanner";
+
 import { fileTreeState } from "../state/filetree";
 import { startFileWatch, stopFileWatch, setTabSwitchInProgress } from "../state/file-watch";
 import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
@@ -604,17 +604,6 @@ export default function App() {
     (async () => {
       await preferencesState.loadPreferences();
 
-      // Check for updates (silent — no error shown if offline or unconfigured)
-      try {
-        const { check } = await import("@tauri-apps/plugin-updater");
-        const update = await check();
-        if (update?.available) {
-          uiState.setUpdateAvailable({ version: update.version, notes: update.body ?? undefined });
-        }
-      } catch {
-        // Silent fail
-      }
-
       // Fullscreen detection
       const appWindow = getCurrentWindow();
       await checkFullscreen();
@@ -710,10 +699,6 @@ export default function App() {
 
         <TabBar onCloseTab={handleCloseTab} onSwitchTab={handleSwitchTab} />
       </div>
-
-      <Show when={uiState.updateAvailable()}>
-        <UpdateBanner />
-      </Show>
 
       <div class="lm-main-area">
         <Sidebar onFileClick={handleSidebarFileClick} />

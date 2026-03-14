@@ -36,10 +36,6 @@ export function getCommands(): Command[] {
   return commands;
 }
 
-export function getCommandById(id: string): Command | undefined {
-  return commands.find((c) => c.id === id);
-}
-
 export function searchCommands(query: string): Command[] {
   if (!query.trim()) return commands;
   const q = query.toLowerCase();

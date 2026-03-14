@@ -36,7 +36,7 @@ pub fn write_file(path: String, content: String) -> Result<(), String> {
     fs::rename(&tmp_path, target).map_err(|e| {
         // Clean up temp file on rename failure
         let _ = fs::remove_file(&tmp_path);
-        format!("Failed to rename temp file: {e}")
+        format!("Failed to save file: {e}")
     })?;
 
     Ok(())

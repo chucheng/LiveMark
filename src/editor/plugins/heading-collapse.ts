@@ -2,7 +2,7 @@ import { Plugin, PluginKey, EditorState, Transaction } from "prosemirror-state";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import { Node } from "prosemirror-model";
 
-export const headingCollapseKey = new PluginKey("headingCollapse");
+const headingCollapseKey = new PluginKey("headingCollapse");
 
 interface CollapseState {
   /** Set of heading positions that are collapsed */

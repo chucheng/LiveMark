@@ -34,13 +34,13 @@ export interface EditorInstance {
   destroy: () => void;
 }
 
-export interface CursorPosition {
+interface CursorPosition {
   line: number;
   col: number;
   selected: number;
 }
 
-export interface EditorOptions {
+interface EditorOptions {
   /** Initial Markdown content */
   content?: string;
   /** Called whenever the document changes */

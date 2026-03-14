@@ -171,4 +171,12 @@ export class CodeBlockView implements NodeView {
     this.updateHighlight(node.textContent);
     return true;
   }
+
+  selectNode() {
+    this.dom.classList.add("ProseMirror-selectednode");
+  }
+
+  deselectNode() {
+    this.dom.classList.remove("ProseMirror-selectednode");
+  }
 }

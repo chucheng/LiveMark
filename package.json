@@ -19,7 +19,7 @@
     "@tauri-apps/plugin-dialog": "^2.0.0",
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-shell": "^2.0.0",
-    "@tauri-apps/plugin-updater": "^2.10.0",
+
     "highlight.js": "^11.10.0",
     "katex": "^0.16.38",
     "markdown-it": "^14.1.0",

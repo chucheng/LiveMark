@@ -87,7 +87,6 @@
 
   /* ── Z-Index Hierarchy ── */
   --z-find-bar: 100;
-  --z-overlay: 900;
   --z-modal: 1000;
   --z-popover: 1050;
   --z-about: 1100;

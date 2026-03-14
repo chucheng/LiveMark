@@ -121,7 +121,7 @@
 3. Keyboard navigation: `↑`/`↓` to move, `→` to expand, `←` to collapse, `Enter` to open
 
 **Toggling the sidebar:**
-1. `Cmd+B` toggles sidebar visibility
+1. `Cmd+\` toggles sidebar visibility
 2. When hidden, editor takes full width
 3. Sidebar state (open/closed, width) persisted in preferences
 
@@ -317,7 +317,7 @@
 ### 2.15 Selection-Aware Copy as Markdown (P1)
 
 **Trigger:**
-1. User selects text → "Copy as Markdown" (Cmd+Shift+M or command palette)
+1. User selects text → "Copy as Markdown" (Cmd+Alt+C or command palette)
 2. Only the selected range is serialized to Markdown and placed on clipboard
 3. If nothing is selected → copies entire document (existing behavior preserved)
 
@@ -349,7 +349,7 @@
 | **Tab Bar** | Below title bar | Appears when ≥2 files are open | Hidden when only 1 file open |
 | **Tab** | Within tab bar | Click to switch, Cmd+W to close | Close button (×) on hover |
 | **Tab overflow dropdown** | Right edge of tab bar | Click ▾ icon | Click outside |
-| **File Tree Sidebar** | Left side of window | "Open Folder" command, Cmd+B toggle | Cmd+B toggle, or close folder |
+| **File Tree Sidebar** | Left side of window | "Open Folder" command, Cmd+\ toggle | Cmd+\ toggle, or close folder |
 | **Sidebar resize handle** | Right edge of sidebar | Drag horizontally | Release mouse |
 | **Block handle** | Left edge of each top-level block | Mouse hover over block | Mouse leaves block (300ms fade) |
 | **Block context menu** | Anchored to block handle | Click handle | Click outside, Esc |
@@ -369,43 +369,7 @@
 
 ## 4. Keyboard Shortcuts
 
-### New v2 Shortcuts
-
-| Shortcut | Action | Notes |
-|---|---|---|
-| `Cmd+Shift+O` | Open Folder | New — no v1 conflict |
-| `Cmd+B` (sidebar) | Toggle Sidebar | **Conflict**: v1 uses Cmd+B for bold. Resolution: Cmd+B toggles bold when editor is focused; toggles sidebar when focus is outside editor (e.g., sidebar focused). Alternative: use `Cmd+\` for sidebar. |
-| `Cmd+W` | Close Tab | New — standard convention |
-| `Cmd+Shift+[` | Previous Tab | New — standard convention |
-| `Cmd+Shift+]` | Next Tab | New — standard convention |
-| `Cmd+1` – `Cmd+9` | Switch to Tab N | New — standard convention |
-| `Cmd+T` | Toggle Mind Map | **Note**: Cmd+T is "new tab" in browsers, but LiveMark is not a browser. Acceptable. |
-| `Cmd+Shift+C` | Copy as Beautiful Doc | New — Cmd+C is copy, Shift variant is available |
-| `Cmd+Shift+M` | Copy Selection as Markdown | New — no conflict |
-| `Cmd+,` | Editor Settings | New — standard macOS convention for preferences |
-| `Cmd+Shift+↑` | Move Block Up | New — no conflict |
-| `Cmd+Shift+↓` | Move Block Down | New — no conflict |
-
-### Conflict Resolution: Cmd+B
-
-The `Cmd+B` conflict between "toggle bold" and "toggle sidebar" requires resolution:
-
-**Recommended approach:** Use `Cmd+\` for sidebar toggle (matches VS Code convention). `Cmd+B` remains exclusively for bold toggle. This avoids any context-dependent behavior that could confuse users.
-
-### Existing v1 Shortcuts (Preserved)
-
-| Shortcut | Action |
-|---|---|
-| `Cmd+S` | Save |
-| `Cmd+O` | Open File |
-| `Cmd+Shift+P` | Command Palette |
-| `Cmd+F` | Find/Replace |
-| `Cmd+/` | Toggle Source View |
-| `Cmd+Z` / `Cmd+Shift+Z` | Undo / Redo |
-| `Cmd+B` | Toggle Bold |
-| `Cmd+I` | Toggle Italic |
-| `Cmd+E` | Toggle Code |
-| `Cmd+=` / `Cmd+-` / `Cmd+0` | Zoom In / Out / Reset |
+See `docs/tutorial.md` for the complete keyboard shortcuts reference.
 
 ---
 

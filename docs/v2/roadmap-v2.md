@@ -178,16 +178,17 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 
 **Definition of Done:**
 - [x] Settings panel opens with Cmd+, or command palette
-- [ ] All editor template settings (font, margins, width, line height, spacing) apply live
-- [ ] Two-column layout toggle works
-- [ ] Presets can be saved and loaded
-- [ ] Custom shortcut assignment works for all commands
-- [ ] Conflict detection warns on OS-level and app-level conflicts
-- [ ] Command palette shows conflict badges
-- [ ] Export HTML/PDF respects editor template settings
+- [x] All editor template settings (font, width, line height, spacing) apply live
+- [ ] Content margins (left/right padding, separate from max-width) — not yet implemented
+- [x] Two-column layout toggle works
+- [x] Presets can be saved and loaded
+- [x] Custom shortcut assignment works for all commands
+- [x] Conflict detection warns on OS-level and app-level conflicts
+- [x] Command palette shows conflict badges
+- [x] Export HTML/PDF respects editor template settings
 - [x] All preferences persisted via Tauri IPC
 - [x] All existing v1 tests pass
-- [ ] New tests for preferences, shortcut customization
+- [x] New tests for preferences, shortcut customization
 
 ---
 
@@ -203,11 +204,13 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 
 **Dependencies:** M1 (CI/CD — release workflow must be in place), M6 (all features complete).
 
+**Note:** `tauri-plugin-updater` was removed (commit e1ebb20) due to missing updater endpoint configuration. Auto-update DoD items are reverted pending proper endpoint config.
+
 **Definition of Done:**
-- [x] App checks for updates on launch
-- [x] Update banner appears when a new version is available
-- [x] User can download and install update from within the app
-- [x] Unsaved documents prompt save before restart
+- [ ] App checks for updates on launch — *reverted — pending proper endpoint config*
+- [ ] Update banner appears when a new version is available — *reverted — pending proper endpoint config*
+- [ ] User can download and install update from within the app — *reverted — pending proper endpoint config*
+- [ ] Unsaved documents prompt save before restart — *reverted — pending proper endpoint config*
 - [ ] macOS build is notarized
 - [ ] Windows build is code-signed
 - [ ] Full release pipeline tested end-to-end (tag → build → publish → update notification)

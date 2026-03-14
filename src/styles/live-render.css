@@ -78,6 +78,7 @@
 
 /* Higher specificity to override .ProseMirror pre defaults in editor.css */
 .ProseMirror .lm-code-block-wrapper pre {
+  position: relative;
   background-color: var(--lm-code-bg);
   padding: 0.75em 1em;
   overflow-x: auto;
@@ -315,10 +316,6 @@
 }
 
 /* --- Code Block Syntax Highlighting --- */
-.ProseMirror .lm-code-block-wrapper pre {
-  position: relative;
-}
-
 .ProseMirror .lm-code-block-wrapper .lm-code-highlight {
   position: absolute;
   top: 0;

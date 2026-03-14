@@ -33,19 +33,12 @@ export default function ReviewPanel(props: ReviewPanelProps) {
   }
 
   // Run analysis on open and on doc changes
-  let patchedView: EditorView | null = null;
-  let origDispatch: typeof EditorView.prototype.dispatch | null = null;
-
   createEffect(() => {
     const isOpen = uiState.isReviewOpen();
     const view = props.view();
 
-    // Clean up previous patch
-    if (patchedView && origDispatch) {
-      patchedView.dispatch = origDispatch;
-      patchedView = null;
-      origDispatch = null;
-    }
+    let patchedView: EditorView | null = null;
+    let origDispatch: typeof EditorView.prototype.dispatch | null = null;
 
     if (!isOpen || !view) return;
     runAnalysis();

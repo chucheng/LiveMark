@@ -109,21 +109,6 @@
   margin-bottom: 0;
 }
 
-.ProseMirror li[data-task] {
-  list-style: none;
-  margin-left: -1.5em;
-  padding-left: 1.5em;
-}
-
-.ProseMirror li[data-task]::before {
-  content: "☐";
-  margin-right: 0.4em;
-}
-
-.ProseMirror li[data-task][data-checked="true"]::before {
-  content: "☑";
-}
-
 /* HR styling handled by NodeView in live-render.css */
 
 .ProseMirror a {
@@ -136,24 +121,6 @@
 .ProseMirror img {
   max-width: 100%;
   border-radius: var(--lm-radius-sm);
-}
-
-.ProseMirror table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-bottom: 0.8em;
-}
-
-.ProseMirror th,
-.ProseMirror td {
-  border: 1px solid var(--lm-border);
-  padding: 0.5em 0.75em;
-  text-align: left;
-}
-
-.ProseMirror th {
-  font-weight: 600;
-  background-color: var(--lm-code-bg);
 }
 
 .ProseMirror ::selection {

@@ -481,17 +481,17 @@
 }
 
 /* [UX-004] Validation error state for inputs */
-.lm-settings-input-error {
-  border-color: var(--lm-severity-issue, #e53935) !important;
+.lm-settings-input.lm-settings-input-error {
+  border-color: var(--lm-severity-issue);
 }
 
-.lm-settings-input-error:focus {
-  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.25) !important;
+.lm-settings-input.lm-settings-input-error:focus {
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.25);
 }
 
 .lm-settings-validation-msg {
   font-size: 11.5px;
-  color: var(--lm-severity-issue, #e53935);
+  color: var(--lm-severity-issue);
   margin-top: 4px;
 }
 

@@ -1,7 +1,7 @@
 import { markdownSerializer } from "../editor/markdown/serializer";
 import type { Node } from "prosemirror-model";
 
-export interface SyncEntry {
+interface SyncEntry {
   pmPos: number;
   mdLine: number;
 }

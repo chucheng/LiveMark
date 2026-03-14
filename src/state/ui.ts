@@ -11,9 +11,6 @@ const [chromeHidden, setChromeHidden] = createSignal(false);
 const [isSettingsOpen, setSettingsOpen] = createSignal(false);
 const [chordPending, setChordPending] = createSignal<string | null>(null);
 const [statusMessage, setStatusMessageSignal] = createSignal("");
-const [updateAvailable, setUpdateAvailable] = createSignal<{ version: string; notes?: string } | null>(null);
-const [updateProgress, setUpdateProgress] = createSignal<{ total: number; downloaded: number } | null>(null);
-const [updateReady, setUpdateReady] = createSignal(false);
 let statusFadeTimer: ReturnType<typeof setTimeout> | null = null;
 
 function showStatus(msg: string, duration = 2000) {
@@ -72,10 +69,4 @@ export const uiState = {
   },
   statusMessage,
   showStatus,
-  updateAvailable,
-  setUpdateAvailable,
-  updateProgress,
-  setUpdateProgress,
-  updateReady,
-  setUpdateReady,
 };

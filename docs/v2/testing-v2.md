@@ -78,7 +78,7 @@ Visual and interaction tests that resist automation:
 | MT-12 | Edge case | Close modified tab → "Cancel" keeps tab open | e2e | P1 |
 | MT-13 | Edge case | Close modified tab → "Don't Save" closes without saving | e2e | P1 |
 | MT-14 | Keyboard | Cmd+W closes active tab | integration | P0 |
-| MT-15 | Keyboard | Cmd+1 through Cmd+9 switch to correct tab | unit | P0 |
+| MT-15 | Keyboard | Cmd+7 through Cmd+9 switch to correct tab (Cmd+1-6 reserved for headings) | unit | P0 |
 | MT-16 | Keyboard | Cmd+Shift+[ / ] cycle through tabs | unit | P0 |
 | MT-17 | Overflow | More tabs than width → scroll arrows appear | manual | P1 |
 | MT-18 | Overflow | Tab dropdown (▾) lists all open tabs | manual | P1 |
@@ -156,6 +156,8 @@ Visual and interaction tests that resist automation:
 | BD-11 | Regression | Existing "Copy as HTML" still copies raw HTML markup (not styled) | integration | P0 |
 
 ### 2.5 Auto-Update Mechanism (P0)
+
+> **Blocked:** Auto-update tests are blocked pending `tauri-plugin-updater` re-integration (removed in commit e1ebb20 due to missing endpoint config).
 
 | ID | Category | Description | Type | Priority |
 |---|---|---|---|---|

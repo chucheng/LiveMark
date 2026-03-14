@@ -11,7 +11,7 @@ import { MathInlineView } from "./math-inline";
 import { FrontmatterView } from "./frontmatter";
 import { MermaidView } from "./mermaid";
 
-export type NodeViewConstructor = (
+type NodeViewConstructor = (
   node: Node,
   view: EditorView,
   getPos: () => number | undefined

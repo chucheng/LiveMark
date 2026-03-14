@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.4.0
+
+- **Settings panel** — editor customization with font family, content max-width, line height, paragraph spacing, and two-column layout toggle
+- **Saveable presets** — save, load, and delete editor template presets
+- **Custom keyboard shortcuts** — reassign shortcuts for any command with conflict detection (OS-level and app-level)
+- **Chord keybindings** — Cmd+J prefix for two-keystroke shortcuts
+- **Auto-update banner** — added then removed; `tauri-plugin-updater` reverted due to missing endpoint configuration (commit e1ebb20)
+- **Bug fixes** — 18 fixes across editor, file I/O, and UI layers from v2 audit
+
 ## v1.3.12
 
 - **Version sync script** — `pnpm version:sync [version]` updates package.json, tauri.conf.json, and Cargo.toml in one command
@@ -91,6 +100,18 @@
 
 - **Task list checkbox fix** — clicking checkboxes now properly toggles the checked state (moved toggle to mousedown to avoid WebKit event suppression)
 - **Window close fix** — macOS traffic light buttons (close/minimize/zoom) were blocked by the drag region; added a no-drag spacer so native controls are clickable
+
+## v1.3.2
+
+- **Titlebar polish** — refined titlebar appearance and behavior
+
+## v1.3.0
+
+- **Auto-save** — 30-second debounce with preference toggle and status bar indicator
+
+## v1.2.0
+
+- **Review panel** — document quality checks (readability, structure, style analysis)
 
 ## v1.1.1
 

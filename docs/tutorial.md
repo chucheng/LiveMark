@@ -1,4 +1,4 @@
-# linkLiveMark Tutorial
+# LiveMark Tutorial
 
 Welcome to **LiveMark** — a desktop Markdown editor with seamless inline live-preview. What you type is what you see, no split panes or preview toggles needed.
 
@@ -17,10 +17,6 @@ Markdown supports six levels of headings. Type `#` followed by a space to create
 ### Heading 3
 
 #### Heading 4
-
-- [ ] dd
-
-  Dd
 
 ##### Heading 5
 
@@ -249,8 +245,6 @@ tags: [markdown, tutorial]
 ```
 
 Frontmatter is displayed in a styled card in the editor and preserved when saving. It's commonly used for static site generators, blog posts, and document metadata.
-
----
 
 ---
 

@@ -142,26 +142,6 @@ export async function openFileInTab(path: string) {
   }
 }
 
-export async function loadFile(path: string) {
-  try {
-    const content = await invoke<string>("read_file", { path });
-    if (!editorRef) return;
-
-    editorRef.setMarkdown(content);
-    documentState.setFilePath(path);
-    documentState.setClean();
-    // Snapshot immediately so the tab has a saved editor state
-    tabsState.snapshotActiveTab(editorRef.view, null);
-    await stampMtime(path);
-    onFileChangeCallback?.();
-  } catch (err) {
-    await message(`Failed to open file:\n${err}`, {
-      title: "Open Error",
-      kind: "error",
-    });
-  }
-}
-
 export async function saveFile() {
   if (!editorRef) return;
   if (saveInProgress) return;

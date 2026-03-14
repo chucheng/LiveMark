@@ -2,7 +2,7 @@ import { Plugin, PluginKey, EditorState, Transaction, TextSelection } from "pros
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
 import { Node } from "prosemirror-model";
 
-export const blockHandlesKey = new PluginKey("blockHandles");
+const blockHandlesKey = new PluginKey("blockHandles");
 
 interface BlockHandlesState {
   hoveredPos: number | null;
@@ -112,7 +112,7 @@ const GRIP_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xm
  * Lowercases, replaces spaces with hyphens, strips non-alphanumeric chars.
  * Falls back to a random ID if the result would be empty.
  */
-export function generateSlug(text: string): string {
+function generateSlug(text: string): string {
   const slug = text
     .toLowerCase()
     .trim()
@@ -126,7 +126,7 @@ export function generateSlug(text: string): string {
 /**
  * Generate a short random block ID (8 hex chars).
  */
-export function generateBlockId(): string {
+function generateBlockId(): string {
   const arr = new Uint8Array(4);
   crypto.getRandomValues(arr);
   return Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("");
@@ -136,7 +136,7 @@ export function generateBlockId(): string {
  * Read-only: get the anchor for a block without mutating state.
  * Returns null for non-heading blocks that have no blockId yet.
  */
-export function readBlockAnchor(
+function readBlockAnchor(
   view: EditorView,
   blockPos: number
 ): string | null {

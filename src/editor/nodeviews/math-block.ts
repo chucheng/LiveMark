@@ -61,4 +61,12 @@ export class MathBlockView implements NodeView {
     this.renderMath(node.textContent);
     return true;
   }
+
+  selectNode() {
+    this.dom.classList.add("ProseMirror-selectednode");
+  }
+
+  deselectNode() {
+    this.dom.classList.remove("ProseMirror-selectednode");
+  }
 }

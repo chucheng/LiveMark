@@ -269,8 +269,7 @@ Frontmatter is always the first node in the document (if present). The parser de
 
 ```
 src/ui/
-  SettingsPanel.tsx        — Modal settings panel
-  KeyboardShortcuts.tsx    — Shortcut customization panel
+  SettingsPanel.tsx        — Modal settings panel (includes keyboard shortcut customization)
 src/state/
   preferences.ts           — Extended with editor template prefs + custom shortcuts
 ```
@@ -320,7 +319,9 @@ ProseMirror document
 
 Differs from "Copy as HTML" (which copies raw HTML markup) in that this copies fully-styled, paste-ready rich text with inline styles on every element.
 
-### 2.9 Auto-Update (`src-tauri/`, `src/ui/UpdateBanner.tsx`)
+### 2.9 Auto-Update (`src-tauri/`, `src/ui/UpdateBanner.tsx`) — REVERTED
+
+> **Note:** `tauri-plugin-updater` was removed (commit e1ebb20) due to missing updater endpoint configuration. This section describes the intended design; re-implementation is pending proper endpoint config.
 
 ```
 src/ui/
@@ -329,7 +330,7 @@ src-tauri/
   tauri.conf.json          — Updater plugin configuration
 ```
 
-Uses `tauri-plugin-updater`. The Rust side checks for updates at launch, emits events to the frontend. Frontend renders the banner.
+Was intended to use `tauri-plugin-updater`. The Rust side would check for updates at launch, emit events to the frontend. Frontend renders the banner.
 
 ### 2.10 CI/CD (`.github/workflows/`)
 
@@ -598,13 +599,13 @@ User invokes "Copy as Beautiful Doc"
 | Crate | Purpose |
 |---|---|
 | `notify` (~v6) | Filesystem watching for file tree sidebar |
-| `tauri-plugin-updater` | Auto-update mechanism |
+| `tauri-plugin-updater` | Auto-update mechanism — *removed (commit e1ebb20), pending re-integration* |
 
 ### Bundle Size Strategy
 
 - **Mermaid.js** is the only large new dependency. It is code-split via dynamic `import()` and only loaded when needed (first Mermaid code block or Mind Map toggle). Initial bundle size increase: ~0.
 - **notify** adds ~200KB to the Rust binary. Acceptable for a file-watching crate.
-- **tauri-plugin-updater** is a standard Tauri plugin; minimal size impact.
+- **tauri-plugin-updater** was removed (commit e1ebb20); will be re-added when updater endpoint is configured.
 
 ---
 

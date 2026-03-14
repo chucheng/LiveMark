@@ -39,6 +39,7 @@ const FONT_SIZE_STEP = 2;
 const FONT_SIZE_DEFAULT = 16;
 
 const CONTENT_WIDTH_MIN = 480;
+const CONTENT_WIDTH_MAX = 2000;
 const CONTENT_WIDTH_STEP = 60;
 const CONTENT_WIDTH_DEFAULT = 720;
 
@@ -207,7 +208,7 @@ export const preferencesState = {
   },
   contentWidth,
   widenContent() {
-    const maxBase = Math.round(window.innerWidth * 16 / fontSize());
+    const maxBase = Math.min(Math.round(window.innerWidth * 16 / fontSize()), CONTENT_WIDTH_MAX);
     setContentWidth(Math.min(contentWidth() + CONTENT_WIDTH_STEP, maxBase));
     savePreferences();
   },
@@ -293,7 +294,7 @@ export const preferencesState = {
     savePreferences();
   },
   setContentWidth(value: number) {
-    setContentWidth(Math.max(CONTENT_WIDTH_MIN, value));
+    setContentWidth(Math.max(CONTENT_WIDTH_MIN, Math.min(CONTENT_WIDTH_MAX, value)));
     setSelectedPreset("custom");
     savePreferences();
   },
@@ -316,6 +317,7 @@ export const preferencesState = {
   FONT_SIZE_MAX,
   FONT_SIZE_STEP,
   CONTENT_WIDTH_MIN,
+  CONTENT_WIDTH_MAX,
   CONTENT_WIDTH_STEP,
   LINE_HEIGHT_MIN,
   LINE_HEIGHT_MAX,
