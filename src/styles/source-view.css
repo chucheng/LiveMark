@@ -21,3 +21,7 @@
   user-select: text;
   letter-spacing: 0.01em;
 }
+
+.lm-source-line {
+  display: inline;
+}

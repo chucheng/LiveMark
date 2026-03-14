@@ -53,6 +53,8 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         // Single-instance: when a 2nd instance is launched (e.g. double-clicking
         // a .md file while app is running), forward file args to the running instance.
         .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {

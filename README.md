@@ -3,7 +3,7 @@
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
 ![CI](https://github.com/chucheng/LiveMark/actions/workflows/ci.yml/badge.svg)
-![Version](https://img.shields.io/badge/version-1.3.12-blue)
+![Version](https://img.shields.io/badge/version-1.4.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -38,6 +38,9 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Auto-save** — 30s after last edit, toggleable from status bar
 - CLI argument support (`livemark file.md`)
 - Unsaved changes protection on close
+
+### App
+- **Auto-update** — checks for updates on launch, non-intrusive banner with download + restart (via `tauri-plugin-updater`)
 
 ### UI
 - **Sidebar file tree** — navigate and open files from a sidebar
@@ -171,6 +174,7 @@ src/
     BlockContextMenu.tsx  — Block handle right-click context menu
     BlockTypePicker.tsx   — Block type insertion picker (+ button)
     MindMap.tsx           — Mind map view overlay (Cmd+T)
+    UpdateBanner.tsx      — Auto-update notification banner
     Sidebar.tsx           — File tree sidebar
     TabBar.tsx            — Multi-tab bar
   state/
@@ -224,6 +228,7 @@ src-tauri/
 | v1.3.10 | CLAUDE.md project guidance, dependency updates |
 | v1.3.11 | Multi-tab, sidebar file tree, block handles, mermaid diagrams, frontmatter, mind map, CI/CD pipeline |
 | v1.3.12 | Version sync script, v2 roadmap update, ideas cleanup |
+| v1.4.0 | Auto-update — in-app update banner via tauri-plugin-updater, settings panel UX improvements, chord keybinding fixes |
 
 ## Documentation
 
@@ -237,6 +242,7 @@ src-tauri/
 - [UX Principles](docs/v1/ux-principles.md) — Design principles and visual guidelines
 - [User Flows](docs/v1/user-flows.md) — Detailed user interaction flows
 - [Testing](docs/v1/testing.md) — UI test plan and test cases
+- [UX Audit](docs/v1/ux-audit.md) — UX audit findings and recommendations
 
 ### V2 Planning
 

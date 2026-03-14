@@ -32,6 +32,9 @@ export default function StatusBar(props: StatusBarProps) {
         {props.cursorInfo().selected > 0 && (
           <span>{props.cursorInfo().selected} selected</span>
         )}
+        <Show when={uiState.statusMessage()}>
+          <span class="lm-statusbar-autosave">{uiState.statusMessage()}</span>
+        </Show>
         <Show when={props.autoSaveStatus?.()}>
           <span class="lm-statusbar-autosave">{props.autoSaveStatus!()}</span>
         </Show>

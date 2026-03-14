@@ -13,6 +13,7 @@ import json from "highlight.js/lib/languages/json";
 import bash from "highlight.js/lib/languages/bash";
 import sql from "highlight.js/lib/languages/sql";
 import ruby from "highlight.js/lib/languages/ruby";
+import markdown from "highlight.js/lib/languages/markdown";
 
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("js", javascript);
@@ -34,6 +35,8 @@ hljs.registerLanguage("sh", bash);
 hljs.registerLanguage("sql", sql);
 hljs.registerLanguage("ruby", ruby);
 hljs.registerLanguage("rb", ruby);
+hljs.registerLanguage("markdown", markdown);
+hljs.registerLanguage("md", markdown);
 
 /**
  * Highlight code and return HTML string with hljs classes.

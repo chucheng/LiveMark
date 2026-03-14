@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { open, save, message } from "@tauri-apps/plugin-dialog";
 import { documentState } from "../state/document";
 import { tabsState } from "../state/tabs";
+import { uiState } from "../state/ui";
 import { stampMtime, clearMtime, isExternallyModified } from "../state/file-watch";
 import type { EditorInstance } from "../editor/editor";
 
@@ -187,6 +188,7 @@ export async function saveFile() {
       await invoke("write_file", { path, content });
       documentState.setClean();
       await stampMtime(path);
+      uiState.showStatus("Saved");
     } catch (err) {
       await message(`Failed to save file:\n${err}`, {
         title: "Save Error",
@@ -241,6 +243,7 @@ export async function saveAsFile() {
     documentState.setFilePath(selected);
     documentState.setClean();
     await stampMtime(selected);
+    uiState.showStatus("Saved");
   } catch (err) {
     await message(`Failed to save file:\n${err}`, {
       title: "Save Error",

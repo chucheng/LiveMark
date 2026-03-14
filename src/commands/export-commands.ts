@@ -4,6 +4,7 @@ import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { documentState } from "../state/document";
 import { generateHTML, renderHTMLBody, type TemplateSettings } from "../export/html-template";
 import { preferencesState } from "../state/preferences";
+import { uiState } from "../state/ui";
 import { generateBeautifulHTML } from "../export/beautiful-doc";
 import { markdownSerializer } from "../editor/markdown/serializer";
 import type { EditorInstance } from "../editor/editor";
@@ -120,6 +121,7 @@ export async function copyAsHTML() {
 
   try {
     await writeText(html);
+    uiState.showStatus("Copied as HTML");
   } catch (err) {
     await message(`Failed to copy HTML:\n${err}`, {
       title: "Copy Error",
@@ -153,6 +155,7 @@ export async function copyAsMarkdown() {
 
   try {
     await writeText(markdown);
+    uiState.showStatus("Copied as Markdown");
   } catch (err) {
     await message(`Failed to copy Markdown:\n${err}`, {
       title: "Copy Error",
@@ -173,6 +176,7 @@ export async function copyAsBeautifulDoc() {
 
   try {
     await writeText(html);
+    uiState.showStatus("Copied as Beautiful Doc");
   } catch (err) {
     await message(`Failed to copy Beautiful Doc:\n${err}`, {
       title: "Copy Error",

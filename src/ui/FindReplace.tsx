@@ -1,4 +1,4 @@
-import { createSignal, createEffect, onMount } from "solid-js";
+import { createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { uiState } from "../state/ui";
 import {
   setSearchQuery,
@@ -26,6 +26,9 @@ export default function FindReplace(props: FindReplaceProps) {
 
   onMount(() => {
     findInputRef.focus();
+    const toggleReplace = () => setShowReplace(!showReplace());
+    window.addEventListener("lm-toggle-replace", toggleReplace);
+    onCleanup(() => window.removeEventListener("lm-toggle-replace", toggleReplace));
   });
 
   createEffect(() => {

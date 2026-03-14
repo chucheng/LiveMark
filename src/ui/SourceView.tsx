@@ -1,4 +1,5 @@
-import { onMount } from "solid-js";
+import { onMount, createMemo } from "solid-js";
+import { highlightCode } from "../editor/highlight";
 
 interface SourceViewProps {
   markdown: () => string;
@@ -8,99 +9,38 @@ interface SourceViewProps {
   onTopLineChange?: (line: number) => void;
 }
 
-/**
- * Build an array of character offsets where each markdown line begins.
- * Line 0 starts at offset 0; line N starts after the Nth newline.
- */
-function lineStartOffsets(text: string): number[] {
-  const offsets = [0];
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "\n") offsets.push(i + 1);
-  }
-  return offsets;
-}
-
-/**
- * Measure the Y pixel position of a character offset within a text node,
- * using a DOM Range for pixel-perfect accuracy regardless of wrapping.
- * Returns the position relative to the top of the scrollable content.
- */
-function charToY(textNode: Text, charIdx: number, scrollContainer: HTMLElement): number {
-  const len = textNode.length;
-  const idx = Math.min(charIdx, len);
-  const range = document.createRange();
-  // Use a 1-char range when possible for a reliable bounding rect;
-  // collapsed ranges can return zero-height rects in some browsers.
-  range.setStart(textNode, idx);
-  range.setEnd(textNode, Math.min(idx + 1, len));
-  const rect = range.getBoundingClientRect();
-  const containerRect = scrollContainer.getBoundingClientRect();
-  return rect.top - containerRect.top + scrollContainer.scrollTop;
-}
-
-/**
- * Binary search to find which fractional line is at a given Y position.
- */
-function yToLine(textNode: Text, offsets: number[], targetY: number, scrollContainer: HTMLElement): number {
-  if (offsets.length <= 1) return 0;
-
-  let lo = 0;
-  let hi = offsets.length - 1;
-
-  while (lo < hi - 1) {
-    const mid = (lo + hi) >>> 1;
-    const midY = charToY(textNode, offsets[mid], scrollContainer);
-    if (midY <= targetY) lo = mid;
-    else hi = mid;
-  }
-
-  // Interpolate within the found line for fractional precision
-  const loY = charToY(textNode, offsets[lo], scrollContainer);
-  const hiY = charToY(textNode, offsets[hi], scrollContainer);
-  const span = hiY - loY;
-  if (span <= 0) return lo;
-
-  const fraction = Math.max(0, Math.min(1, (targetY - loY) / span));
-  return lo + fraction;
-}
-
 export default function SourceView(props: SourceViewProps) {
   let containerRef!: HTMLDivElement;
 
-  /** Get the primary text node inside <pre><code>.
-   *  SolidJS wraps reactive expressions with comment markers,
-   *  so we must walk children to find the actual Text node. */
-  function getTextNode(): Text | null {
+  const highlightedHTML = createMemo(() => {
+    return highlightCode(props.markdown(), "markdown");
+  });
+
+  function getLineElements(): HTMLElement[] {
     const code = containerRef.querySelector("code");
-    if (!code) return null;
-    for (let i = 0; i < code.childNodes.length; i++) {
-      const child = code.childNodes[i];
-      if (child.nodeType === Node.TEXT_NODE && (child as Text).length > 0) {
-        return child as Text;
-      }
-    }
-    return null;
+    if (!code) return [];
+    return Array.from(code.querySelectorAll<HTMLElement>(".lm-source-line"));
   }
 
   /** Scroll the container so the given fractional markdown line is at the top. */
   function scrollToLine(line: number): void {
-    const textNode = getTextNode();
-    if (!textNode) return;
-
-    const text = props.markdown();
-    const offsets = lineStartOffsets(text);
+    const lines = getLineElements();
+    if (lines.length === 0) return;
     const lineIdx = Math.floor(line);
     const frac = line - lineIdx;
 
-    if (lineIdx >= offsets.length) {
+    if (lineIdx >= lines.length) {
       containerRef.scrollTop = containerRef.scrollHeight;
       return;
     }
 
-    const y = charToY(textNode, offsets[lineIdx], containerRef);
+    const containerRect = containerRef.getBoundingClientRect();
+    const lineRect = lines[lineIdx].getBoundingClientRect();
+    const y = lineRect.top - containerRect.top + containerRef.scrollTop;
 
-    if (frac > 0 && lineIdx + 1 < offsets.length) {
-      const nextY = charToY(textNode, offsets[lineIdx + 1], containerRef);
+    if (frac > 0 && lineIdx + 1 < lines.length) {
+      const nextRect = lines[lineIdx + 1].getBoundingClientRect();
+      const nextY = nextRect.top - containerRect.top + containerRef.scrollTop;
       containerRef.scrollTop = y + frac * (nextY - y);
     } else {
       containerRef.scrollTop = y;
@@ -109,14 +49,30 @@ export default function SourceView(props: SourceViewProps) {
 
   /** Determine which fractional line is currently at the top of the viewport. */
   function getTopVisibleLine(): number {
-    const textNode = getTextNode();
-    if (!textNode) return 0;
+    const lines = getLineElements();
+    if (lines.length === 0) return 0;
 
-    const text = props.markdown();
-    const offsets = lineStartOffsets(text);
-    const targetY = containerRef.scrollTop;
+    const containerRect = containerRef.getBoundingClientRect();
+    const targetY = containerRect.top;
 
-    return yToLine(textNode, offsets, targetY, containerRef);
+    // Binary search for the line at the top
+    let lo = 0;
+    let hi = lines.length - 1;
+
+    while (lo < hi - 1) {
+      const mid = (lo + hi) >>> 1;
+      const midRect = lines[mid].getBoundingClientRect();
+      if (midRect.top <= targetY) lo = mid;
+      else hi = mid;
+    }
+
+    const loRect = lines[lo].getBoundingClientRect();
+    const hiRect = lines[hi].getBoundingClientRect();
+    const span = hiRect.top - loRect.top;
+    if (span <= 0) return lo;
+
+    const fraction = Math.max(0, Math.min(1, (targetY - loRect.top) / span));
+    return lo + fraction;
   }
 
   onMount(() => {
@@ -133,10 +89,21 @@ export default function SourceView(props: SourceViewProps) {
     props.onTopLineChange?.(getTopVisibleLine());
   }
 
+  /** Wrap each line in a span for scroll sync and highlight the full content. */
+  function buildLineHTML(): string {
+    const html = highlightedHTML();
+    // Split the highlighted HTML by newlines, wrapping each in a line span.
+    // Since hljs output preserves newlines, we can split on them.
+    const lines = html.split("\n");
+    return lines
+      .map((line) => `<span class="lm-source-line">${line}</span>`)
+      .join("\n");
+  }
+
   return (
     <div ref={containerRef} class="lm-source-view" onScroll={handleScroll}>
       <pre class="lm-source-pre">
-        <code>{props.markdown()}</code>
+        <code innerHTML={buildLineHTML()} />
       </pre>
     </div>
   );

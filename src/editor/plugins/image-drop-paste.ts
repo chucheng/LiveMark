@@ -1,6 +1,7 @@
 import { Plugin } from "prosemirror-state";
 import { schema } from "../schema";
 import { invoke } from "@tauri-apps/api/core";
+import { documentState } from "../../state/document";
 
 /**
  * Plugin that handles image drag-and-drop and paste into the editor.
@@ -78,16 +79,26 @@ export function imageDropPastePlugin(): Plugin {
   });
 }
 
+/** Get the directory of the current document, or null for untitled docs. */
+function getDocDir(): string | null {
+  const fp = documentState.filePath();
+  if (!fp) return null;
+  const idx = fp.lastIndexOf("/");
+  return idx >= 0 ? fp.slice(0, idx) : null;
+}
+
 async function handleImageFile(file: File): Promise<string | null> {
   try {
     const buffer = await file.arrayBuffer();
     const data = Array.from(new Uint8Array(buffer));
-    const filename = file.name || `image-${Date.now()}.png`;
+    const filename = file.name || `pasted-image-${Date.now()}.png`;
 
-    // Save via Rust command; returns the absolute path
+    // Save via Rust command — pass doc directory for relative path support
+    const docDir = getDocDir();
     const savedPath = await invoke<string>("save_image", {
       filename,
       data,
+      docDir,
     });
     return savedPath;
   } catch (err) {

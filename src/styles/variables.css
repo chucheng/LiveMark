@@ -131,3 +131,11 @@
   --lm-btn-border: #383c46;
   --lm-btn-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
+
+/* Smooth theme transition — applied temporarily during theme toggle */
+.lm-theme-transition,
+.lm-theme-transition *,
+.lm-theme-transition *::before,
+.lm-theme-transition *::after {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease !important;
+}

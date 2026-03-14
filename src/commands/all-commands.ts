@@ -240,6 +240,26 @@ export function registerAllCommands() {
     execute: () => { themeState.cycleTheme(); preferencesState.savePreferences(); },
   });
 
+  // App
+  registerCommand({
+    id: "app.checkForUpdates",
+    label: "Check for Updates",
+    category: "View",
+    execute: async () => {
+      try {
+        const { check } = await import("@tauri-apps/plugin-updater");
+        const update = await check();
+        if (update?.available) {
+          uiState.setUpdateAvailable({ version: update.version, notes: update.body ?? undefined });
+        } else {
+          uiState.showStatus("You're on the latest version.");
+        }
+      } catch {
+        uiState.showStatus("Could not check for updates.");
+      }
+    },
+  });
+
   // Block
   registerCommand({
     id: "block.copyLink",
@@ -264,6 +284,38 @@ export function registerAllCommands() {
           await navigator.clipboard.writeText(`#${anchor}`);
         }
       }
+    },
+  });
+
+  registerCommand({
+    id: "edit.insertLink",
+    label: "Insert Link",
+    shortcut: "Cmd+K",
+    category: "Edit",
+    execute: async () => {
+      const { getEditorRef } = await import("./file-commands");
+      const editor = getEditorRef();
+      if (!editor) return;
+      const { schema } = await import("../editor/schema");
+      const view = editor.view;
+      const { from, to, empty } = view.state.selection;
+      const linkMark = schema.marks.link;
+      if (!empty && view.state.doc.rangeHasMark(from, to, linkMark)) {
+        view.dispatch(view.state.tr.removeMark(from, to, linkMark));
+        return;
+      }
+      const tr = view.state.tr;
+      if (empty) {
+        const linkText = "link";
+        const mark = linkMark.create({ href: "url" });
+        tr.insertText(linkText, from);
+        tr.addMark(from, from + linkText.length, mark);
+        const { TextSelection } = await import("prosemirror-state");
+        tr.setSelection(TextSelection.create(tr.doc, from, from + linkText.length));
+      } else {
+        tr.addMark(from, to, linkMark.create({ href: "" }));
+      }
+      view.dispatch(tr.scrollIntoView());
     },
   });
 

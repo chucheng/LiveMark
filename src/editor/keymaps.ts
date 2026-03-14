@@ -144,6 +144,126 @@ const hrOnEnter: Command = (state, dispatch) => {
   return true;
 };
 
+/**
+ * On Enter, convert two consecutive paragraphs that form a Markdown table
+ * (header row + separator row) into a ProseMirror table node.
+ *
+ * Pattern: paragraph "| H1 | H2 |" followed by paragraph "| --- | --- |"
+ * with cursor at the end of the separator paragraph.
+ */
+const tableOnEnter: Command = (state, dispatch) => {
+  const { $from, empty } = state.selection;
+  if (!empty) return false;
+
+  const parent = $from.parent;
+  if (parent.type !== schema.nodes.paragraph) return false;
+
+  const text = parent.textContent.trim();
+  // Check if current line is a separator row: | --- | --- | ...
+  if (!/^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$/.test(text)) return false;
+
+  // Find the preceding paragraph (header row)
+  const sepPos = $from.before(); // position of separator paragraph
+  const $sep = state.doc.resolve(sepPos);
+  if ($sep.index($sep.depth - 1) === 0) return false; // no preceding sibling
+
+  const headerNode = $sep.node($sep.depth - 1).child($sep.index($sep.depth - 1) - 1);
+  if (headerNode.type !== schema.nodes.paragraph) return false;
+
+  const headerText = headerNode.textContent.trim();
+  // Check if header line looks like: | H1 | H2 | ...
+  if (!/^\|?.+\|.+\|?\s*$/.test(headerText)) return false;
+
+  // Parse columns from header
+  const headerCells = headerText
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((c) => c.trim());
+
+  // Parse separator to check column count matches
+  const sepCells = text
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((c) => c.trim());
+
+  if (headerCells.length !== sepCells.length || headerCells.length === 0) return false;
+
+  if (dispatch) {
+    const tr = state.tr;
+    const { table, table_row, table_header, table_cell, paragraph } = schema.nodes;
+
+    // Build header row with table_header cells
+    const headerRowCells = headerCells.map((cellText) =>
+      table_header.createAndFill(null, paragraph.create(null, cellText ? schema.text(cellText) : undefined))!
+    );
+    const headerRow = table_row.create(null, headerRowCells);
+
+    // Build an empty data row
+    const dataCells = headerCells.map(() =>
+      table_cell.createAndFill(null, paragraph.create())!
+    );
+    const dataRow = table_row.create(null, dataCells);
+
+    const tableNode = table.create(null, [headerRow, dataRow]);
+
+    // Replace from start of header paragraph to end of separator paragraph
+    const headerParaPos = sepPos - headerNode.nodeSize;
+    const sepEnd = sepPos + parent.nodeSize;
+
+    tr.replaceWith(headerParaPos, sepEnd, tableNode);
+    // Place cursor in first data cell
+    const tableStart = headerParaPos;
+    // Navigate into table > dataRow > first cell > paragraph
+    tr.setSelection(TextSelection.create(tr.doc, tableStart + headerRow.nodeSize + 3));
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
+
+/**
+ * Insert or toggle a link mark.
+ * If text is selected and already linked, remove the link.
+ * If text is selected and not linked, wrap it in a link with placeholder URL.
+ * If no selection, insert [link](url) template.
+ */
+const insertLink: Command = (state, dispatch) => {
+  const { from, to, empty } = state.selection;
+  const linkMark = schema.marks.link;
+
+  // If selection has a link, remove it
+  if (!empty) {
+    const hasLink = state.doc.rangeHasMark(from, to, linkMark);
+    if (hasLink) {
+      if (dispatch) {
+        dispatch(state.tr.removeMark(from, to, linkMark));
+      }
+      return true;
+    }
+  }
+
+  if (dispatch) {
+    const tr = state.tr;
+    if (empty) {
+      // No selection — insert [link](url) and select "url" for easy typing
+      const linkText = "link";
+      const urlText = "url";
+      const mark = linkMark.create({ href: urlText });
+      tr.insertText(linkText, from);
+      tr.addMark(from, from + linkText.length, mark);
+      // Place cursor at the end of inserted link text so user can type
+      tr.setSelection(TextSelection.create(tr.doc, from, from + linkText.length));
+    } else {
+      // Selection exists — wrap selected text in a link with placeholder URL
+      const mark = linkMark.create({ href: "" });
+      tr.addMark(from, to, mark);
+    }
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
+
 export function buildKeymaps() {
   const keys: Record<string, Command> = {};
 
@@ -158,6 +278,9 @@ export function buildKeymaps() {
   keys["Mod-`"] = markCommand("code");
   keys["Mod-Shift-x"] = markCommand("strikethrough");
 
+  // Insert link
+  keys["Mod-k"] = insertLink;
+
   // Headings (Cmd+1 through Cmd+6)
   for (let i = 1; i <= 6; i++) {
     keys[`Mod-${i}`] = headingCommand(i);
@@ -167,7 +290,7 @@ export function buildKeymaps() {
   // Lists + Tables (Tab/Shift-Tab context-aware)
   keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item));
   keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item));
-  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, splitListItem(schema.nodes.list_item));
+  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item));
 
   // Block operations
   keys["Mod-Shift-c"] = toCodeBlock;

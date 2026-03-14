@@ -21,6 +21,7 @@ import {
   closeTabById,
   confirmAllUnsavedChanges,
   silentSave,
+  isOpenableFile,
 } from "../commands/file-commands";
 import {
   exportHTML,
@@ -43,11 +44,13 @@ import Sidebar from "./Sidebar";
 import BlockContextMenu from "./BlockContextMenu";
 import BlockTypePicker from "./BlockTypePicker";
 import MindMap from "./MindMap";
+import UpdateBanner from "./UpdateBanner";
 import { fileTreeState } from "../state/filetree";
 import { startFileWatch, stopFileWatch } from "../state/file-watch";
 import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import type { EditorView } from "prosemirror-view";
+import { TextSelection } from "prosemirror-state";
 
 function getEditorTopLine(view: EditorView, scroller: HTMLElement): number {
   const scrollerRect = scroller.getBoundingClientRect();
@@ -87,6 +90,8 @@ export default function App() {
   });
   const [syncLine, setSyncLine] = createSignal(0);
   const [autoSaveStatus, setAutoSaveStatus] = createSignal("");
+  let savedSelectionAnchor = 0;
+  let savedSelectionHead = 0;
   /** Format a file path for the title bar — abbreviate home dir with ~/ */
   function displayPath(): string {
     const fp = documentState.filePath();
@@ -278,6 +283,29 @@ export default function App() {
   function handleKeydown(e: KeyboardEvent) {
     const mod = e.metaKey || e.ctrlKey;
 
+    // Esc exits source view
+    if (e.key === "Escape" && uiState.isSourceView() && !mod) {
+      e.preventDefault();
+      const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+      uiState.toggleSourceView();
+      requestAnimationFrame(() => {
+        if (editor && editorScroller) {
+          scrollEditorToLine(editor.view, editorScroller, syncLine());
+        }
+        if (editor) {
+          try {
+            const maxPos = editor.view.state.doc.content.size;
+            const anchor = Math.min(savedSelectionAnchor, maxPos);
+            const head = Math.min(savedSelectionHead, maxPos);
+            const sel = TextSelection.create(editor.view.state.doc, anchor, head);
+            editor.view.dispatch(editor.view.state.tr.setSelection(sel));
+          } catch { /* ignore */ }
+          editor.view.focus();
+        }
+      });
+      return;
+    }
+
     // Phase 1: If chord is pending, dispatch or cancel
     if (uiState.chordPending()) {
       if (e.key === "Escape") {
@@ -376,8 +404,24 @@ export default function App() {
           if (editor && editorScroller) {
             scrollEditorToLine(editor.view, editorScroller, syncLine());
           }
+          // Restore cursor position
+          if (editor) {
+            try {
+              const maxPos = editor.view.state.doc.content.size;
+              const anchor = Math.min(savedSelectionAnchor, maxPos);
+              const head = Math.min(savedSelectionHead, maxPos);
+              const sel = TextSelection.create(editor.view.state.doc, anchor, head);
+              editor.view.dispatch(editor.view.state.tr.setSelection(sel));
+            } catch { /* ignore */ }
+            editor.view.focus();
+          }
         });
       } else {
+        if (editor) {
+          // Save cursor position before entering source view
+          savedSelectionAnchor = editor.view.state.selection.anchor;
+          savedSelectionHead = editor.view.state.selection.head;
+        }
         if (editor && editorScroller) {
           setSyncLine(getEditorTopLine(editor.view, editorScroller));
         }
@@ -388,7 +432,12 @@ export default function App() {
       uiState.toggleFind();
     } else if (e.key === "F" && e.shiftKey) {
       e.preventDefault();
-      preferencesState.toggleFocusMode();
+      if (uiState.isFindOpen()) {
+        // When find bar is open, Cmd+Shift+F toggles replace row
+        window.dispatchEvent(new CustomEvent("lm-toggle-replace"));
+      } else {
+        preferencesState.toggleFocusMode();
+      }
     } else if (e.key === "R" && e.shiftKey) {
       e.preventDefault();
       uiState.toggleReview();
@@ -423,8 +472,8 @@ export default function App() {
       }
       tabsState.switchTabRelative(1);
       handleTabSwitch();
-    } else if (/^[1-9]$/.test(e.key) && !e.shiftKey && !e.altKey) {
-      // Cmd+1-9 — switch to tab by index
+    } else if (/^[7-9]$/.test(e.key) && !e.shiftKey && !e.altKey) {
+      // Cmd+7-9 — switch to tab by index (Cmd+1-6 reserved for heading levels)
       e.preventDefault();
       const idx = parseInt(e.key) - 1;
       if (idx < tabsState.tabs().length) {
@@ -441,6 +490,7 @@ export default function App() {
   let unlistenClose: (() => void) | undefined;
   let unlistenResize: (() => void) | undefined;
   let unlistenOpenFiles: (() => void) | undefined;
+  let unlistenDragDrop: (() => void) | undefined;
   let chromeHideTimer: ReturnType<typeof setTimeout> | null = null;
   let chromeLeaveTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -456,6 +506,31 @@ export default function App() {
       // Mouse at top edge — show chrome
       if (chromeLeaveTimer) { clearTimeout(chromeLeaveTimer); chromeLeaveTimer = null; }
       uiState.showChrome();
+    }
+  }
+
+  function handleDragOver(e: DragEvent) {
+    // Allow drop for non-image files (images handled by ProseMirror plugin)
+    if (e.dataTransfer?.types.includes("Files")) {
+      e.preventDefault();
+    }
+  }
+
+  function handleFileDrop(e: DragEvent) {
+    if (!e.dataTransfer?.files?.length) return;
+    const files = Array.from(e.dataTransfer.files);
+    // Check for non-image droppable files (images are handled by ProseMirror plugin)
+    const textFiles = files.filter(
+      (f) => !f.type.startsWith("image/") && f.name && isOpenableFile(f.name)
+    );
+    if (textFiles.length === 0) return;
+    e.preventDefault();
+    for (const f of textFiles) {
+      // In Tauri webview, dropped files have a path property
+      const path = (f as File & { path?: string }).path;
+      if (path) {
+        openFileInTab(path);
+      }
     }
   }
 
@@ -517,9 +592,22 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeydown);
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("dragover", handleDragOver);
+    window.addEventListener("drop", handleFileDrop);
 
     (async () => {
       await preferencesState.loadPreferences();
+
+      // Check for updates (silent — no error shown if offline or unconfigured)
+      try {
+        const { check } = await import("@tauri-apps/plugin-updater");
+        const update = await check();
+        if (update?.available) {
+          uiState.setUpdateAvailable({ version: update.version, notes: update.body ?? undefined });
+        }
+      } catch {
+        // Silent fail
+      }
 
       // Fullscreen detection
       const appWindow = getCurrentWindow();
@@ -551,6 +639,18 @@ export default function App() {
         }
       });
 
+      // Drag-and-drop file open via Tauri window event
+      unlistenDragDrop = await appWindow.onDragDropEvent(async (event) => {
+        if (event.payload.type === "drop") {
+          const paths = event.payload.paths ?? [];
+          for (const p of paths) {
+            if (isOpenableFile(p)) {
+              await openFileInTab(p);
+            }
+          }
+        }
+      });
+
       startFileWatch();
 
       unlistenClose = await appWindow.onCloseRequested(async (event) => {
@@ -565,6 +665,8 @@ export default function App() {
   onCleanup(() => {
     window.removeEventListener("keydown", handleKeydown);
     window.removeEventListener("mousemove", handleMouseMove);
+    window.removeEventListener("dragover", handleDragOver);
+    window.removeEventListener("drop", handleFileDrop);
     stopFileWatch();
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
@@ -574,6 +676,7 @@ export default function App() {
     unlistenClose?.();
     unlistenResize?.();
     unlistenOpenFiles?.();
+    unlistenDragDrop?.();
     editor?.destroy();
   });
 
@@ -593,7 +696,7 @@ export default function App() {
         <div class="lm-titlebar">
           <div class="lm-titlebar-traffic-light-spacer" />
           <span class="lm-titlebar-title">
-            {displayPath()}
+            {uiState.isSourceView() ? "[Source] " : ""}{displayPath()}
             {documentState.isModified() ? " ●" : ""}
           </span>
           <div class="lm-titlebar-traffic-light-spacer" />
@@ -601,6 +704,10 @@ export default function App() {
 
         <TabBar onCloseTab={handleCloseTab} onSwitchTab={handleSwitchTab} />
       </div>
+
+      <Show when={uiState.updateAvailable()}>
+        <UpdateBanner />
+      </Show>
 
       <div class="lm-main-area">
         <Sidebar onFileClick={handleSidebarFileClick} />

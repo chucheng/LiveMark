@@ -4,7 +4,9 @@ export type Theme = "light" | "dark" | "system";
 
 const [theme, setThemeSignal] = createSignal<Theme>("system");
 
-const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const darkQuery = typeof window !== "undefined"
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : { matches: false, addEventListener: () => {}, removeEventListener: () => {} } as unknown as MediaQueryList;
 
 function resolvedTheme(): "light" | "dark" {
   const t = theme();
@@ -15,6 +17,7 @@ function resolvedTheme(): "light" | "dark" {
 }
 
 function applyTheme() {
+  if (typeof document === "undefined") return;
   const resolved = resolvedTheme();
   if (resolved === "dark") {
     document.documentElement.dataset.theme = "dark";
@@ -24,6 +27,13 @@ function applyTheme() {
 }
 
 function setTheme(t: Theme) {
+  if (typeof document !== "undefined") {
+    // Add transition class for smooth theme switch
+    document.documentElement.classList.add("lm-theme-transition");
+    setTimeout(() => {
+      document.documentElement.classList.remove("lm-theme-transition");
+    }, 250);
+  }
   setThemeSignal(t);
   applyTheme();
 }
