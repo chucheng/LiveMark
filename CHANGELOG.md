@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.4
+
+- **CJK heading fix** — increase heading line-height from 1.3 to 1.5 to prevent Chinese/Japanese/Korean characters from being clipped
+
 ## v2.1.3
 
 - **Show Tutorial command** — open the bundled tutorial in a new tab via the command palette (Cmd+Shift+P → "Show Tutorial")
