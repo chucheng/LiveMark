@@ -177,7 +177,7 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** M2 (settings panel must work with multi-tab), M5 (settings apply to new features like Mermaid).
 
 **Definition of Done:**
-- [ ] Settings panel opens with Cmd+, or command palette
+- [x] Settings panel opens with Cmd+, or command palette
 - [ ] All editor template settings (font, margins, width, line height, spacing) apply live
 - [ ] Two-column layout toggle works
 - [ ] Presets can be saved and loaded
@@ -185,8 +185,8 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 - [ ] Conflict detection warns on OS-level and app-level conflicts
 - [ ] Command palette shows conflict badges
 - [ ] Export HTML/PDF respects editor template settings
-- [ ] All preferences persisted via Tauri IPC
-- [ ] All existing v1 tests pass
+- [x] All preferences persisted via Tauri IPC
+- [x] All existing v1 tests pass
 - [ ] New tests for preferences, shortcut customization
 
 ---
@@ -204,10 +204,10 @@ M2: Multi-Tab ──→ M3: File Tree ──→ M5: Rich Features         │
 **Dependencies:** M1 (CI/CD — release workflow must be in place), M6 (all features complete).
 
 **Definition of Done:**
-- [ ] App checks for updates on launch
-- [ ] Update banner appears when a new version is available
-- [ ] User can download and install update from within the app
-- [ ] Unsaved documents prompt save before restart
+- [x] App checks for updates on launch
+- [x] Update banner appears when a new version is available
+- [x] User can download and install update from within the app
+- [x] Unsaved documents prompt save before restart
 - [ ] macOS build is notarized
 - [ ] Windows build is code-signed
 - [ ] Full release pipeline tested end-to-end (tag → build → publish → update notification)

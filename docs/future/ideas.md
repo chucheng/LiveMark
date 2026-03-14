@@ -15,14 +15,14 @@ Future possibilities for LiveMark. These are **not commitments** — they are id
 - The architecture already supports extension points: schema extensions, ProseMirror plugins, NodeView registry, command registry, theme system, export pipelines
 - Would require designing a stable API surface and plugin distribution mechanism
 
-### User-Configurable Editor Template
-Let users customize the editor's visual layout and typography — not just color themes, but the full writing environment. Applies to both the in-editor experience and export output (HTML/PDF).
-- **Font family** — choose their preferred writing font (font *size* zoom is already shipped via Cmd+=/Cmd+-/Cmd+0)
-- **Content margins** — adjust left/right padding between the writing zone and the window edge (currently fixed ~48px)
+### Editor Template Expansion
+Settings panel and font size zoom are shipped. Remaining:
+- **Font family** — choose preferred writing font
+- **Content margins** — adjust left/right padding (currently fixed ~48px)
 - **Content max-width** — wider or narrower writing column
 - **Line height and paragraph spacing**
-- **Two-column layout** — a toggle (like focus mode) that reflows the document into two newspaper-style columns. Still fully editable, not a separate reading mode — just a layout option for people who prefer denser content on wide screens.
-- Templates should be saveable/shareable as presets
+- **Two-column layout** — reflow document into two newspaper-style columns
+- **Saveable presets** — save/load/share template configurations
 
 ### Spell Checking
 - Integrate spell checking (OS-level or library-based)
@@ -34,13 +34,12 @@ Let users customize the editor's visual layout and typography — not just color
 ## Command Palette & Keyboard Shortcuts
 
 ### Shortcut conflict awareness in Command Palette
-When displaying commands in Cmd+Shift+P, if a shortcut is already taken by the OS or another app, indicate it visually — strikethrough, greyed out, or a "conflict" badge. Users should immediately see which shortcuts won't work as expected.
+When displaying commands in Cmd+Shift+P, if a shortcut is already taken by the OS or another app, indicate it visually — strikethrough, greyed out, or a "conflict" badge.
 
 ### Custom hotkey assignment
-Allow users to reassign keyboard shortcuts for any command. When assigning a new shortcut:
+Allow users to reassign keyboard shortcuts for any command:
 - Check for conflicts within LiveMark's own keybindings
 - Check for conflicts with OS-level shortcuts (Cmd+Q, Cmd+Tab, etc.)
-- Check for known conflicts with common apps (if feasible)
 - Show a warning if a conflict is detected, but still allow the user to proceed
 
 ---
@@ -71,26 +70,20 @@ Allow users to reassign keyboard shortcuts for any command. When assigning a new
 
 ## Infrastructure & Distribution
 
-### Auto-Update Mechanism
-- In-app update notifications and installation
-- Tauri has built-in updater plugin support
+### Release Pipeline Completion
+Auto-update mechanism is shipped. Remaining:
+- macOS notarization (code signing)
+- Windows code signing
+- End-to-end release pipeline verification (tag → build → publish → update notification)
 
 ### Version History / Local Snapshots
 - Track document revisions locally
 - Browse and restore previous versions
 - Could use git-like approach or simple timestamped copies
 
-### Cross-Platform Testing
-- Expand automated testing across macOS, Windows, Linux
-- WebView rendering differences need systematic verification
-
 ---
 
 ## Architecture Improvements
-
-### State Management Scaling
-- If multi-tab is added, signal architecture may need per-tab isolation
-- Consider whether a lightweight state library becomes worthwhile
 
 ### Schema Extensibility
 - Formalize the schema extension mechanism for plugins
