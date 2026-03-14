@@ -30,7 +30,7 @@
 }
 
 .ProseMirror p {
-  margin-bottom: 0.8em;
+  margin-bottom: var(--lm-paragraph-spacing, 0.8em);
   position: relative;
 }
 
@@ -177,4 +177,10 @@
 }
 .lm-focus-mode .ProseMirror > .lm-active {
   opacity: 1;
+}
+
+/* Two-column layout */
+.lm-two-column .ProseMirror {
+  column-count: 2;
+  column-gap: 2em;
 }

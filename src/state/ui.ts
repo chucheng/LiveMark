@@ -8,6 +8,7 @@ const [isReviewOpen, setReviewOpen] = createSignal(false);
 const [isMindMapOpen, setMindMapOpen] = createSignal(false);
 const [isFullscreen, setFullscreen] = createSignal(false);
 const [chromeHidden, setChromeHidden] = createSignal(false);
+const [isSettingsOpen, setSettingsOpen] = createSignal(false);
 const [chordPending, setChordPending] = createSignal<string | null>(null);
 
 export const uiState = {
@@ -37,6 +38,11 @@ export const uiState = {
   setMindMapOpen,
   toggleMindMap() {
     setMindMapOpen(!isMindMapOpen());
+  },
+  isSettingsOpen,
+  setSettingsOpen,
+  toggleSettings() {
+    setSettingsOpen(!isSettingsOpen());
   },
   isFullscreen,
   setFullscreen,

@@ -30,12 +30,14 @@ import {
   setExportEditorRef,
 } from "../commands/export-commands";
 import { registerAllCommands } from "../commands/all-commands";
+import { applyCustomShortcuts } from "../commands/registry";
 import StatusBar, { type CursorInfo } from "./StatusBar";
 import CommandPalette from "./CommandPalette";
 import FindReplace from "./FindReplace";
 import SourceView from "./SourceView";
 import AboutModal from "./AboutModal";
 import ReviewPanel from "./ReviewPanel";
+import SettingsPanel from "./SettingsPanel";
 import TabBar from "./TabBar";
 import Sidebar from "./Sidebar";
 import BlockContextMenu from "./BlockContextMenu";
@@ -99,8 +101,19 @@ export default function App() {
   createEffect(() => {
     const fs = preferencesState.fontSize();
     const cw = preferencesState.contentWidth();
-    document.documentElement.style.setProperty("--lm-font-size", fs + "px");
-    document.documentElement.style.setProperty("--lm-content-width", (cw * fs / 16) + "px");
+    const root = document.documentElement.style;
+    root.setProperty("--lm-font-size", fs + "px");
+    root.setProperty("--lm-content-width", (cw * fs / 16) + "px");
+    root.setProperty("--lm-font-body", preferencesState.fontFamilyCSS());
+    root.setProperty("--lm-line-height", String(preferencesState.lineHeight()));
+    root.setProperty("--lm-paragraph-spacing", preferencesState.paragraphSpacing());
+    root.setProperty("--lm-editor-padding-x", preferencesState.editorPaddingX() + "px");
+    root.setProperty("--lm-editor-padding-y", preferencesState.editorPaddingY() + "px");
+  });
+
+  // Apply custom shortcuts whenever they change
+  createEffect(() => {
+    applyCustomShortcuts(preferencesState.customShortcuts());
   });
 
   function resetAutoSaveTimer() {
@@ -308,7 +321,11 @@ export default function App() {
       return;
     }
 
-    if (e.key === "o" && e.shiftKey) {
+    if (e.key === ",") {
+      e.preventDefault();
+      uiState.toggleSettings();
+      return;
+    } else if (e.key === "o" && e.shiftKey) {
       // Cmd+Shift+O — open folder
       e.preventDefault();
       handleOpenFolder();
@@ -592,6 +609,7 @@ export default function App() {
           classList={{
             "lm-focus-mode": preferencesState.focusMode(),
             "lm-hidden": uiState.isSourceView(),
+            "lm-two-column": preferencesState.twoColumn(),
           }}
         >
           <Show when={uiState.isFindOpen()}>
@@ -618,6 +636,10 @@ export default function App() {
 
       <Show when={uiState.isMindMapOpen()}>
         <MindMap view={() => editor?.view} onClose={() => uiState.setMindMapOpen(false)} />
+      </Show>
+
+      <Show when={uiState.isSettingsOpen()}>
+        <SettingsPanel />
       </Show>
 
       <BlockContextMenu view={() => editor?.view} />

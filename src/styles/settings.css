@@ -1,0 +1,460 @@
+.lm-settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--lm-overlay-backdrop);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+  z-index: 1000;
+}
+
+.lm-settings-panel {
+  width: 580px;
+  max-height: calc(100vh - 80px);
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-lg);
+  box-shadow: var(--lm-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.lm-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--lm-border);
+}
+
+.lm-settings-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--lm-text);
+  margin: 0;
+}
+
+.lm-settings-close {
+  background: none;
+  border: none;
+  color: var(--lm-text-muted);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.lm-settings-close:hover {
+  color: var(--lm-text);
+}
+
+.lm-settings-body {
+  overflow-y: auto;
+  padding: 16px 20px 24px;
+  flex: 1;
+}
+
+/* Sections */
+.lm-settings-section {
+  margin-bottom: 24px;
+}
+
+.lm-settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.lm-settings-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--lm-text-faint);
+  margin: 0 0 12px 0;
+}
+
+/* Row layout */
+.lm-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  min-height: 36px;
+}
+
+.lm-settings-label {
+  font-size: 13px;
+  color: var(--lm-text);
+  font-weight: 450;
+}
+
+.lm-settings-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Select */
+.lm-settings-select {
+  background: var(--lm-btn-bg);
+  border: 1px solid var(--lm-btn-border);
+  border-radius: var(--lm-radius-sm);
+  color: var(--lm-text);
+  font-size: 13px;
+  padding: 4px 8px;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--lm-font-body);
+}
+
+.lm-settings-select:focus {
+  box-shadow: var(--lm-focus-ring-shadow);
+}
+
+/* Input */
+.lm-settings-input {
+  background: var(--lm-bg-inset);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  color: var(--lm-text);
+  font-size: 13px;
+  padding: 6px 10px;
+  outline: none;
+  font-family: var(--lm-font-body);
+  flex: 1;
+}
+
+.lm-settings-input:focus {
+  box-shadow: var(--lm-focus-ring-shadow);
+  border-color: var(--lm-focus-ring);
+}
+
+.lm-settings-input::placeholder {
+  color: var(--lm-text-faint);
+}
+
+/* Stepper */
+.lm-settings-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  min-height: 36px;
+}
+
+.lm-settings-stepper-label {
+  font-size: 13px;
+  color: var(--lm-text);
+  font-weight: 450;
+}
+
+.lm-settings-stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--lm-btn-border);
+  border-radius: var(--lm-radius-sm);
+  overflow: hidden;
+}
+
+.lm-settings-stepper-btn {
+  background: var(--lm-btn-bg);
+  border: none;
+  color: var(--lm-text);
+  font-size: 14px;
+  width: 30px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.lm-settings-stepper-btn:hover {
+  background: var(--lm-btn-bg-hover);
+}
+
+.lm-settings-stepper-btn:active {
+  background: var(--lm-btn-bg-active);
+}
+
+.lm-settings-stepper-value {
+  font-size: 12.5px;
+  color: var(--lm-text);
+  font-family: var(--lm-font-mono);
+  min-width: 54px;
+  text-align: center;
+  background: var(--lm-bg-inset);
+  height: 28px;
+  line-height: 28px;
+  border-left: 1px solid var(--lm-border-subtle);
+  border-right: 1px solid var(--lm-border-subtle);
+}
+
+/* Toggle switch */
+.lm-settings-toggle {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.lm-settings-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.lm-settings-toggle-track {
+  display: block;
+  width: 36px;
+  height: 20px;
+  background: var(--lm-border);
+  border-radius: 10px;
+  position: relative;
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-settings-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--lm-transition-fast);
+}
+
+.lm-settings-toggle input:checked + .lm-settings-toggle-track {
+  background: var(--lm-accent);
+}
+
+.lm-settings-toggle input:checked + .lm-settings-toggle-track::after {
+  transform: translateX(16px);
+}
+
+/* Presets */
+.lm-settings-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.lm-settings-preset-item {
+  display: flex;
+  align-items: center;
+  border-radius: var(--lm-radius-sm);
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-settings-preset-item.lm-preset-active {
+  background: var(--lm-hover);
+}
+
+.lm-settings-preset-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--lm-text);
+  font-family: var(--lm-font-body);
+  text-align: left;
+}
+
+.lm-settings-preset-btn:hover {
+  background: var(--lm-hover);
+  border-radius: var(--lm-radius-sm);
+}
+
+.lm-preset-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.lm-preset-detail {
+  font-size: 11.5px;
+  color: var(--lm-text-faint);
+  font-family: var(--lm-font-mono);
+}
+
+.lm-settings-preset-delete {
+  background: none;
+  border: none;
+  color: var(--lm-text-faint);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.lm-settings-preset-delete:hover {
+  color: var(--lm-severity-issue);
+}
+
+.lm-settings-preset-save {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.lm-settings-btn {
+  background: var(--lm-btn-bg);
+  border: 1px solid var(--lm-btn-border);
+  border-radius: var(--lm-radius-sm);
+  color: var(--lm-text);
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: var(--lm-font-body);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.lm-settings-btn:hover:not(:disabled) {
+  background: var(--lm-btn-bg-hover);
+}
+
+.lm-settings-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Keyboard shortcuts */
+.lm-settings-shortcut-search {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.lm-settings-shortcuts-list {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--lm-border-subtle);
+  border-radius: var(--lm-radius-sm);
+}
+
+.lm-settings-shortcut-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--lm-border-subtle);
+  min-height: 36px;
+}
+
+.lm-settings-shortcut-row:last-child {
+  border-bottom: none;
+}
+
+.lm-settings-shortcut-category {
+  font-size: 10.5px;
+  color: var(--lm-text-faint);
+  min-width: 40px;
+  text-transform: uppercase;
+}
+
+.lm-settings-shortcut-label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--lm-text);
+}
+
+.lm-settings-shortcut-capture {
+  position: relative;
+}
+
+.lm-settings-shortcut-key {
+  background: var(--lm-bg-inset);
+  border: 1px solid var(--lm-border-subtle);
+  border-radius: 4px;
+  color: var(--lm-text-muted);
+  font-size: 11.5px;
+  font-family: var(--lm-font-mono);
+  padding: 3px 8px;
+  cursor: pointer;
+  min-width: 40px;
+  text-align: center;
+}
+
+.lm-settings-shortcut-key:hover {
+  border-color: var(--lm-accent);
+  color: var(--lm-accent);
+}
+
+.lm-settings-shortcut-key.lm-shortcut-custom {
+  color: var(--lm-accent);
+  border-color: var(--lm-accent-muted);
+}
+
+.lm-settings-shortcut-input {
+  background: var(--lm-bg-inset);
+  border: 2px solid var(--lm-accent);
+  border-radius: 4px;
+  color: var(--lm-text);
+  font-size: 11.5px;
+  font-family: var(--lm-font-mono);
+  padding: 3px 8px;
+  min-width: 100px;
+  outline: none;
+  text-align: center;
+}
+
+.lm-settings-shortcut-conflict {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-severity-warning);
+  border-radius: var(--lm-radius-sm);
+  padding: 6px 10px;
+  font-size: 11.5px;
+  color: var(--lm-severity-warning);
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: var(--lm-shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lm-settings-conflict-confirm,
+.lm-settings-conflict-cancel {
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 10.5px;
+  padding: 2px 6px;
+  cursor: pointer;
+  color: inherit;
+  font-family: var(--lm-font-body);
+}
+
+.lm-settings-conflict-confirm:hover {
+  background: var(--lm-severity-warning-muted);
+}
+
+.lm-settings-conflict-cancel:hover {
+  background: var(--lm-hover);
+}
+
+.lm-settings-shortcut-reset {
+  background: none;
+  border: none;
+  color: var(--lm-text-faint);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.lm-settings-shortcut-reset:hover {
+  color: var(--lm-accent);
+}

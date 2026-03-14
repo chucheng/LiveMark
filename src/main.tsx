@@ -16,6 +16,7 @@ import "./styles/tab-bar.css";
 import "./styles/sidebar.css";
 import "./styles/block-handles.css";
 import "./styles/mind-map.css";
+import "./styles/settings.css";
 import "katex/dist/katex.min.css";
 import "prosemirror-gapcursor/style/gapcursor.css";
 

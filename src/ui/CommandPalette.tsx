@@ -1,6 +1,7 @@
 import { createSignal, createEffect, For, onMount } from "solid-js";
 import { uiState } from "../state/ui";
-import { searchCommands, type Command } from "../commands/registry";
+import { searchCommands, getCommands, type Command } from "../commands/registry";
+import { normalizeShortcut } from "../state/shortcuts";
 
 export default function CommandPalette() {
   let inputRef!: HTMLInputElement;
@@ -8,6 +9,21 @@ export default function CommandPalette() {
   const [query, setQuery] = createSignal("");
   const [selectedIdx, setSelectedIdx] = createSignal(0);
   const [results, setResults] = createSignal<Command[]>([]);
+
+  // Build a set of shortcuts that appear more than once (conflicts)
+  function conflictedShortcuts(): Set<string> {
+    const counts = new Map<string, number>();
+    for (const cmd of getCommands()) {
+      if (!cmd.shortcut) continue;
+      const norm = normalizeShortcut(cmd.shortcut);
+      counts.set(norm, (counts.get(norm) || 0) + 1);
+    }
+    const dupes = new Set<string>();
+    for (const [k, v] of counts) {
+      if (v > 1) dupes.add(k);
+    }
+    return dupes;
+  }
 
   createEffect(() => {
     setResults(searchCommands(query()));
@@ -97,6 +113,9 @@ export default function CommandPalette() {
                           </>
                         ))
                       : cmd.shortcut}
+                    {conflictedShortcuts().has(normalizeShortcut(cmd.shortcut)) && (
+                      <span class="lm-palette-conflict-badge" title="Shortcut conflict">!</span>
+                    )}
                   </span>
                 )}
               </div>

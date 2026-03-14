@@ -2,7 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { save, message } from "@tauri-apps/plugin-dialog";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { documentState } from "../state/document";
-import { generateHTML, renderHTMLBody } from "../export/html-template";
+import { generateHTML, renderHTMLBody, type TemplateSettings } from "../export/html-template";
+import { preferencesState } from "../state/preferences";
 import { generateBeautifulHTML } from "../export/beautiful-doc";
 import { markdownSerializer } from "../editor/markdown/serializer";
 import type { EditorInstance } from "../editor/editor";
@@ -11,6 +12,16 @@ let editorRef: EditorInstance | null = null;
 
 export function setExportEditorRef(editor: EditorInstance) {
   editorRef = editor;
+}
+
+function currentTemplate(): TemplateSettings {
+  return {
+    fontFamily: preferencesState.fontFamily(),
+    fontSize: preferencesState.fontSize(),
+    lineHeight: preferencesState.lineHeight(),
+    contentWidth: preferencesState.contentWidth(),
+    paragraphSpacing: preferencesState.paragraphSpacing(),
+  };
 }
 
 /**
@@ -22,7 +33,7 @@ export async function exportHTML() {
 
   const markdown = editorRef.getMarkdown();
   const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
-  const html = generateHTML(markdown, title);
+  const html = generateHTML(markdown, title, currentTemplate());
 
   const path = await save({
     filters: [{ name: "HTML", extensions: ["html"] }],
@@ -54,7 +65,7 @@ export async function exportPDF() {
 
   const markdown = editorRef.getMarkdown();
   const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
-  const html = generateHTML(markdown, title);
+  const html = generateHTML(markdown, title, currentTemplate());
 
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";

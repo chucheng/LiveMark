@@ -186,6 +186,13 @@ export function registerAllCommands() {
     execute: () => uiState.toggleMindMap(),
   });
   registerCommand({
+    id: "view.settings",
+    label: "Settings",
+    shortcut: "Cmd+,",
+    category: "View",
+    execute: () => uiState.toggleSettings(),
+  });
+  registerCommand({
     id: "view.about",
     label: "About LiveMark",
     category: "View",
