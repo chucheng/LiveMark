@@ -80,4 +80,8 @@ export class ImageView implements NodeView {
   stopEvent(): boolean {
     return false;
   }
+
+  destroy() {
+    this.img.onerror = null;
+  }
 }

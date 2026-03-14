@@ -29,9 +29,12 @@ export class TaskListItemView implements NodeView {
       e.preventDefault();
       const pos = this.getPos();
       if (pos === undefined) return;
+      // Read fresh node attrs from current editor state to avoid stale data
+      const freshNode = this.view.state.doc.nodeAt(pos);
+      if (!freshNode || freshNode.type.name !== "task_list_item") return;
       const tr = this.view.state.tr.setNodeMarkup(pos, undefined, {
-        ...this.node.attrs,
-        checked: !this.node.attrs.checked,
+        ...freshNode.attrs,
+        checked: !freshNode.attrs.checked,
       });
       this.view.dispatch(tr);
     });
@@ -53,5 +56,13 @@ export class TaskListItemView implements NodeView {
       this.dom.classList.remove("checked");
     }
     return true;
+  }
+
+  destroy() {
+    // Event listeners on this.checkbox are cleaned up when
+    // the DOM node is removed and garbage collected.
+    // Null out references to help GC and prevent stale access.
+    (this as any).view = null;
+    (this as any).getPos = null;
   }
 }

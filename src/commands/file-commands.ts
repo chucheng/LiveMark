@@ -44,6 +44,7 @@ export { isOpenableFile };
 let editorRef: EditorInstance | null = null;
 let onFileChangeCallback: (() => void) | null = null;
 let onTabSwitchCallback: (() => void) | null = null;
+let saveInProgress = false;
 
 export function setEditorRef(editor: EditorInstance) {
   editorRef = editor;
@@ -159,6 +160,7 @@ export async function loadFile(path: string) {
 
 export async function saveFile() {
   if (!editorRef) return;
+  if (saveInProgress) return;
 
   const path = documentState.filePath();
   if (path) {
@@ -179,6 +181,7 @@ export async function saveFile() {
       if (result !== "Overwrite") return;
     }
 
+    saveInProgress = true;
     try {
       const content = editorRef.getMarkdown();
       await invoke("write_file", { path, content });
@@ -189,6 +192,8 @@ export async function saveFile() {
         title: "Save Error",
         kind: "error",
       });
+    } finally {
+      saveInProgress = false;
     }
   } else {
     await saveAsFile();
@@ -198,6 +203,7 @@ export async function saveFile() {
 /** Silent save for auto-save — no error dialogs, returns success boolean. */
 export async function silentSave(): Promise<boolean> {
   if (!editorRef) return false;
+  if (saveInProgress) return false;
   const path = documentState.filePath();
   if (!path) return false;
   if (!documentState.isModified()) return false;
@@ -205,6 +211,7 @@ export async function silentSave(): Promise<boolean> {
   // Don't auto-save over external changes — let file-watch handle it
   if (await isExternallyModified(path)) return false;
 
+  saveInProgress = true;
   try {
     const content = editorRef.getMarkdown();
     await invoke("write_file", { path, content });
@@ -213,6 +220,8 @@ export async function silentSave(): Promise<boolean> {
     return true;
   } catch {
     return false;
+  } finally {
+    saveInProgress = false;
   }
 }
 
@@ -378,6 +387,7 @@ export async function confirmAllUnsavedChanges(): Promise<boolean> {
   );
 
   if (result === "Save All") {
+    const failedTabs: string[] = [];
     for (const tab of modifiedTabs) {
       if (tab.id === tabsState.activeTabId() && editorRef) {
         await saveFile();
@@ -391,7 +401,7 @@ export async function confirmAllUnsavedChanges(): Promise<boolean> {
           tabsState.updateTab(tab.id, { isModified: false });
           await stampMtime(tab.filePath);
         } catch {
-          // Continue with other tabs
+          failedTabs.push(tab.fileName);
         }
       } else if (!tab.filePath && editorRef) {
         // Unsaved untitled tab — prompt for save location
@@ -399,6 +409,13 @@ export async function confirmAllUnsavedChanges(): Promise<boolean> {
         onTabSwitchCallback?.();
         await saveAsFile();
       }
+    }
+    if (failedTabs.length > 0) {
+      await message(
+        `Failed to save ${failedTabs.length} file(s):\n${failedTabs.join(", ")}\n\nPlease save them manually before closing.`,
+        { title: "Save Error", kind: "error" },
+      );
+      return false;
     }
     return true;
   }

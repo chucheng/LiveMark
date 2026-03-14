@@ -31,10 +31,12 @@ async function checkForChanges(): Promise<void> {
   checking = true;
 
   try {
+    // Snapshot tabs and mtime to prevent concurrent modification issues
     const allTabs = tabsState.tabs();
+    const mtimeSnapshot = new Map(lastKnownMtime);
     for (const tab of allTabs) {
       if (!tab.filePath) continue;
-      const stored = lastKnownMtime.get(tab.filePath);
+      const stored = mtimeSnapshot.get(tab.filePath);
       if (stored === undefined) continue;
 
       let diskMtime: number;
@@ -69,8 +71,10 @@ async function handleCleanReload(tabId: string, filePath: string, isActive: bool
     await stampMtime(filePath);
 
     if (isActive) {
+      // Guard: verify the tab is still active and editor is still valid
+      if (tabsState.activeTabId() !== tabId) return;
       const editor = getEditorRef();
-      if (editor) {
+      if (editor && editor.view.dom.isConnected) {
         // Preserve scroll position
         const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
         const scrollTop = scroller?.scrollTop ?? 0;

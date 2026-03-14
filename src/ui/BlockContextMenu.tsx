@@ -137,12 +137,14 @@ export default function BlockContextMenu(props: BlockContextMenuProps) {
     document.addEventListener("click", handleClick, true);
     document.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("scroll", handleDismiss, true);
+    window.addEventListener("lm-tab-switch", handleDismiss);
   });
 
   onCleanup(() => {
     document.removeEventListener("click", handleClick, true);
     document.removeEventListener("mousedown", handleMouseDown);
     window.removeEventListener("scroll", handleDismiss, true);
+    window.removeEventListener("lm-tab-switch", handleDismiss);
   });
 
   // Clamp menu position to viewport after first paint

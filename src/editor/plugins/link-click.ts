@@ -18,7 +18,14 @@ export function linkClickPlugin(): Plugin {
         const href = linkMark.attrs.href;
         if (href) {
           event.preventDefault();
-          open(href).catch(console.error);
+          open(href).catch((err) => {
+            import("@tauri-apps/plugin-dialog").then(({ message }) => {
+              message(`Could not open link:\n${href}\n\n${err}`, {
+                title: "Link Error",
+                kind: "error",
+              });
+            });
+          });
         }
         return true;
       },

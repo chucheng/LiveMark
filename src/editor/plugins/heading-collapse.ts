@@ -98,6 +98,10 @@ export function headingCollapsePlugin(): Plugin<CollapseState> {
         if (meta) return meta;
 
         if (tr.docChanged && value.collapsed.size > 0) {
+          // Full doc replacement (e.g. tab switch via updateState) — clear collapse state
+          if (tr.steps.length === 0) {
+            return { collapsed: new Set() };
+          }
           // Map collapsed positions through the transaction
           const newCollapsed = new Set<number>();
           for (const pos of value.collapsed) {

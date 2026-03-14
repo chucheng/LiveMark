@@ -11,7 +11,17 @@ pub fn read_file(path: String) -> Result<String, String> {
 #[tauri::command]
 pub fn write_file(path: String, content: String) -> Result<(), String> {
     let target = Path::new(&path);
-    let tmp_path = target.with_extension("tmp");
+
+    // Use a unique temp filename to prevent concurrent write conflicts
+    let tmp_name = format!(
+        ".{}.{}.tmp",
+        target
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy(),
+        std::process::id()
+    );
+    let tmp_path = target.with_file_name(&tmp_name);
 
     // Write to temporary file first
     let mut file = fs::File::create(&tmp_path)
@@ -23,8 +33,11 @@ pub fn write_file(path: String, content: String) -> Result<(), String> {
     drop(file);
 
     // Atomic rename
-    fs::rename(&tmp_path, target)
-        .map_err(|e| format!("Failed to rename temp file: {e}"))?;
+    fs::rename(&tmp_path, target).map_err(|e| {
+        // Clean up temp file on rename failure
+        let _ = fs::remove_file(&tmp_path);
+        format!("Failed to rename temp file: {e}")
+    })?;
 
     Ok(())
 }

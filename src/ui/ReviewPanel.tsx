@@ -33,17 +33,29 @@ export default function ReviewPanel(props: ReviewPanelProps) {
   }
 
   // Run analysis on open and on doc changes
+  let patchedView: EditorView | null = null;
+  let origDispatch: typeof EditorView.prototype.dispatch | null = null;
+
   createEffect(() => {
-    if (!uiState.isReviewOpen()) return;
+    const isOpen = uiState.isReviewOpen();
+    const view = props.view();
+
+    // Clean up previous patch
+    if (patchedView && origDispatch) {
+      patchedView.dispatch = origDispatch;
+      patchedView = null;
+      origDispatch = null;
+    }
+
+    if (!isOpen || !view) return;
     runAnalysis();
 
-    const view = props.view();
-    if (!view) return;
-
     // Listen for doc changes via a transaction listener
-    const origDispatch = view.dispatch.bind(view);
-    const patchedDispatch: typeof view.dispatch = (tr) => {
-      origDispatch(tr);
+    origDispatch = view.dispatch.bind(view);
+    patchedView = view;
+    const saved = origDispatch;
+    view.dispatch = (tr) => {
+      saved(tr);
       if (tr.docChanged) {
         try {
           runAnalysis();
@@ -52,10 +64,13 @@ export default function ReviewPanel(props: ReviewPanelProps) {
         }
       }
     };
-    view.dispatch = patchedDispatch;
 
     onCleanup(() => {
-      view.dispatch = origDispatch;
+      if (patchedView && origDispatch) {
+        patchedView.dispatch = origDispatch;
+        patchedView = null;
+        origDispatch = null;
+      }
     });
   });
 

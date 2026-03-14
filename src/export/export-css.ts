@@ -85,6 +85,13 @@ pre {
   overflow-x: auto;
 }
 
+pre.frontmatter {
+  border-left: 3px solid var(--lm-border);
+  background-color: var(--lm-code-bg);
+  color: var(--lm-text-muted);
+  font-size: 0.875em;
+}
+
 pre code {
   background: none;
   padding: 0;

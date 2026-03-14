@@ -132,6 +132,13 @@ export default function BlockTypePicker(props: BlockTypePickerProps) {
     }
   }
 
+  // Dismiss on tab switch
+  createEffect(() => {
+    const handler = () => dismiss();
+    window.addEventListener("lm-tab-switch", handler);
+    onCleanup(() => window.removeEventListener("lm-tab-switch", handler));
+  });
+
   // Global keydown, click-outside, and scroll dismiss
   createEffect(() => {
     if (position()) {

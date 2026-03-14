@@ -30,6 +30,8 @@ export async function exportHTML() {
   });
 
   if (!path) return;
+  // Re-validate after async dialog — editor may have been destroyed
+  if (!editorRef) return;
 
   try {
     await invoke("write_file", { path, content: html });

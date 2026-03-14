@@ -22,8 +22,11 @@ export function lazyRenderPlugin(): Plugin {
       const doc = editorView.state.doc;
       if (doc.childCount < BLOCK_THRESHOLD) return {};
 
+      let alive = true;
+
       observer = new IntersectionObserver(
         (entries) => {
+          if (!alive || !editorView.dom.isConnected) return;
           let changed = false;
           for (const entry of entries) {
             const pos = parseInt(
@@ -76,6 +79,7 @@ export function lazyRenderPlugin(): Plugin {
           }
         },
         destroy() {
+          alive = false;
           observer?.disconnect();
           observer = null;
           visibleBlocks.clear();

@@ -105,8 +105,9 @@ export class MermaidView implements NodeView {
 
     const gen = ++this.renderGeneration;
     const result = await renderMermaid(source);
-    // Discard stale results from superseded renders
+    // Discard stale results from superseded renders or destroyed views
     if (gen !== this.renderGeneration) return;
+    if (!this.dom.isConnected) return;
 
     if ("svg" in result) {
       this.renderContainer.innerHTML = result.svg;

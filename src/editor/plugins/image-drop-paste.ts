@@ -22,13 +22,16 @@ export function imageDropPastePlugin(): Plugin {
 
         handleImageFile(file).then((src) => {
           if (src && view.dom.isConnected) {
-            const node = schema.nodes.image.create({ src, alt: file.name });
-            // Use current selection if original drop position is now invalid
-            const pos = coords.pos <= view.state.doc.content.size
-              ? coords.pos
-              : view.state.selection.from;
-            const tr = view.state.tr.insert(pos, node);
-            view.dispatch(tr);
+            try {
+              const node = schema.nodes.image.create({ src, alt: file.name });
+              // Clamp position to current doc size (doc may have changed during async save)
+              const maxPos = view.state.doc.content.size;
+              const pos = coords.pos <= maxPos ? coords.pos : view.state.selection.from;
+              const tr = view.state.tr.insert(pos, node);
+              view.dispatch(tr);
+            } catch {
+              // View or doc changed too much during async — drop silently
+            }
           }
         });
         return true;
@@ -46,9 +49,13 @@ export function imageDropPastePlugin(): Plugin {
 
             handleImageFile(file).then((src) => {
               if (src && view.dom.isConnected) {
-                const node = schema.nodes.image.create({ src, alt: file.name || "pasted-image" });
-                const tr = view.state.tr.replaceSelectionWith(node);
-                view.dispatch(tr);
+                try {
+                  const node = schema.nodes.image.create({ src, alt: file.name || "pasted-image" });
+                  const tr = view.state.tr.replaceSelectionWith(node);
+                  view.dispatch(tr);
+                } catch {
+                  // View or doc changed too much during async — drop silently
+                }
               }
             });
             return true;

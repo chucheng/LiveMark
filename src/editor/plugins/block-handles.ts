@@ -460,8 +460,14 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
           const sourcePos = currentState.dragSourcePos;
           const targetPos = currentState.dropTargetPos;
 
-          // Find source block
+          // Find source block — validate positions are within doc bounds
           const doc = view.state.doc;
+          if (sourcePos < 0 || sourcePos >= doc.content.size || targetPos < 0 || targetPos > doc.content.size) {
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
+              dragSourcePos: null, dropTargetPos: null, hoveredPos: null,
+            }));
+            return false;
+          }
           const srcIdx = indexOfPos(doc, sourcePos);
           if (srcIdx < 0) {
             // Clear drag state on failure

@@ -105,7 +105,7 @@ export const markdownSerializer = new MarkdownSerializer(
         const temp = markdownSerializer.serialize(
           cell.type.schema.node("doc", null, [paragraph])
         );
-        return temp.trim().replace(/\|/g, "\\|");
+        return temp.trim().replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
       }
 
       const rows: string[][] = [];
@@ -152,8 +152,8 @@ export const markdownSerializer = new MarkdownSerializer(
 
     image(state, node) {
       const alt = state.esc(node.attrs.alt || "");
-      const src = node.attrs.src;
-      const title = node.attrs.title;
+      const src = (node.attrs.src || "").replace(/[()]/g, (c: string) => `\\${c}`);
+      const title = node.attrs.title?.replace(/"/g, '\\"');
       state.write(
         `![${alt}](${src}${title ? ` "${title}"` : ""})`
       );
@@ -166,6 +166,8 @@ export const markdownSerializer = new MarkdownSerializer(
           return;
         }
       }
+      // Fallback: hard break at start of content or only hard breaks
+      state.write("  \n");
     },
 
     text(state, node) {
@@ -197,8 +199,9 @@ export const markdownSerializer = new MarkdownSerializer(
     link: {
       open: "[",
       close(state: MarkdownSerializerState, mark: Mark) {
-        const title = mark.attrs.title;
-        return `](${mark.attrs.href}${title ? ` "${title}"` : ""})`;
+        const href = (mark.attrs.href || "").replace(/[()]/g, (c: string) => `\\${c}`);
+        const title = mark.attrs.title?.replace(/"/g, '\\"');
+        return `](${href}${title ? ` "${title}"` : ""})`;
       },
     },
     strikethrough: {
