@@ -92,7 +92,7 @@ export class MermaidView implements NodeView {
 
   private scheduleRender() {
     if (this.renderTimer) clearTimeout(this.renderTimer);
-    this.renderTimer = setTimeout(() => this.doRender(), 50);
+    this.renderTimer = setTimeout(() => this.doRender(), 300);
   }
 
   private async doRender() {
