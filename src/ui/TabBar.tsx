@@ -82,7 +82,7 @@ export default function TabBar(props: TabBarProps) {
                 }}
               >
                 <span class="lm-tab-label" title={tab.isDeleted ? "File has been deleted" : undefined}>
-                  {tab.isDeleted ? "⚠ " : tab.isModified ? "● " : ""}
+                  {tab.isDeleted ? "⚠ " : tab.isModified ? "* " : ""}
                   {tab.fileName}
                 </span>
                 <button

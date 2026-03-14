@@ -293,7 +293,8 @@ export async function silentSave(): Promise<SilentSaveResult> {
     documentState.setClean();
     await stampMtime(path);
     return "saved";
-  } catch {
+  } catch (err) {
+    console.error("[silentSave] write_file failed:", err);
     return "failed";
   } finally {
     saveInProgress = false;

@@ -83,6 +83,8 @@ export default function App() {
   let tabSwitching = false;
   const AUTO_SAVE_DELAY = 30_000;
   const AUTO_SAVE_MAX_DELAY = 5 * 60_000; // 5 minutes max-wait
+  const AUTO_SAVE_MAX_FAILURES = 3;
+  let autoSaveFailCount = 0;
   const [wordCount, setWordCount] = createSignal(0);
   const [cursorInfo, setCursorInfo] = createSignal<CursorInfo>({
     line: 1,
@@ -128,13 +130,25 @@ export default function App() {
     if (autoSaveMaxTimer) { clearTimeout(autoSaveMaxTimer); autoSaveMaxTimer = null; }
     const result = await silentSave();
     if (result === "saved") {
+      autoSaveFailCount = 0;
       setAutoSaveStatus("Auto-saved");
       if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
       autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 2000);
     } else if (result === "failed") {
-      setAutoSaveStatus("Auto-save failed");
-      if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
-      autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 5000);
+      autoSaveFailCount++;
+      console.error(`[auto-save] write failed (attempt ${autoSaveFailCount}/${AUTO_SAVE_MAX_FAILURES})`);
+      if (autoSaveFailCount >= AUTO_SAVE_MAX_FAILURES) {
+        // Disable auto-save after repeated failures to prevent data loss
+        preferencesState.toggleAutoSave();
+        autoSaveFailCount = 0;
+        setAutoSaveStatus("Auto-save disabled — save failed repeatedly");
+        if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+        autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 8000);
+      } else {
+        setAutoSaveStatus("Auto-save failed — will retry");
+        if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
+        autoSaveFadeTimer = setTimeout(() => setAutoSaveStatus(""), 5000);
+      }
     }
   }
 
@@ -844,7 +858,7 @@ export default function App() {
           <div class="lm-titlebar-traffic-light-spacer" />
           <span class="lm-titlebar-title">
             {uiState.isSourceView() ? "[Source] " : ""}{documentState.isDeleted() ? "[Deleted] " : documentState.isReadOnly() ? "[Read Only] " : ""}{displayPath()}
-            {documentState.isModified() ? " ●" : ""}
+            {documentState.isModified() ? " *" : ""}
           </span>
           <div class="lm-titlebar-traffic-light-spacer" />
         </div>

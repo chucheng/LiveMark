@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.8.0-blue)
+![Version](https://img.shields.io/badge/version-2.8.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -35,7 +35,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 ### File Operations
 - **Multi-tab** — open multiple files in tabs with per-tab editor state
 - Open, save, save-as, new file (Cmd+O/S/Shift+S/N)
-- **Auto-save** — 30s after last edit, toggleable from status bar
+- **Auto-save** — 30s after last edit, off by default, toggleable from status bar with confirmation; auto-disables after 3 consecutive failures
 - CLI argument support (`livemark file.md`)
 - Unsaved changes protection on close
 
@@ -250,6 +250,7 @@ src-tauri/
 | v2.6.0 | Smart Markdown paste — pasting Markdown text auto-parses into headings, lists, tables, etc.; skips code blocks; detects structural HTML; find & replace scroll fix |
 | v2.7.0 | Find & Replace overhaul — per-textblock search for accurate matching, regex support, sticky find bar; welcome beta feedback message; email update |
 | v2.8.0 | Feature cleanup — removed mind map, review panel, block handles, block transform, copy as beautiful doc, sentence focus; Cmd+T now toggles focus mode (off/block); simplified focus mode to 2-stage |
+| v2.8.1 | Auto-save safety — off by default with confirmation dialog on enable, auto-disables after 3 consecutive failures; tab dirty indicator changed to `*`; bundled JetBrains Mono font |
 
 ## Documentation
 

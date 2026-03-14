@@ -1,4 +1,5 @@
 import { type Accessor, Show } from "solid-js";
+import { message } from "@tauri-apps/plugin-dialog";
 import { documentState } from "../state/document";
 import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
@@ -23,6 +24,30 @@ export default function StatusBar(props: StatusBarProps) {
     if (t === "dark") return "Dark";
     return "Auto";
   };
+
+  async function handleAutoSaveToggle() {
+    if (preferencesState.autoSave()) {
+      // Turning OFF — no confirmation needed
+      preferencesState.toggleAutoSave();
+      return;
+    }
+    // Turning ON — warn user
+    const result = await message(
+      "Auto-save will automatically write your changes to disk 30 seconds after each edit. Make sure you're comfortable with files being overwritten without manual confirmation.",
+      {
+        title: "Enable Auto-Save?",
+        kind: "warning",
+        buttons: {
+          yes: "Enable",
+          no: "Cancel",
+          cancel: "Cancel",
+        },
+      },
+    );
+    if (result === "Enable") {
+      preferencesState.toggleAutoSave();
+    }
+  }
 
   return (
     <div class="lm-statusbar">
@@ -60,7 +85,7 @@ export default function StatusBar(props: StatusBarProps) {
         <span>UTF-8</span>
         <button
           class="lm-statusbar-btn"
-          onClick={() => preferencesState.toggleAutoSave()}
+          onClick={handleAutoSaveToggle}
           title="Toggle auto-save"
         >
           {preferencesState.autoSave() ? "Auto-save: On" : "Auto-save: Off"}

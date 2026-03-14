@@ -35,7 +35,7 @@ Try it now — click on this heading, or the bold text above, and watch the synt
 The feature you didn't know you needed. Press **`Cmd+T`** to toggle:
 
 | Mode | What it does |
-|---|---|
+| --- | --- |
 | **Block focus** | Dims every block except the one you're writing in |
 | **Off** | Back to normal |
 
@@ -83,6 +83,6 @@ To explore every Markdown feature LiveMark supports — headings, tables, task l
 
 ---
 
-<sub>[Privacy Policy][^1]</sub>
+<sub>\[Privacy Policy\]\[^1\]</sub>
 
-[^1]: LiveMark respects your privacy. All your documents stay on your machine — we don't collect, store, or transmit any of your content. See the full [Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html) for details.
+\[^1\]: LiveMark respects your privacy. All your documents stay on your machine — we don't collect, store, or transmit any of your content. See the full [Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html) for details.

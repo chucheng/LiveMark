@@ -7,7 +7,7 @@ import { feedbackState, type FeedbackPrefs } from "./feedback";
 export type FocusLevel = "off" | "block";
 const [focusMode, setFocusMode] = createSignal<FocusLevel>("off");
 const [typewriterMode, setTypewriterMode] = createSignal(false);
-const [autoSave, setAutoSave] = createSignal(true);
+const [autoSave, setAutoSave] = createSignal(false);
 const [fontSize, setFontSize] = createSignal(16);
 const [contentWidth, setContentWidth] = createSignal(720);
 const [fontFamily, setFontFamily] = createSignal("system");
