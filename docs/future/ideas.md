@@ -39,6 +39,14 @@ Settings panel, font size zoom, font family, content max-width, line height, par
 - Only visible on hover — keeps the UI clean
 - Standard affordance in all quality Markdown renderers
 
+### Cursor & Live-Preview Polish
+Identified from a deep audit comparing LiveMark's editing UX to Typora:
+
+- **Inline math direct editing** — Currently `atom: true` so cursor can't enter. Need an interaction mode (e.g. double-click to open editable source, Escape to close). Typora does this well.
+- **Input rule cursor positioning** — `# heading`, `**bold**` auto-transforms rely on ProseMirror's implicit position mapping. Usually fine, but can cause subtle cursor jumps. Consider explicit cursor repositioning after transforms.
+- **GapCursor visual feedback** — Gap positions between blocks have no visual indicator. Add a thin blinking line or highlight so users know the cursor is in a valid gap.
+- **Large-file lazy render latency** — Off-screen blocks collapse past 500 blocks. Cursor entering a collapsed block triggers render, causing momentary lag. Consider pre-expanding a buffer zone around the viewport.
+
 ### Incremental Markdown Parsing
 - Move parsing to Rust backend using pulldown-cmark for very large files
 - Send token stream to frontend via IPC
