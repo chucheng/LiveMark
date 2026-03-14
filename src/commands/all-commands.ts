@@ -9,6 +9,7 @@ import {
 import {
   exportHTML,
   exportPDF,
+  exportDOCX,
   copyAsHTML,
   copyAsMarkdown,
   copyAsBeautifulDoc,
@@ -85,6 +86,13 @@ export function registerAllCommands() {
     shortcut: "Cmd+Shift+E",
     category: "Export",
     execute: exportHTML,
+  });
+  registerCommand({
+    id: "export.docx",
+    label: "Export as Word Document",
+    shortcut: "Cmd+Shift+D",
+    category: "Export",
+    execute: exportDOCX,
   });
   registerCommand({
     id: "export.pdf",

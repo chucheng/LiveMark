@@ -20,6 +20,7 @@ import { lazyRenderPlugin } from "./plugins/lazy-render";
 import { typewriterPlugin } from "./plugins/typewriter";
 import { sentenceFocusPlugin } from "./plugins/sentence-focus";
 import { smartCopyPlugin } from "./plugins/smart-copy";
+import { imagePopoverPlugin } from "./plugins/image-popover";
 import { tableEditing } from "prosemirror-tables";
 import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
@@ -89,6 +90,7 @@ export function createEditor(
       lazyRenderPlugin(),
       typewriterPlugin(),
       sentenceFocusPlugin(),
+      imagePopoverPlugin(),
       gapCursor(),
       tableEditing(),
     ],

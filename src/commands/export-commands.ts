@@ -7,6 +7,7 @@ import { generateHTML, renderHTMLBody, type TemplateSettings } from "../export/h
 import { preferencesState } from "../state/preferences";
 import { uiState } from "../state/ui";
 import { generateBeautifulHTML } from "../export/beautiful-doc";
+import { generateDOCX } from "../export/docx-generator";
 import { markdownSerializer } from "../editor/markdown/serializer";
 import type { EditorInstance } from "../editor/editor";
 
@@ -162,6 +163,44 @@ export async function copyAsMarkdown() {
       title: "Copy Error",
       kind: "error",
     });
+  }
+}
+
+/**
+ * Export the current document as a Word (.docx) file.
+ * Cmd+Shift+D
+ */
+export async function exportDOCX() {
+  if (!editorRef || exportInProgress) return;
+  exportInProgress = true;
+
+  try {
+    const doc = editorRef.view.state.doc;
+    const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
+    const filePath = documentState.filePath();
+    const docDir = filePath ? filePath.replace(/[/\\][^/\\]+$/, "") : undefined;
+
+    const data = await generateDOCX(doc, title, docDir);
+
+    const path = await save({
+      filters: [{ name: "Word Document", extensions: ["docx"] }],
+      defaultPath: title + ".docx",
+    });
+
+    if (!path) return;
+    if (!editorRef) return;
+
+    try {
+      await invoke("write_binary_file", { path, data: Array.from(data) });
+      await message("Exported to Word document successfully.", { title: "Export" });
+    } catch (err) {
+      await message(`Failed to export DOCX:\n${err}`, {
+        title: "Export Error",
+        kind: "error",
+      });
+    }
+  } finally {
+    exportInProgress = false;
   }
 }
 

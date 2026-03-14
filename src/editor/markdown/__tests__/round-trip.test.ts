@@ -303,6 +303,36 @@ describe("Callout round-trip", () => {
   });
 });
 
+describe("Image with width round-trip", () => {
+  it("image without width uses standard markdown syntax", () => {
+    expectRoundTrip("![alt text](https://example.com/img.png)");
+  });
+
+  it("image with width round-trips as HTML img tag", () => {
+    expectStructuralRoundTrip('<img src="https://example.com/img.png" alt="photo" width="300">');
+  });
+
+  it("image with width and title round-trips as HTML img tag", () => {
+    expectStructuralRoundTrip('<img src="https://example.com/img.png" alt="photo" title="My Photo" width="300">');
+  });
+
+  it("image with width serializes to HTML img tag", () => {
+    const md = '<img src="https://example.com/img.png" alt="photo" width="400">';
+    const doc = parseMarkdown(md);
+    if (!doc) throw new Error("parseMarkdown returned null");
+    const serialized = serializeMarkdown(doc);
+    expect(serialized).toContain('<img src="https://example.com/img.png"');
+    expect(serialized).toContain('width="400"');
+  });
+
+  it("image without width serializes to standard markdown", () => {
+    const md = "![photo](https://example.com/img.png)";
+    const serialized = roundTrip(md);
+    expect(serialized.trim()).toBe(md);
+    expect(serialized).not.toContain("<img");
+  });
+});
+
 describe("Markdown round-trip: structural fidelity", () => {
   it("complex document preserves structure through double round-trip", () => {
     const md = `## Heading

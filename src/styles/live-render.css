@@ -386,12 +386,34 @@
 .lm-image-wrapper {
   display: inline-block;
   max-width: 100%;
+  position: relative;
 }
 
 .lm-image-wrapper img {
   max-width: 100%;
   height: auto;
   border-radius: var(--lm-radius-sm);
+}
+
+/* Resize handle — only visible when image is selected */
+.lm-image-resize-handle {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 12px;
+  height: 12px;
+  background: var(--lm-accent);
+  border: 2px solid var(--lm-bg);
+  border-radius: 2px;
+  cursor: se-resize;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ProseMirror-selectednode .lm-image-resize-handle {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .lm-image-wrapper.lm-image-error {
@@ -408,6 +430,79 @@
 .ProseMirror-selectednode .lm-image-wrapper {
   outline: 2px solid var(--lm-accent);
   border-radius: var(--lm-radius-sm);
+}
+
+/* --- Image Popover --- */
+.lm-image-popover {
+  position: absolute;
+  z-index: 100;
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  box-shadow: var(--lm-shadow-md);
+  padding: 10px;
+  min-width: 260px;
+  max-width: 360px;
+}
+
+.lm-image-popover-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.lm-image-popover-label {
+  font-size: 0.8em;
+  color: var(--lm-text-muted);
+  width: 40px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.lm-image-popover-input {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.85em;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-bg);
+  color: var(--lm-text);
+  outline: none;
+}
+
+.lm-image-popover-input:focus {
+  border-color: var(--lm-accent);
+}
+
+.lm-image-popover-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--lm-border-subtle);
+}
+
+.lm-image-popover-btn {
+  padding: 4px 10px;
+  font-size: 0.8em;
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-sm);
+  background: var(--lm-bg);
+  color: var(--lm-text);
+  cursor: pointer;
+}
+
+.lm-image-popover-btn:hover {
+  background: var(--lm-hover);
+}
+
+.lm-image-popover-btn-danger {
+  color: var(--lm-severity-issue, #f85149);
+}
+
+.lm-image-popover-btn-danger:hover {
+  background: rgba(248, 81, 73, 0.1);
 }
 
 /* --- Code Block Syntax Highlighting --- */
