@@ -225,6 +225,7 @@ const nodes: Record<string, NodeSpec> = {
       src: {},
       alt: { default: null },
       title: { default: null },
+      width: { default: null },
     },
     group: "inline",
     draggable: true,
@@ -232,18 +233,22 @@ const nodes: Record<string, NodeSpec> = {
       {
         tag: "img[src]",
         getAttrs(node) {
-          const el = node as HTMLElement;
+          const el = node as HTMLImageElement;
+          const width = el.getAttribute("width") || el.style.width?.replace("px", "") || null;
           return {
             src: el.getAttribute("src"),
             alt: el.getAttribute("alt"),
             title: el.getAttribute("title"),
+            width: width ? Number(width) || null : null,
           };
         },
       },
     ],
     toDOM(node) {
-      const { src, alt, title } = node.attrs;
-      return ["img", { src, alt, title }];
+      const { src, alt, title, width } = node.attrs;
+      const attrs: Record<string, string> = { src, alt, title };
+      if (width) attrs.style = `width: ${width}px`;
+      return ["img", attrs];
     },
   },
 

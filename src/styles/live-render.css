@@ -205,7 +205,54 @@
   display: block;
   margin-bottom: 4px;
   user-select: none;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Keep callout visual styling when active (editing) */
+.lm-callout.lm-active .lm-blockquote-hint {
+  display: none;
+}
+
+.lm-callout.lm-active blockquote {
+  border-left-color: inherit;
+}
+
+/* --- Callout Dropdown --- */
+.lm-callout-dropdown {
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-md);
+  box-shadow: var(--lm-shadow-md);
+  padding: 4px;
+  min-width: 160px;
+}
+
+.lm-callout-dropdown-item {
+  padding: 6px 10px;
+  border-radius: var(--lm-radius-sm);
+  cursor: pointer;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.lm-callout-dropdown-item:hover {
+  background: var(--lm-hover);
+}
+
+.lm-callout-dropdown-active {
+  font-weight: 600;
+  background: var(--lm-selection);
+}
+
+.lm-callout-dropdown-divider {
+  height: 1px;
+  background: var(--lm-border);
+  margin: 4px 0;
+}
+
+.lm-callout-dropdown-remove {
+  color: var(--lm-text-muted);
 }
 
 [data-theme="dark"] .lm-callout-NOTE blockquote      { background: rgba(68,147,248,0.10); }

@@ -7,8 +7,10 @@ import { mathPlugin } from "./math-plugin";
 import { tightListPlugin } from "./tight-list-plugin";
 import { frontmatterPlugin } from "./frontmatter-plugin";
 import { calloutPlugin } from "./callout-plugin";
+import { htmlImagePlugin } from "./html-image-plugin";
 
 export const md = MarkdownIt("commonmark", { html: false })
+  .enable("html_inline")
   .enable("strikethrough")
   .enable("table")
   .use(frontmatterPlugin)
@@ -16,6 +18,7 @@ export const md = MarkdownIt("commonmark", { html: false })
   .use(mathPlugin)
   .use(tightListPlugin)
   .use(calloutPlugin)
+  .use(htmlImagePlugin)
   .use(stripTheadTbody)
   .use(trimCodeBlockTrailingNewline);
 
@@ -119,11 +122,15 @@ const markdownParser = new MarkdownParser(schema, md, {
   },
   image: {
     node: "image",
-    getAttrs: (tok) => ({
-      src: tok.attrGet("src"),
-      title: tok.attrGet("title") || null,
-      alt: tok.children?.[0]?.content || null,
-    }),
+    getAttrs: (tok) => {
+      const widthStr = tok.attrGet("width");
+      return {
+        src: tok.attrGet("src"),
+        title: tok.attrGet("title") || null,
+        alt: tok.children?.[0]?.content || null,
+        width: widthStr ? Number(widthStr) || null : null,
+      };
+    },
   },
   hardbreak: {
     node: "hard_break",

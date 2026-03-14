@@ -159,11 +159,23 @@ export const markdownSerializer = new MarkdownSerializer(
 
     image(state, node) {
       const alt = state.esc(node.attrs.alt || "");
-      const src = (node.attrs.src || "").replace(/[()]/g, (c: string) => `\\${c}`);
-      const title = node.attrs.title?.replace(/"/g, '\\"');
-      state.write(
-        `![${alt}](${src}${title ? ` "${title}"` : ""})`
-      );
+      const src = node.attrs.src || "";
+      const title = node.attrs.title || "";
+      const width = node.attrs.width;
+
+      if (width) {
+        // Use HTML <img> tag to preserve width
+        const parts = [`<img src="${src}" alt="${alt}"`];
+        if (title) parts.push(`title="${title.replace(/"/g, "&quot;")}"`);
+        parts.push(`width="${width}"`);
+        state.write(parts.join(" ") + ">");
+      } else {
+        const escapedSrc = src.replace(/[()]/g, (c: string) => `\\${c}`);
+        const escapedTitle = title?.replace(/"/g, '\\"');
+        state.write(
+          `![${alt}](${escapedSrc}${escapedTitle ? ` "${escapedTitle}"` : ""})`
+        );
+      }
     },
 
     hard_break(state, node, parent, index) {
