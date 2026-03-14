@@ -172,6 +172,31 @@ export async function saveFile() {
       if (result !== "Overwrite") return;
     }
 
+    // Check if file is read-only before attempting to write
+    try {
+      const readonly = await invoke<boolean>("is_file_readonly", { path });
+      if (readonly) {
+        const result = await message(
+          `"${documentState.fileName()}" is read-only. Would you like to save to a different location?`,
+          {
+            title: "Read-Only File",
+            kind: "warning",
+            buttons: {
+              yes: "Save As…",
+              no: "Cancel",
+              cancel: "Cancel",
+            },
+          },
+        );
+        if (result === "Save As…") {
+          await saveAsFile();
+        }
+        return;
+      }
+    } catch {
+      // If we can't check, proceed with the write and let it fail naturally
+    }
+
     saveInProgress = true;
     try {
       const content = editorRef.getMarkdown();
@@ -183,10 +208,29 @@ export async function saveFile() {
       tabsState.snapshotActiveTab(editorRef.view, scroller);
       uiState.showStatus("Saved");
     } catch (err) {
-      await message(`Failed to save file:\n${err}`, {
-        title: "Save Error",
-        kind: "error",
-      });
+      const errStr = String(err);
+      if (errStr.includes("Permission denied") || errStr.includes("permission denied") || errStr.includes("Read-only")) {
+        const result = await message(
+          `Unable to save "${documentState.fileName()}" — permission denied. Would you like to save to a different location?`,
+          {
+            title: "Permission Denied",
+            kind: "warning",
+            buttons: {
+              yes: "Save As…",
+              no: "Cancel",
+              cancel: "Cancel",
+            },
+          },
+        );
+        if (result === "Save As…") {
+          await saveAsFile();
+        }
+      } else {
+        await message(`Failed to save file:\n${err}`, {
+          title: "Save Error",
+          kind: "error",
+        });
+      }
     } finally {
       saveInProgress = false;
     }
@@ -205,6 +249,14 @@ export async function silentSave(): Promise<boolean> {
 
   // Don't auto-save over external changes — let file-watch handle it
   if (await isExternallyModified(path)) return false;
+
+  // Don't auto-save read-only files
+  try {
+    if (await invoke<boolean>("is_file_readonly", { path })) return false;
+  } catch {
+    // If check fails, skip auto-save to be safe
+    return false;
+  }
 
   saveInProgress = true;
   try {
@@ -395,8 +447,14 @@ export async function confirmAllUnsavedChanges(): Promise<boolean> {
       if (tab.id === tabsState.activeTabId() && editorRef) {
         await saveFile();
       } else if (tab.filePath && tab.editorState) {
-        // Skip background tabs whose file was externally modified
+        // Skip background tabs whose file was externally modified or read-only
         if (await isExternallyModified(tab.filePath)) continue;
+        try {
+          if (await invoke<boolean>("is_file_readonly", { path: tab.filePath })) {
+            failedTabs.push(tab.fileName + " (read-only)");
+            continue;
+          }
+        } catch { /* proceed with write attempt */ }
         const { serializeMarkdown } = await import("../editor/markdown/serializer");
         const content = serializeMarkdown(tab.editorState.doc);
         try {

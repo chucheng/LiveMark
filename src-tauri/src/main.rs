@@ -3,7 +3,7 @@
 
 mod commands;
 
-use commands::file::{get_file_mtime, read_file, write_file, write_temp_html};
+use commands::file::{get_file_mtime, is_file_readonly, read_file, write_file, write_temp_html};
 use commands::filetree::{list_directory, unwatch_directory, watch_directory, WatcherState};
 use commands::image::save_image;
 use commands::preferences::{read_preferences, write_preferences};
@@ -71,6 +71,7 @@ fn main() {
             write_file,
             write_temp_html,
             get_file_mtime,
+            is_file_readonly,
             get_initial_files,
             save_image,
             read_preferences,

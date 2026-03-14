@@ -68,6 +68,12 @@ pub fn write_temp_html(content: String, name: String) -> Result<String, String> 
 }
 
 #[tauri::command]
+pub fn is_file_readonly(path: String) -> Result<bool, String> {
+    let meta = fs::metadata(&path).map_err(|e| format!("Failed to read metadata: {e}"))?;
+    Ok(meta.permissions().readonly())
+}
+
+#[tauri::command]
 pub fn get_file_mtime(path: String) -> Result<f64, String> {
     let meta = fs::metadata(&path).map_err(|e| format!("Failed to read metadata: {e}"))?;
     let modified = meta
