@@ -162,6 +162,23 @@ export async function saveFile() {
 
   const path = documentState.filePath();
   if (path) {
+    // Check for external modifications before overwriting
+    if (await isExternallyModified(path)) {
+      const result = await message(
+        `"${documentState.fileName()}" has been modified externally. Saving will overwrite those changes. Continue?`,
+        {
+          title: "File Changed on Disk",
+          kind: "warning",
+          buttons: {
+            yes: "Overwrite",
+            no: "Cancel",
+            cancel: "Cancel",
+          },
+        },
+      );
+      if (result !== "Overwrite") return;
+    }
+
     try {
       const content = editorRef.getMarkdown();
       await invoke("write_file", { path, content });
@@ -365,6 +382,8 @@ export async function confirmAllUnsavedChanges(): Promise<boolean> {
       if (tab.id === tabsState.activeTabId() && editorRef) {
         await saveFile();
       } else if (tab.filePath && tab.editorState) {
+        // Skip background tabs whose file was externally modified
+        if (await isExternallyModified(tab.filePath)) continue;
         const { serializeMarkdown } = await import("../editor/markdown/serializer");
         const content = serializeMarkdown(tab.editorState.doc);
         try {
