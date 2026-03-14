@@ -102,6 +102,8 @@ Auto-update mechanism was added then reverted (`tauri-plugin-updater` removed du
 ### LLM-Powered Inline Editing
 Native integration with large language models for text revision — not generation, but refinement. No mainstream Markdown editor has this as a first-class feature.
 
+**Core principle:** AI appears naturally within the writing flow, never interrupting it. No chat sidebar, no mode switch — the writer stays in the document and AI assists in-place.
+
 **UX concept:**
 1. Select text → shortcut or context menu → revision panel appears
 2. One-click presets: "More formal", "More concise", "Fix grammar", "Translate to English/Chinese"
