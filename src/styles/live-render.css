@@ -167,12 +167,28 @@
 
 /* --- Horizontal Rule NodeView --- */
 .lm-hr-wrapper {
-  margin: 2em 0;
+  margin: 1.5em 0;
+  padding: 4px 0;
+  cursor: pointer;
+  border-radius: var(--lm-radius-sm);
+  transition: background 150ms ease;
+}
+
+.lm-hr-wrapper:hover {
+  background: var(--lm-hover);
+}
+
+.ProseMirror-selectednode.lm-hr-wrapper {
+  background: var(--lm-selection);
+  outline: 2px solid var(--lm-accent);
+  outline-offset: -2px;
 }
 
 .lm-hr-line {
   display: flex;
   align-items: center;
+  height: 1px;
+  position: relative;
 }
 
 .lm-hr-line::before,
@@ -180,29 +196,16 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--lm-border) 20%,
-    var(--lm-border) 80%,
-    transparent
-  );
+  background: var(--lm-border);
 }
 
-.lm-hr-ornament {
-  padding: 0 1em;
-  color: var(--lm-text-faint);
-  font-size: 0.7em;
-  letter-spacing: 0.5em;
-  opacity: 0.5;
-  user-select: none;
-}
-
-.lm-hr-hint {
-  text-align: center;
-  margin-top: 2px;
-  font-size: 0.8em;
-  line-height: 1;
+.lm-hr-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--lm-text-faint);
+  margin: 0 8px;
+  flex-shrink: 0;
 }
 
 /* --- Task List --- */
