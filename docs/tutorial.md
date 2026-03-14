@@ -385,10 +385,11 @@ Click any item in the panel to jump to that location in the editor. The panel up
 
 LiveMark can export your documents in multiple formats:
 
-- **HTML** — standalone HTML file with embedded styles
-- **PDF** — via the system print dialog
-- **Copy as HTML** — copy rendered HTML to clipboard
-- **Copy as Markdown** — copy raw Markdown to clipboard (selection-aware: copies only the selected range if you have one)
+- **Word Document** (`Cmd+Shift+D`) — `.docx` file with full formatting: headings, lists, tables, code blocks, math, images, and task lists. Opens in Microsoft Word, Google Docs, or any OOXML-compatible editor
+- **HTML** (`Cmd+Shift+E`) — standalone HTML file with embedded styles
+- **PDF** (`Cmd+P`) — via the system print dialog
+- **Copy as HTML** (`Cmd+Shift+C`) — copy rendered HTML to clipboard
+- **Copy as Markdown** (`Cmd+Alt+C`) — copy raw Markdown to clipboard (selection-aware: copies only the selected range if you have one)
 - **Copy as Beautiful Doc** — styled HTML clipboard copy for pasting into rich editors like Google Docs or Notion
 
 Access export options through the command palette (`Cmd+Shift+P`) or keyboard shortcuts.
@@ -487,6 +488,7 @@ Enter fullscreen via the standard macOS green button. In fullscreen mode, the ti
 | `Cmd+=` | Zoom in |
 | `Cmd+-` | Zoom out |
 | `Cmd+0` | Reset zoom |
+| `Cmd+Shift+D` | Export as Word Document |
 | `Cmd+Shift+E` | Export as HTML |
 | `Cmd+P` | Print / Export PDF |
 | `Cmd+Shift+C` | Copy as HTML |
