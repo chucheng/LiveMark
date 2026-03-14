@@ -3,6 +3,10 @@ name = "livemark"
 version = "1.4.0"
 edition = "2024"
 
+[[bin]]
+name = "LiveMark"
+path = "src/main.rs"
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
