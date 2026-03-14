@@ -84,6 +84,22 @@
   display: block;
 }
 
+/* ── Drag State ─────────────────────────────────────────────── */
+
+.lm-drag-source {
+  opacity: 0.4;
+  transition: opacity 150ms;
+}
+
+body.lm-dragging,
+body.lm-dragging * {
+  cursor: grabbing !important;
+}
+
+.lm-no-select {
+  user-select: none;
+}
+
 /* ── Drop Indicator ──────────────────────────────────────────── */
 
 .lm-drop-indicator {

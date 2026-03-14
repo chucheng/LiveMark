@@ -277,6 +277,54 @@ export function deleteBlock(state: EditorState, dispatch?: (tr: Transaction) => 
 export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
   let throttleTimer: ReturnType<typeof setTimeout> | null = null;
   let dragThrottleTimer: ReturnType<typeof setTimeout> | null = null;
+  let autoScrollRAF: number | null = null;
+  let lastDragClientY = 0;
+  let dragSourceElement: HTMLElement | null = null;
+
+  function startAutoScroll(view: EditorView) {
+    if (autoScrollRAF !== null) return;
+    const EDGE_ZONE = 60;
+    const MAX_SPEED = 12;
+
+    function tick() {
+      const editorRect = view.dom.getBoundingClientRect();
+      const y = lastDragClientY;
+      let speed = 0;
+
+      if (y < editorRect.top + EDGE_ZONE) {
+        // Near top — scroll up
+        const dist = Math.max(0, y - editorRect.top);
+        speed = -MAX_SPEED * (1 - dist / EDGE_ZONE);
+      } else if (y > editorRect.bottom - EDGE_ZONE) {
+        // Near bottom — scroll down
+        const dist = Math.max(0, editorRect.bottom - y);
+        speed = MAX_SPEED * (1 - dist / EDGE_ZONE);
+      }
+
+      if (speed !== 0) {
+        view.dom.scrollTop += speed;
+      }
+
+      autoScrollRAF = requestAnimationFrame(tick);
+    }
+    autoScrollRAF = requestAnimationFrame(tick);
+  }
+
+  function stopAutoScroll() {
+    if (autoScrollRAF !== null) {
+      cancelAnimationFrame(autoScrollRAF);
+      autoScrollRAF = null;
+    }
+  }
+
+  function cleanupDrag() {
+    stopAutoScroll();
+    document.body.classList.remove("lm-dragging");
+    if (dragSourceElement) {
+      dragSourceElement.classList.remove("lm-drag-source");
+      dragSourceElement = null;
+    }
+  }
 
   return new Plugin<BlockHandlesState>({
     key: blockHandlesKey,
@@ -365,18 +413,31 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
                   const blockDOM = view.nodeDOM(pos) as HTMLElement | null;
                   if (blockDOM) {
                     const clone = blockDOM.cloneNode(true) as HTMLElement;
-                    clone.style.width = blockDOM.offsetWidth + "px";
+                    clone.style.width = Math.min(blockDOM.offsetWidth, 600) + "px";
+                    clone.style.maxWidth = "600px";
                     clone.style.opacity = "0.6";
                     clone.style.position = "absolute";
                     clone.style.top = "-9999px";
                     clone.style.pointerEvents = "none";
                     document.body.appendChild(clone);
                     e.dataTransfer.setDragImage(clone, 0, 0);
-                    requestAnimationFrame(() => clone.remove());
+                    // Delay removal to ensure browser captures the image
+                    setTimeout(() => clone.remove(), 100);
+
+                    // Ghost the source block
+                    blockDOM.classList.add("lm-drag-source");
+                    dragSourceElement = blockDOM;
                   }
                 } catch {
                   // fall through — default drag image
                 }
+
+                // Global grabbing cursor + prevent text selection
+                document.body.classList.add("lm-dragging");
+                view.dom.classList.add("lm-no-select");
+
+                // Start auto-scroll loop
+                startAutoScroll(view);
 
                 view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
                   dragSourcePos: pos,
@@ -441,22 +502,41 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
             event.dataTransfer.dropEffect = "move";
           }
 
+          // Track cursor Y for auto-scroll
+          lastDragClientY = event.clientY;
+
           // Throttle boundary computation — dragover fires every ~16ms
           if (dragThrottleTimer) return false;
           dragThrottleTimer = setTimeout(() => { dragThrottleTimer = null; }, 40);
 
           const dropPos = nearestBlockBoundary(view, event.clientY);
           if (dropPos !== null && dropPos !== currentState.dropTargetPos) {
-            view.dispatch(view.state.tr.setMeta(blockHandlesKey, { dropTargetPos: dropPos }));
+            // Skip indicator at same position as source (would be a no-op drop)
+            const sourcePos = currentState.dragSourcePos!;
+            const sourceNode = view.state.doc.nodeAt(sourcePos);
+            if (sourceNode && (dropPos === sourcePos || dropPos === sourcePos + sourceNode.nodeSize)) {
+              // Clear indicator if it was showing
+              if (currentState.dropTargetPos !== null) {
+                view.dispatch(view.state.tr.setMeta(blockHandlesKey, { dropTargetPos: null }));
+              }
+            } else {
+              view.dispatch(view.state.tr.setMeta(blockHandlesKey, { dropTargetPos: dropPos }));
+            }
           }
           return false;
         },
 
         drop(view, event) {
           const currentState = blockHandlesKey.getState(view.state);
-          if (currentState?.dragSourcePos == null || currentState?.dropTargetPos == null) return false;
+          if (currentState?.dragSourcePos == null || currentState?.dropTargetPos == null) {
+            cleanupDrag();
+            view.dom.classList.remove("lm-no-select");
+            return false;
+          }
 
           event.preventDefault();
+          cleanupDrag();
+          view.dom.classList.remove("lm-no-select");
           const sourcePos = currentState.dragSourcePos;
           const targetPos = currentState.dropTargetPos;
 
@@ -524,6 +604,8 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
         },
 
         dragend(view) {
+          cleanupDrag();
+          view.dom.classList.remove("lm-no-select");
           const currentState = blockHandlesKey.getState(view.state);
           if (currentState?.dragSourcePos != null || currentState?.dropTargetPos != null) {
             view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
