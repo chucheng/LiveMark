@@ -285,6 +285,10 @@ Press `Cmd+Shift+P` to open the command palette. Every action in LiveMark is reg
 
 LiveMark supports **multi-tab editing** — open multiple files and switch between them with tabs at the top of the window. Each tab preserves its own editor state (cursor position, scroll, undo history). Close a tab with `Cmd+W` or by clicking the close button on the tab.
 
+- `Cmd+Shift+[` / `Cmd+Shift+]` — switch to previous / next tab
+- `Cmd+7` through `Cmd+9` — jump to a tab by position (Cmd+1–6 are reserved for heading levels)
+- `Cmd+J W` — close all tabs
+
 ---
 
 ## Sidebar
@@ -322,7 +326,7 @@ Press `Cmd+T` to open the **mind map view**. It renders your document's heading 
 
 ## Find & Replace
 
-Press `Cmd+F` to open the find & replace bar. It supports case-sensitive matching and replaces across the entire document.
+Press `Cmd+F` to open the find bar. Press `Cmd+Shift+H` to toggle the replace field. It supports case-sensitive matching and replaces across the entire document.
 
 ---
 
@@ -395,6 +399,52 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 
 ---
 
+## Settings
+
+Press `Cmd+,` to open the **settings panel**. It gives you fine-grained control over the editor's look and feel:
+
+- **Font family** — System (default), Serif, Monospace, or any custom font name
+- **Font size** — independent of zoom level
+- **Line height** — adjustable in 0.1 increments
+- **Content width** — how wide the editing area is (in pixels)
+- **Paragraph spacing** — space between blocks (6 presets from compact to spacious)
+- **Editor padding** — horizontal and vertical padding around the editor area
+- **Two-column layout** — toggle a dual-pane view
+
+### Presets
+
+LiveMark ships with three built-in presets — **Default**, **Compact**, and **Wide** — each with different font, spacing, and width settings. You can also save your current configuration as a custom preset and switch between them.
+
+### Keyboard Shortcuts
+
+The settings panel includes a shortcut customization section where you can rebind any command's keyboard shortcut. It detects conflicts and lets you reset individual shortcuts to their defaults.
+
+---
+
+## Heading Collapse
+
+Click the collapse arrow next to any heading to **fold** all content beneath it until the next heading of the same or higher level. This lets you hide sections you're not working on to keep the document compact. Click again to expand.
+
+---
+
+## Insert Link
+
+Press `Cmd+K` to insert a link. If you have text selected, it wraps the selection in a link. If no text is selected, it inserts a placeholder `[link](url)` and selects it for quick editing. If the selection already has a link, `Cmd+K` removes it.
+
+---
+
+## Copy File Path
+
+Press `Cmd+J P` to copy the current file's path to the clipboard — handy for referencing files in terminal commands or other tools.
+
+---
+
+## Fullscreen
+
+Enter fullscreen via the standard macOS green button. In fullscreen mode, the titlebar and status bar **auto-hide** to maximize your writing space. Move the mouse to the top or bottom edge to reveal them.
+
+---
+
 ## Keyboard Shortcuts
 
 | Shortcut | Action |
@@ -412,13 +462,20 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 | `Cmd+Shift+S` | Save as |
 | `Cmd+N` | New file |
 | `Cmd+W` | Close tab |
+| `Cmd+K` | Insert link |
 | `Cmd+F` | Find & replace |
+| `Cmd+Shift+H` | Toggle replace bar |
 | `Cmd+/` | Toggle source view |
-| `Cmd+\\\\\\\\` | Toggle sidebar |
+| `Cmd+\` | Toggle sidebar |
 | `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
+| `Cmd+,` | Open settings |
+| `Cmd+Shift+[` | Previous tab |
+| `Cmd+Shift+]` | Next tab |
 | `Cmd+J F` | Toggle focus mode |
 | `Cmd+J T` | Cycle theme |
+| `Cmd+J P` | Copy file path |
+| `Cmd+J W` | Close all tabs |
 | `Cmd+=` | Zoom in |
 | `Cmd+-` | Zoom out |
 | `Cmd+0` | Reset zoom |
