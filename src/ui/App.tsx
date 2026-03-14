@@ -1,6 +1,7 @@
 import { onMount, onCleanup, createSignal, createEffect, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { listen } from "@tauri-apps/api/event";
 import { createEditor, type EditorInstance } from "../editor/editor";
 import { documentState } from "../state/document";
 import { tabsState } from "../state/tabs";
@@ -333,6 +334,7 @@ export default function App() {
 
   let unlistenClose: (() => void) | undefined;
   let unlistenResize: (() => void) | undefined;
+  let unlistenOpenFiles: (() => void) | undefined;
   let chromeHideTimer: ReturnType<typeof setTimeout> | null = null;
   let chromeLeaveTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -419,13 +421,21 @@ export default function App() {
       unlistenResize = await appWindow.onResized(() => checkFullscreen());
 
       try {
-        const initialFile = await invoke<string | null>("get_initial_file");
-        if (initialFile) {
-          await openFileInTab(initialFile);
+        const initialFiles = await invoke<string[]>("get_initial_files");
+        for (const file of initialFiles) {
+          await openFileInTab(file);
         }
       } catch {
-        // No initial file
+        // No initial files
       }
+
+      // Listen for files opened from a second instance (e.g. double-clicking
+      // a .md file in Finder while the app is already running)
+      unlistenOpenFiles = await listen<string[]>("open-files", async (event) => {
+        for (const file of event.payload) {
+          await openFileInTab(file);
+        }
+      });
 
       startFileWatch();
 
@@ -448,6 +458,7 @@ export default function App() {
     if (chromeLeaveTimer) clearTimeout(chromeLeaveTimer);
     unlistenClose?.();
     unlistenResize?.();
+    unlistenOpenFiles?.();
     editor?.destroy();
   });
 

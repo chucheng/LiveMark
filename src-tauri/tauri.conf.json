@@ -17,6 +17,13 @@
       "icons/icon.icns",
       "icons/icon.ico",
       "icons/icon.png"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["md", "markdown", "txt"],
+        "mimeType": "text/markdown",
+        "description": "Markdown Document"
+      }
     ]
   },
   "app": {
