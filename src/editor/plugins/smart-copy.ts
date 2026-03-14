@@ -3,7 +3,8 @@ import { EditorView } from "prosemirror-view";
 import { Fragment } from "prosemirror-model";
 import { schema } from "../schema";
 import { markdownSerializer } from "../markdown/serializer";
-import { generateBeautifulHTML } from "../../export/beautiful-doc";
+import { md } from "../markdown/parser";
+import { getExportCSS } from "../../export/export-css";
 import { uiState } from "../../state/ui";
 
 /**
@@ -88,7 +89,8 @@ function handleCopyOrCut(
   }
 
   // Generate styled HTML for rich paste targets
-  const html = generateBeautifulHTML(plainText);
+  const css = getExportCSS();
+  const html = `<div class="livemark-export"><style>${css}</style>${md.render(plainText)}</div>`;
 
   clipboardData.setData("text/html", html);
   clipboardData.setData("text/plain", plainText);

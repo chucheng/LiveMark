@@ -14,11 +14,9 @@ import { linkClickPlugin } from "./plugins/link-click";
 import { imageDropPastePlugin } from "./plugins/image-drop-paste";
 import { findReplacePlugin } from "./plugins/find-replace";
 import { trailingParagraphPlugin } from "./plugins/trailing-paragraph";
-import { blockHandlesPlugin } from "./plugins/block-handles";
 import { headingCollapsePlugin } from "./plugins/heading-collapse";
 import { lazyRenderPlugin } from "./plugins/lazy-render";
 import { typewriterPlugin } from "./plugins/typewriter";
-import { sentenceFocusPlugin } from "./plugins/sentence-focus";
 import { smartCopyPlugin } from "./plugins/smart-copy";
 import { markdownPastePlugin } from "./plugins/markdown-paste";
 import { imagePopoverPlugin } from "./plugins/image-popover";
@@ -88,11 +86,9 @@ export function createEditor(
       markdownPastePlugin(),
       findReplacePlugin(),
       trailingParagraphPlugin(),
-      blockHandlesPlugin(),
       headingCollapsePlugin(),
       lazyRenderPlugin(),
       typewriterPlugin(),
-      sentenceFocusPlugin(),
       imagePopoverPlugin(),
       linkPopoverPlugin(),
       gapCursor(),

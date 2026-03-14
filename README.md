@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.7.0-blue)
+![Version](https://img.shields.io/badge/version-2.8.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -25,7 +25,6 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Table editing** — visual tables with Tab navigation between cells
 - **Task list checkboxes** — clickable checkboxes that toggle state
 - **Image preview** — inline rendering, drag-and-drop or paste to insert, HTML `<img>` width preservation
-- **Block handles** — hover any block for drag-to-move, context menu (move/duplicate/delete/copy link), and insert-new-block picker
 - **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
 - **Smart link open** — local file links (e.g. `tutorial.md`) open in a tab; external URLs open in browser. Works in popover and Cmd+click
 - **Clickable links** — Cmd/Ctrl+click opens links (local files in-app, URLs in browser)
@@ -47,14 +46,11 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Sidebar file tree** — navigate and open files from a sidebar
 - **Document outline** — Cmd+Shift+O, heading tree with active heading tracking and click-to-navigate
 - **Light & dark themes** — system-follow or manual toggle (Cmd+Shift+T), persisted
-- **Mind map view** — Cmd+T, document headings as an interactive mind map with zoom/pan (scroll wheel, drag, keyboard)
 - **Command palette** — Cmd+Shift+P, fuzzy search across all actions
 - **Source view** — Cmd+/ toggles read-only raw Markdown
-- **Focus mode** — Cmd+J F cycles off → block → sentence focus (dims inactive blocks or non-active sentences)
+- **Focus mode** — Cmd+T toggles off → block focus (dims inactive blocks)
 - **Typewriter mode** — keeps cursor vertically centered as you type
 - **Callout admonitions** — `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!CAUTION]`, `> [!IMPORTANT]` with styled badges and type dropdown
-- **Block transform** — right-click any block handle → "Turn Into" to convert between paragraph, heading, blockquote, code block, and list types
-- **Review panel** — Cmd+Shift+R, document quality checks (headings, images, links, code blocks)
 - **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset (12–28px, persisted)
 - **Status bar** — line/column, selection count, word count, zoom %, encoding, theme toggle
 
@@ -64,7 +60,6 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - PDF export (Cmd+P) — opens in browser for print/save-as-PDF
 - Copy as HTML (Cmd+Shift+C)
 - Copy as Markdown (Cmd+Alt+C) — selection-aware
-- Copy as Beautiful Doc — styled HTML for pasting into rich editors
 - **Smart copy** — copy/cut produces Markdown as text/plain + styled HTML as text/html
 - **Smart paste** — pasting Markdown text auto-parses into structured content (headings, lists, tables, etc.); plain text pastes normally
 
@@ -79,7 +74,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 | `Cmd+K` | Insert Link |
 | `Cmd+Shift+H` | Toggle Find and Replace |
 | `Cmd+Shift+X` | Strikethrough |
-| `Cmd+J F` | Cycle Focus Mode (off → block → sentence) |
+| `Cmd+T` | Toggle Focus Mode (off → block) |
 | `Cmd+J P` | Copy File Path |
 | `Cmd+J W` | Close All Tabs |
 | `Cmd+J T` | Cycle Theme |
@@ -169,7 +164,6 @@ src/
     input-rules.ts        — Auto-transforms (# heading, **bold**, etc.)
     keymaps.ts            — Keyboard shortcuts
     mermaid-loader.ts     — Lazy mermaid.js loader and renderer
-    mind-map.ts           — Heading extraction and mermaid mind map generation
     markdown/
       parser.ts           — markdown-it → ProseMirror document
       serializer.ts       — ProseMirror document → Markdown string
@@ -181,7 +175,6 @@ src/
     nodeviews/            — Cursor-aware NodeViews (heading, code-block, blockquote, math, mermaid, frontmatter, etc.)
     plugins/
       live-render.ts      — Active block detection + decorations
-      block-handles.ts    — Block hover handles (drag, context menu, copy link)
       heading-collapse.ts — Heading fold/unfold
       find-replace.ts     — Search decorations + match navigation
       placeholder.ts      — Empty doc placeholder
@@ -193,7 +186,6 @@ src/
       lazy-render.ts      — IntersectionObserver-based lazy rendering
       trailing-paragraph.ts — Ensures doc ends with paragraph
       typewriter.ts       — Typewriter mode (cursor vertical centering)
-      sentence-focus.ts   — Sentence-level focus mode decorations
       smart-copy.ts       — Smart copy/cut (Markdown + styled HTML clipboard)
       markdown-paste.ts   — Smart paste (Markdown text → structured content)
   ui/
@@ -204,10 +196,6 @@ src/
     SourceView.tsx        — Raw Markdown source view (scroll-synced)
     scroll-sync.ts        — Editor ↔ source view scroll position mapping
     AboutModal.tsx        — About dialog (version info)
-    ReviewPanel.tsx       — Document review panel
-    BlockContextMenu.tsx  — Block handle right-click context menu
-    BlockTypePicker.tsx   — Block type insertion picker (+ button)
-    MindMap.tsx           — Mind map view overlay (Cmd+T)
     SettingsPanel.tsx     — Settings panel (editor customization, shortcuts)
     Sidebar.tsx           — File tree sidebar with tab bar (Files/Outline)
     OutlineTree.tsx       — Document outline tree (heading hierarchy)
@@ -226,14 +214,11 @@ src/
     export-commands.ts    — Export action handlers
     registry.ts           — Command registry with fuzzy search
     all-commands.ts       — All registered commands
-  review/
-    engine.ts             — Document analysis engine (quality checks)
   export/
     html-template.ts      — HTML document template generation
     export-css.ts         — Bundled CSS for export
-    beautiful-doc.ts      — Styled HTML for rich clipboard copy
     docx-generator.ts     — Word document (.docx) generation from ProseMirror doc
-  styles/                 — CSS (variables, editor, app, status-bar, block-handles, etc.)
+  styles/                 — CSS (variables, editor, app, status-bar, etc.)
 src-tauri/
   src/
     main.rs               — Tauri entry point, command handlers
@@ -264,6 +249,7 @@ src-tauri/
 | v2.5.0 | Smart link open — local file links open in-app tabs, external URLs open in browser; works in popover and Cmd+click |
 | v2.6.0 | Smart Markdown paste — pasting Markdown text auto-parses into headings, lists, tables, etc.; skips code blocks; detects structural HTML; find & replace scroll fix |
 | v2.7.0 | Find & Replace overhaul — per-textblock search for accurate matching, regex support, sticky find bar; welcome beta feedback message; email update |
+| v2.8.0 | Feature cleanup — removed mind map, review panel, block handles, block transform, copy as beautiful doc, sentence focus; Cmd+T now toggles focus mode (off/block); simplified focus mode to 2-stage |
 
 ## Documentation
 

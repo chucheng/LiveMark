@@ -6,7 +6,6 @@ import { documentState } from "../state/document";
 import { generateHTML, renderHTMLBody, type TemplateSettings } from "../export/html-template";
 import { preferencesState } from "../state/preferences";
 import { uiState } from "../state/ui";
-import { generateBeautifulHTML } from "../export/beautiful-doc";
 import { generateDOCX } from "../export/docx-generator";
 import { markdownSerializer } from "../editor/markdown/serializer";
 import type { EditorInstance } from "../editor/editor";
@@ -204,23 +203,3 @@ export async function exportDOCX() {
   }
 }
 
-/**
- * Copy as Beautiful Doc — styled HTML with inline CSS.
- * Pastes nicely into Google Docs, Notion, etc.
- */
-export async function copyAsBeautifulDoc() {
-  if (!editorRef) return;
-
-  const markdown = editorRef.getMarkdown();
-  const html = generateBeautifulHTML(markdown);
-
-  try {
-    await writeText(html);
-    uiState.showStatus("Copied as Beautiful Doc");
-  } catch (err) {
-    await message(`Failed to copy Beautiful Doc:\n${err}`, {
-      title: "Copy Error",
-      kind: "error",
-    });
-  }
-}

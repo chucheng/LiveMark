@@ -1,8 +1,7 @@
 .lm-find-bar {
-  position: sticky;
+  position: absolute;
   top: 0;
-  margin-left: auto;
-  width: fit-content;
+  right: 16px;
   z-index: var(--z-find-bar);
   background: var(--lm-bg-elevated);
   border: 1px solid var(--lm-border);

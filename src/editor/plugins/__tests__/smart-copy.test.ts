@@ -15,10 +15,14 @@ vi.mock("../../../state/ui", () => ({
   },
 }));
 
-// --- Mock generateBeautifulHTML to avoid markdown-it rendering overhead ---
-vi.mock("../../../export/beautiful-doc", () => ({
-  generateBeautifulHTML: (md: string) =>
-    `<div class="livemark-export"><style></style><p>${md}</p></div>`,
+// --- Mock getExportCSS and md.render to avoid rendering overhead ---
+vi.mock("../../../export/export-css", () => ({
+  getExportCSS: () => "",
+}));
+vi.mock("../../markdown/parser", () => ({
+  md: {
+    render: (text: string) => `<p>${text}</p>`,
+  },
 }));
 
 // --- Node builders ---

@@ -37,13 +37,9 @@ import CommandPalette from "./CommandPalette";
 import FindReplace from "./FindReplace";
 import SourceView from "./SourceView";
 import AboutModal from "./AboutModal";
-import ReviewPanel from "./ReviewPanel";
 import SettingsPanel from "./SettingsPanel";
 import TabBar from "./TabBar";
 import Sidebar from "./Sidebar";
-import BlockContextMenu from "./BlockContextMenu";
-import BlockTypePicker from "./BlockTypePicker";
-import MindMap from "./MindMap";
 import EnjoymentPrompt from "./EnjoymentPrompt";
 
 import { fileTreeState } from "../state/filetree";
@@ -312,7 +308,7 @@ export default function App() {
         // Toggle focus mode
         preferencesState.toggleFocusMode();
         const level = preferencesState.focusMode();
-        const labels: Record<string, string> = { off: "Off", block: "Block", sentence: "Sentence" };
+        const labels: Record<string, string> = { off: "Off", block: "Block" };
         uiState.showStatus(`Focus: ${labels[level]}`);
       },
     },
@@ -479,8 +475,10 @@ export default function App() {
       copyAsMarkdown();
     } else if (e.key === "t" && !e.shiftKey && !e.altKey) {
       e.preventDefault();
-      uiState.toggleMindMap();
-      uiState.showStatus(`Mind map: ${uiState.isMindMapOpen() ? "On" : "Off"}`);
+      preferencesState.toggleFocusMode();
+      const level = preferencesState.focusMode();
+      const labels: Record<string, string> = { off: "Off", block: "Block" };
+      uiState.showStatus(`Focus: ${labels[level]}`);
     } else if (e.key === "T" && e.shiftKey) {
       e.preventDefault();
       throttledCycleTheme();
@@ -527,10 +525,6 @@ export default function App() {
     } else if (e.key === "H" && e.shiftKey) {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("lm-toggle-replace"));
-    } else if (e.key === "R" && e.shiftKey) {
-      e.preventDefault();
-      uiState.toggleReview();
-      uiState.showStatus(`Review: ${uiState.isReviewOpen() ? "On" : "Off"}`);
     } else if (e.key === "=" || e.key === "+") {
       e.preventDefault();
       preferencesState.zoomIn();
@@ -861,26 +855,28 @@ export default function App() {
       <div class="lm-main-area">
         <Sidebar onFileClick={handleSidebarFileClick} view={() => editor?.view} />
         <div
-          class="lm-editor-wrapper"
+          class="lm-editor-area"
           classList={{
-            "lm-focus-mode": preferencesState.focusMode() === "block",
-            "lm-focus-sentence": preferencesState.focusMode() === "sentence",
-            "lm-typewriter-mode": preferencesState.typewriterMode(),
             "lm-hidden": uiState.isSourceView(),
           }}
         >
           <Show when={uiState.isFindOpen()}>
             <FindReplace view={() => editor?.view} />
           </Show>
-          <div ref={editorRef} class="lm-editor-mount" />
+          <div
+            class="lm-editor-wrapper"
+            classList={{
+              "lm-focus-mode": preferencesState.focusMode() === "block",
+              "lm-typewriter-mode": preferencesState.typewriterMode(),
+            }}
+          >
+            <div ref={editorRef} class="lm-editor-mount" />
+          </div>
         </div>
         <Show when={uiState.isSourceView()}>
           <SourceView markdown={() => editor?.getMarkdown() ?? ""} initialLine={syncLine} initialCursorOffset={() => sourceCursorOffset} onTopLineChange={setSyncLine} onChange={(text) => { sourceEditedText = text; }} onCursorChange={(offset) => { sourceCursorOffset = offset; }} />
         </Show>
 
-        <Show when={uiState.isReviewOpen()}>
-          <ReviewPanel view={() => editor?.view} />
-        </Show>
       </div>
 
       <Show when={uiState.isPaletteOpen()}>
@@ -891,10 +887,6 @@ export default function App() {
         <AboutModal />
       </Show>
 
-      <Show when={uiState.isMindMapOpen()}>
-        <MindMap view={() => editor?.view} onClose={() => uiState.setMindMapOpen(false)} />
-      </Show>
-
       <Show when={uiState.isSettingsOpen()}>
         <SettingsPanel />
       </Show>
@@ -902,9 +894,6 @@ export default function App() {
       <Show when={feedbackState.isEnjoymentPromptOpen()}>
         <EnjoymentPrompt />
       </Show>
-
-      <BlockContextMenu view={() => editor?.view} />
-      <BlockTypePicker view={() => editor?.view} />
 
       <div
         class="lm-statusbar-chrome"

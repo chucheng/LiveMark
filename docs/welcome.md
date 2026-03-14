@@ -32,15 +32,14 @@ Try it now — click on this heading, or the bold text above, and watch the synt
 
 ## Focus Mode — Write Without Distractions
 
-The feature you didn't know you needed. Press **`Cmd+J F`** to cycle through three levels:
+The feature you didn't know you needed. Press **`Cmd+T`** to toggle:
 
 | Mode | What it does |
 |---|---|
 | **Block focus** | Dims every block except the one you're writing in |
-| **Sentence focus** | Goes further — highlights only the current sentence |
 | **Off** | Back to normal |
 
-Block focus is great for long documents. Sentence focus is for when you really need to nail a paragraph. Everything else melts away — just you and your words.
+Block focus is great for long documents. Everything else melts away — just you and your words.
 
 ---
 
@@ -63,7 +62,6 @@ Perfect for when you need to check or fine-tune the exact syntax, then flip back
 ## More Things to Love
 
 - **Command Palette** (`Cmd+Shift+P`) — Every action in one search bar
-- **Mind Map** (`Cmd+T`) — See your document's heading structure as an interactive mind map with zoom and pan
 - **Math** — Write LaTeX inline with `$E=mc^2$` or in display blocks with `$$`
 - **Mermaid Diagrams** — Fenced code blocks with `mermaid` render as live diagrams
 - **Find & Replace** (`Cmd+F`) — Jumps to nearest match, pre-fills from selection, regex support, replace all

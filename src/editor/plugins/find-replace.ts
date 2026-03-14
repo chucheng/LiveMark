@@ -25,6 +25,17 @@ function findMatches(
 ): Array<{ from: number; to: number }> {
   if (!query) return [];
 
+  console.log("[find] findMatches called, query:", JSON.stringify(query), "doc size:", state.doc.content.size);
+  let blockCount = 0;
+  state.doc.descendants((node, pos) => {
+    if (node.isTextblock) {
+      blockCount++;
+      if (blockCount <= 5) console.log(`[find]   textblock[${blockCount}] type=${node.type.name} pos=${pos} text=${JSON.stringify(node.textContent.slice(0, 80))}`);
+    }
+    return true;
+  });
+  console.log("[find]   total textblocks:", blockCount);
+
   let regex: RegExp;
   try {
     const flags = caseSensitive ? "g" : "gi";
@@ -298,12 +309,19 @@ function scrollToCurrentMatch(view: EditorView) {
   const pluginState = findReplaceKey.getState(view.state);
   if (!pluginState || pluginState.currentIndex < 0) return;
 
-  // Use DOM-based scrolling on the decoration element.
-  // Don't dispatch a selection change — that steals focus from the find bar.
+  // Scroll only the editor's scroll container (.lm-editor-wrapper),
+  // not outer ancestors. This keeps the find bar (absolutely positioned
+  // in the parent .lm-editor-area) visible at all times.
   requestAnimationFrame(() => {
-    const el = view.dom.querySelector(".lm-find-current");
-    if (el) {
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
-    }
+    const el = view.dom.querySelector(".lm-find-current") as HTMLElement | null;
+    if (!el) return;
+
+    const scrollParent = view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+    if (!scrollParent) return;
+
+    const elRect = el.getBoundingClientRect();
+    const parentRect = scrollParent.getBoundingClientRect();
+    const offset = elRect.top - parentRect.top - parentRect.height / 2 + elRect.height / 2;
+    scrollParent.scrollBy({ top: offset, behavior: "smooth" });
   });
 }

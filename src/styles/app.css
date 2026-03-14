@@ -90,7 +90,7 @@
   overflow: hidden;
 }
 
-.lm-main-area > .lm-editor-wrapper {
+.lm-main-area > .lm-editor-area {
   min-width: 300px;
 }
 

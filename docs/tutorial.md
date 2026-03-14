@@ -315,33 +315,6 @@ Press `Cmd+Shift+O` to open the sidebar directly on the **Outline** tab. It disp
 
 ---
 
-## Block Handles
-
-Hover over any block (paragraph, heading, list, code block, etc.) to reveal a **grip handle** on the left side. The handle provides:
-
-- **Drag to move** — grab the handle and drag to reorder blocks
-- **Context menu** — right-click (or click) the handle for options: move up/down, duplicate, delete, and copy link to block
-- **Plus button** — click the `+` icon to insert a new block above. A picker lets you choose the block type: paragraph, heading (H1–H3), bullet list, ordered list, task list, blockquote, code block, horizontal rule, or math block
-
----
-
-## Mind Map
-
-Press `Cmd+T` to open the **mind map view**. It renders your document's heading structure as an interactive diagram using Mermaid, giving you a visual overview of the document outline.
-
-**Navigation:** Click any node to jump to that heading in the editor.
-
-**Zoom & Pan:**
-
-- **Scroll wheel / trackpad** — zoom in and out (centered on cursor)
-- **Click + drag** — pan the diagram
-- **Arrow keys** — pan with keyboard
-- **`+` / `-`** — zoom in / out by step
-- **`0`** — reset to fit
-- Zoom controls also available in the header bar
-
----
-
 ## Find & Replace
 
 Press `Cmd+F` to open the find bar. If you have text selected, it automatically becomes the search query. The editor jumps to the nearest match from your cursor — not the top of the document. Use `Enter` / `Shift+Enter` (or the arrow buttons) to cycle through matches. Press `Cmd+Shift+H` to toggle the replace field. Replacing a match auto-advances to the next one. Search is case-insensitive by default — click the **Aa** button to toggle case sensitivity. Click the **.\*** button to enable regex search. Replace-all replaces every match across the entire document.
@@ -356,13 +329,12 @@ Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your 
 
 ## Focus Mode
 
-Press `Cmd+J F` to cycle through focus modes:
+Press `Cmd+T` to toggle focus mode:
 
 1. **Off** — normal editing, all content visible
 2. **Block focus** — only the current block (paragraph, heading, list, etc.) is fully visible; surrounding blocks are dimmed
-3. **Sentence focus** — only the current sentence within the active block is highlighted; the rest is dimmed
 
-This helps you concentrate on exactly what you're writing, from block-level down to sentence-level granularity. Sentence focus works inside blockquotes, list items, and table cells too.
+This helps you concentrate on exactly what you're writing. Everything else melts away — just you and your words.
 
 ---
 
@@ -371,23 +343,6 @@ This helps you concentrate on exactly what you're writing, from block-level down
 Typewriter mode keeps your cursor vertically centered in the editor window as you type, so your eyes stay in one place. Combined with focus mode, it creates a distraction-free writing experience.
 
 Toggle it from the command palette (`Cmd+Shift+P` → "Toggle Typewriter Mode").
-
----
-
-## Review Panel
-
-Press `Cmd+Shift+R` to open the review panel. It analyzes your document for quality issues:
-
-- **Empty headings** — headings with no content
-- **Heading hierarchy skips** — jumping from h1 to h3 without h2
-- **Duplicate headings** — identical heading text
-- **Missing image alt text** — images without descriptive alt text
-- **Empty links** — links with no URL
-- **Code blocks without language** — fenced blocks missing a language tag
-- **Long paragraphs** — paragraphs over 300 words
-- **Missing document title** — no h1 heading in the document
-
-Click any item in the panel to jump to that location in the editor. The panel updates live as you type.
 
 ---
 
@@ -400,7 +355,6 @@ LiveMark can export your documents in multiple formats:
 - **PDF** (`Cmd+P`) — via the system print dialog
 - **Copy as HTML** (`Cmd+Shift+C`) — copy rendered HTML to clipboard
 - **Copy as Markdown** (`Cmd+Alt+C`) — copy raw Markdown to clipboard (selection-aware: copies only the selected range if you have one)
-- **Copy as Beautiful Doc** — styled HTML clipboard copy for pasting into rich editors like Google Docs or Notion
 
 Access export options through the command palette (`Cmd+Shift+P`) or keyboard shortcuts.
 
@@ -486,12 +440,11 @@ Enter fullscreen via the standard macOS green button. In fullscreen mode, the ti
 | `Cmd+/` | Toggle source view |
 | `Cmd+\` | Toggle sidebar |
 | `Cmd+Shift+O` | Show outline |
-| `Cmd+T` | Toggle mind map |
-| `Cmd+Shift+R` | Toggle review panel |
+| `Cmd+T` | Toggle focus mode |
 | `Cmd+,` | Open settings |
 | `Cmd+Shift+[` | Previous tab |
 | `Cmd+Shift+]` | Next tab |
-| `Cmd+J F` | Toggle focus mode |
+| `Cmd+J F` | Toggle focus mode (chord) |
 | `Cmd+J T` | Cycle theme |
 | `Cmd+J P` | Copy file path |
 | `Cmd+J W` | Close all tabs |
@@ -514,10 +467,8 @@ Enter fullscreen via the standard macOS green button. In fullscreen mode, the ti
  4. **Paste images** from your clipboard — they auto-save next to your file
  5. **Use the status bar** at the bottom to see word count, line/column, and toggle themes
  6. **Open files from the terminal** with `livemark path/to/file.md`
- 7. **Hover block handles** to quickly reorder, duplicate, or delete blocks
- 8. **Use the `+` button** on block handles to insert any block type without memorizing syntax
- 9. **Open multiple files in tabs** to work on several documents at once
-10. **Toggle the sidebar** with `Cmd+\` for quick file navigation
+ 7. **Open multiple files in tabs** to work on several documents at once
+ 8. **Toggle the sidebar** with `Cmd+\` for quick file navigation
 
 ---
 

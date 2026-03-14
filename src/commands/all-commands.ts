@@ -12,7 +12,6 @@ import {
   exportDOCX,
   copyAsHTML,
   copyAsMarkdown,
-  copyAsBeautifulDoc,
 } from "./export-commands";
 import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
@@ -115,13 +114,6 @@ export function registerAllCommands() {
     category: "Export",
     execute: copyAsMarkdown,
   });
-  registerCommand({
-    id: "export.copyBeautifulDoc",
-    label: "Copy as Beautiful Doc",
-    category: "Export",
-    execute: copyAsBeautifulDoc,
-  });
-
   // View
   registerCommand({
     id: "view.toggleTheme",
@@ -143,18 +135,6 @@ export function registerAllCommands() {
     execute: () => {
       uiState.toggleSourceView();
       uiState.showStatus(`Source view: ${uiState.isSourceView() ? "On" : "Off"}`);
-    },
-  });
-  registerCommand({
-    id: "view.focusMode",
-    label: "Toggle Focus Mode",
-    shortcut: "Cmd+J F",
-    category: "View",
-    execute: () => {
-      preferencesState.toggleFocusMode();
-      const level = preferencesState.focusMode();
-      const labels: Record<string, string> = { off: "Off", block: "Block", sentence: "Sentence" };
-      uiState.showStatus(`Focus: ${labels[level]}`);
     },
   });
   registerCommand({
@@ -246,13 +226,15 @@ export function registerAllCommands() {
   });
 
   registerCommand({
-    id: "view.mindMap",
-    label: "Toggle Mind Map",
+    id: "view.focusMode",
+    label: "Toggle Focus Mode",
     shortcut: "Cmd+T",
     category: "View",
     execute: () => {
-      uiState.toggleMindMap();
-      uiState.showStatus(`Mind map: ${uiState.isMindMapOpen() ? "On" : "Off"}`);
+      preferencesState.toggleFocusMode();
+      const level = preferencesState.focusMode();
+      const labels: Record<string, string> = { off: "Off", block: "Block" };
+      uiState.showStatus(`Focus: ${labels[level]}`);
     },
   });
   registerCommand({
@@ -342,34 +324,6 @@ export function registerAllCommands() {
     },
   });
 
-  // Block
-  registerCommand({
-    id: "block.copyLink",
-    label: "Copy Link to Block",
-    category: "Edit",
-    execute: async () => {
-      // Uses the active block (where cursor is) via the shared editorRef
-      const { getBlockAnchor } = await import("../editor/plugins/block-handles");
-      const { getEditorRef } = await import("./file-commands");
-      const editor = getEditorRef();
-      if (!editor) return;
-      const view = editor.view;
-      const { $head } = view.state.selection;
-      if ($head.depth < 1) return;
-      const blockPos = $head.before(1);
-      const anchor = getBlockAnchor(view, blockPos);
-      if (anchor) {
-        try {
-          const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
-          await writeText(`#${anchor}`);
-        } catch {
-          await navigator.clipboard.writeText(`#${anchor}`);
-        }
-        uiState.showStatus("Link copied");
-      }
-    },
-  });
-
   registerCommand({
     id: "edit.insertLink",
     label: "Insert Link",
@@ -438,14 +392,4 @@ export function registerAllCommands() {
     },
   });
 
-  registerCommand({
-    id: "view.review",
-    label: "Toggle Review Panel",
-    shortcut: "Cmd+Shift+R",
-    category: "View",
-    execute: () => {
-      uiState.toggleReview();
-      uiState.showStatus(`Review: ${uiState.isReviewOpen() ? "On" : "Off"}`);
-    },
-  });
 }

@@ -1,14 +1,22 @@
+.lm-editor-area {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lm-editor-area.lm-hidden {
+  display: none;
+}
+
 .lm-editor-wrapper {
   flex: 1;
   min-width: 0;
   overflow-y: auto;
   display: flex;
   justify-content: center;
-  position: relative;
-}
-
-.lm-editor-wrapper.lm-hidden {
-  display: none;
 }
 
 .lm-editor-mount {
@@ -144,22 +152,6 @@
 }
 .lm-focus-mode .ProseMirror > .lm-active {
   opacity: 1;
-}
-
-/* Sentence focus mode */
-.lm-focus-sentence .ProseMirror > * {
-  opacity: 0.25;
-  transition: opacity 250ms ease;
-}
-.lm-focus-sentence .ProseMirror > .lm-has-active-sentence {
-  opacity: 1;
-}
-.lm-focus-sentence .lm-has-active-sentence {
-  color: var(--lm-text-muted);
-}
-.lm-focus-sentence .lm-sentence-active {
-  color: var(--lm-text) !important;
-  opacity: 1 !important;
 }
 
 /* Typewriter mode — keep cursor vertically centered */

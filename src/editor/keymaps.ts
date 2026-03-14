@@ -18,7 +18,6 @@ import {
 import { undo, redo } from "prosemirror-history";
 import { goToNextCell } from "prosemirror-tables";
 import { schema } from "./schema";
-import { moveBlockUp, moveBlockDown } from "./plugins/block-handles";
 
 const isMac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
 
@@ -300,10 +299,6 @@ export function buildKeymaps() {
   keys["Alt-ArrowDown"] = joinDown;
   keys["Mod-["] = lift;
   keys["Escape"] = selectParentNode;
-
-  // Block move
-  keys["Mod-Shift-ArrowUp"] = moveBlockUp;
-  keys["Mod-Shift-ArrowDown"] = moveBlockDown;
 
   // Hard break
   keys["Shift-Enter"] = chainCommands(exitCode, insertHardBreak);

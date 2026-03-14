@@ -4,7 +4,7 @@ import { themeState, type Theme } from "./theme";
 import { fileTreeState } from "./filetree";
 import { feedbackState, type FeedbackPrefs } from "./feedback";
 
-export type FocusLevel = "off" | "block" | "sentence";
+export type FocusLevel = "off" | "block";
 const [focusMode, setFocusMode] = createSignal<FocusLevel>("off");
 const [typewriterMode, setTypewriterMode] = createSignal(false);
 const [autoSave, setAutoSave] = createSignal(true);
@@ -59,7 +59,7 @@ let loaded = false;
 
 interface Preferences {
   theme?: Theme;
-  focusMode?: boolean | FocusLevel;
+  focusMode?: boolean | FocusLevel | "sentence";
   typewriterMode?: boolean;
   autoSave?: boolean;
   fontSize?: number;
@@ -83,10 +83,10 @@ async function loadPreferences() {
     const prefs: Preferences = JSON.parse(json);
     if (prefs.theme) themeState.setTheme(prefs.theme);
     if (prefs.focusMode !== undefined) {
-      // Backwards compat: boolean → FocusLevel
+      // Backwards compat: boolean → FocusLevel, "sentence" → "off"
       if (prefs.focusMode === true) setFocusMode("block");
-      else if (prefs.focusMode === false) setFocusMode("off");
-      else setFocusMode(prefs.focusMode);
+      else if (prefs.focusMode === false || prefs.focusMode === "sentence") setFocusMode("off");
+      else setFocusMode(prefs.focusMode as FocusLevel);
     }
     if (prefs.typewriterMode !== undefined) setTypewriterMode(prefs.typewriterMode);
     if (prefs.autoSave !== undefined) setAutoSave(prefs.autoSave);
@@ -199,7 +199,7 @@ export const preferencesState = {
     savePreferences();
   },
   toggleFocusMode() {
-    const cycle: Record<FocusLevel, FocusLevel> = { off: "block", block: "sentence", sentence: "off" };
+    const cycle: Record<FocusLevel, FocusLevel> = { off: "block", block: "off" };
     setFocusMode(cycle[focusMode()]);
     savePreferences();
   },

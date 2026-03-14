@@ -5,8 +5,6 @@ const [isPaletteOpen, setPaletteOpen] = createSignal(false);
 const [isFindOpen, setFindOpen] = createSignal(false);
 const [findInitialQuery, setFindInitialQuery] = createSignal("");
 const [isAboutOpen, setAboutOpen] = createSignal(false);
-const [isReviewOpen, setReviewOpen] = createSignal(false);
-const [isMindMapOpen, setMindMapOpen] = createSignal(false);
 const [isFullscreen, setFullscreen] = createSignal(false);
 const [chromeHidden, setChromeHidden] = createSignal(false);
 const [isSettingsOpen, setSettingsOpen] = createSignal(false);
@@ -44,16 +42,6 @@ export const uiState = {
   },
   isAboutOpen,
   setAboutOpen,
-  isReviewOpen,
-  setReviewOpen,
-  toggleReview() {
-    setReviewOpen(!isReviewOpen());
-  },
-  isMindMapOpen,
-  setMindMapOpen,
-  toggleMindMap() {
-    setMindMapOpen(!isMindMapOpen());
-  },
   isSettingsOpen,
   setSettingsOpen,
   toggleSettings() {
