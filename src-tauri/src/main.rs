@@ -3,7 +3,7 @@
 
 mod commands;
 
-use commands::file::{read_file, write_file};
+use commands::file::{get_file_mtime, read_file, write_file};
 use commands::filetree::{list_directory, watch_directory, unwatch_directory, WatcherState};
 use commands::image::save_image;
 use commands::preferences::{read_preferences, write_preferences};
@@ -62,6 +62,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             read_file,
             write_file,
+            get_file_mtime,
             get_initial_file,
             get_home_dir,
             save_image,

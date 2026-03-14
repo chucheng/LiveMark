@@ -1,6 +1,7 @@
 use std::fs;
 use std::io::Write;
 use std::path::Path;
+use std::time::UNIX_EPOCH;
 
 #[tauri::command]
 pub fn read_file(path: String) -> Result<String, String> {
@@ -26,4 +27,17 @@ pub fn write_file(path: String, content: String) -> Result<(), String> {
         .map_err(|e| format!("Failed to rename temp file: {e}"))?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub fn get_file_mtime(path: String) -> Result<f64, String> {
+    let meta = fs::metadata(&path).map_err(|e| format!("Failed to read metadata: {e}"))?;
+    let modified = meta
+        .modified()
+        .map_err(|e| format!("Failed to get mtime: {e}"))?;
+    let millis = modified
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| format!("Invalid mtime: {e}"))?
+        .as_millis() as f64;
+    Ok(millis)
 }

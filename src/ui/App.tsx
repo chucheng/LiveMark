@@ -38,8 +38,10 @@ import ReviewPanel from "./ReviewPanel";
 import TabBar from "./TabBar";
 import Sidebar from "./Sidebar";
 import BlockContextMenu from "./BlockContextMenu";
+import BlockTypePicker from "./BlockTypePicker";
 import MindMap from "./MindMap";
 import { fileTreeState } from "../state/filetree";
+import { startFileWatch, stopFileWatch } from "../state/file-watch";
 import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import type { EditorView } from "prosemirror-view";
@@ -72,6 +74,7 @@ export default function App() {
   let editor: EditorInstance | undefined;
   let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
   let autoSaveFadeTimer: ReturnType<typeof setTimeout> | null = null;
+  let tabSwitching = false;
   const AUTO_SAVE_DELAY = 30_000;
   const [wordCount, setWordCount] = createSignal(0);
   const [cursorInfo, setCursorInfo] = createSignal<CursorInfo>({
@@ -169,7 +172,13 @@ export default function App() {
   }
 
   async function handleTabSwitch() {
-    await restoreTabState();
+    if (tabSwitching) return;
+    tabSwitching = true;
+    try {
+      await restoreTabState();
+    } finally {
+      tabSwitching = false;
+    }
   }
 
   async function handleCloseTab(tabId: string) {
@@ -418,6 +427,8 @@ export default function App() {
         // No initial file
       }
 
+      startFileWatch();
+
       unlistenClose = await appWindow.onCloseRequested(async (event) => {
         const canClose = await confirmAllUnsavedChanges();
         if (!canClose) {
@@ -430,6 +441,7 @@ export default function App() {
   onCleanup(() => {
     window.removeEventListener("keydown", handleKeydown);
     window.removeEventListener("mousemove", handleMouseMove);
+    stopFileWatch();
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     if (autoSaveFadeTimer) clearTimeout(autoSaveFadeTimer);
     if (chromeHideTimer) clearTimeout(chromeHideTimer);
@@ -499,6 +511,7 @@ export default function App() {
       </Show>
 
       <BlockContextMenu view={() => editor?.view} />
+      <BlockTypePicker view={() => editor?.view} />
 
       <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} autoSaveStatus={autoSaveStatus} />
     </div>

@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { open, save, message } from "@tauri-apps/plugin-dialog";
 import { documentState } from "../state/document";
 import { tabsState } from "../state/tabs";
+import { stampMtime, clearMtime, isExternallyModified } from "../state/file-watch";
 import type { EditorInstance } from "../editor/editor";
 
 const MD_FILTERS = [
@@ -46,6 +47,10 @@ let onTabSwitchCallback: (() => void) | null = null;
 
 export function setEditorRef(editor: EditorInstance) {
   editorRef = editor;
+}
+
+export function getEditorRef(): EditorInstance | null {
+  return editorRef;
 }
 
 export function onFileChange(cb: () => void) {
@@ -101,6 +106,7 @@ export async function openFileInTab(path: string) {
       tabsState.setActiveClean();
       // Immediately snapshot so the tab has a saved editor state
       tabsState.snapshotActiveTab(editorRef.view, null);
+      await stampMtime(path);
       onFileChangeCallback?.();
       return;
     }
@@ -117,6 +123,7 @@ export async function openFileInTab(path: string) {
     tabsState.setActiveClean();
     // Immediately snapshot so the tab has a saved editor state
     tabsState.snapshotActiveTab(editorRef.view, null);
+    await stampMtime(path);
     onFileChangeCallback?.();
   } catch (err) {
     const errStr = String(err);
@@ -140,6 +147,7 @@ export async function loadFile(path: string) {
     documentState.setClean();
     // Snapshot immediately so the tab has a saved editor state
     tabsState.snapshotActiveTab(editorRef.view, null);
+    await stampMtime(path);
     onFileChangeCallback?.();
   } catch (err) {
     await message(`Failed to open file:\n${err}`, {
@@ -158,6 +166,7 @@ export async function saveFile() {
       const content = editorRef.getMarkdown();
       await invoke("write_file", { path, content });
       documentState.setClean();
+      await stampMtime(path);
     } catch (err) {
       await message(`Failed to save file:\n${err}`, {
         title: "Save Error",
@@ -175,10 +184,15 @@ export async function silentSave(): Promise<boolean> {
   const path = documentState.filePath();
   if (!path) return false;
   if (!documentState.isModified()) return false;
+
+  // Don't auto-save over external changes — let file-watch handle it
+  if (await isExternallyModified(path)) return false;
+
   try {
     const content = editorRef.getMarkdown();
     await invoke("write_file", { path, content });
     documentState.setClean();
+    await stampMtime(path);
     return true;
   } catch {
     return false;
@@ -200,6 +214,7 @@ export async function saveAsFile() {
     await invoke("write_file", { path: selected, content });
     documentState.setFilePath(selected);
     documentState.setClean();
+    await stampMtime(selected);
   } catch (err) {
     await message(`Failed to save file:\n${err}`, {
       title: "Save Error",
@@ -265,6 +280,10 @@ export async function closeTabById(tabId: string): Promise<boolean> {
 
 function performCloseTab(tabId: string): boolean {
   if (!editorRef) return false;
+
+  // Clean up mtime tracking for the closed tab
+  const closingTab = tabsState.tabs().find((t) => t.id === tabId);
+  if (closingTab?.filePath) clearMtime(closingTab.filePath);
 
   const newTab = tabsState.closeTab(tabId);
 
@@ -341,22 +360,23 @@ export async function confirmAllUnsavedChanges(): Promise<boolean> {
 
   if (result === "Save All") {
     for (const tab of modifiedTabs) {
-      if (tab.filePath && editorRef) {
-        // We need to serialize the tab's content
-        // For the active tab, we can use the editor directly
-        // For other tabs, their content is in the snapshotted state
-        if (tab.id === tabsState.activeTabId()) {
-          await saveFile();
-        } else if (tab.editorState) {
-          const { serializeMarkdown } = await import("../editor/markdown/serializer");
-          const content = serializeMarkdown(tab.editorState.doc);
-          try {
-            await invoke("write_file", { path: tab.filePath, content });
-            tabsState.updateTab(tab.id, { isModified: false });
-          } catch {
-            // Continue with other tabs
-          }
+      if (tab.id === tabsState.activeTabId() && editorRef) {
+        await saveFile();
+      } else if (tab.filePath && tab.editorState) {
+        const { serializeMarkdown } = await import("../editor/markdown/serializer");
+        const content = serializeMarkdown(tab.editorState.doc);
+        try {
+          await invoke("write_file", { path: tab.filePath, content });
+          tabsState.updateTab(tab.id, { isModified: false });
+          await stampMtime(tab.filePath);
+        } catch {
+          // Continue with other tabs
         }
+      } else if (!tab.filePath && editorRef) {
+        // Unsaved untitled tab — prompt for save location
+        tabsState.switchTab(tab.id);
+        onTabSwitchCallback?.();
+        await saveAsFile();
       }
     }
     return true;
