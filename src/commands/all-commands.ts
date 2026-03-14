@@ -17,6 +17,7 @@ import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
 import { preferencesState } from "../state/preferences";
 import { fileTreeState } from "../state/filetree";
+import { feedbackState } from "../state/feedback";
 
 export function registerAllCommands() {
   // File
@@ -246,6 +247,12 @@ export function registerAllCommands() {
     label: "About LiveMark",
     category: "View",
     execute: () => { uiState.setAboutOpen(true); },
+  });
+  registerCommand({
+    id: "help.feedback",
+    label: "Send Feedback",
+    category: "View",
+    execute: () => feedbackState.openFeedbackEmail(),
   });
   registerCommand({
     id: "help.tutorial",

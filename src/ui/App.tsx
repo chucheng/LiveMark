@@ -44,8 +44,10 @@ import Sidebar from "./Sidebar";
 import BlockContextMenu from "./BlockContextMenu";
 import BlockTypePicker from "./BlockTypePicker";
 import MindMap from "./MindMap";
+import EnjoymentPrompt from "./EnjoymentPrompt";
 
 import { fileTreeState } from "../state/filetree";
+import { feedbackState } from "../state/feedback";
 import { startFileWatch, stopFileWatch, setTabSwitchInProgress } from "../state/file-watch";
 import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
@@ -685,6 +687,7 @@ export default function App() {
 
     (async () => {
       await preferencesState.loadPreferences();
+      feedbackState.recordLaunch(() => preferencesState.savePreferences());
 
       // Fullscreen detection
       const appWindow = getCurrentWindow();
@@ -825,6 +828,10 @@ export default function App() {
 
       <Show when={uiState.isSettingsOpen()}>
         <SettingsPanel />
+      </Show>
+
+      <Show when={feedbackState.isEnjoymentPromptOpen()}>
+        <EnjoymentPrompt />
       </Show>
 
       <BlockContextMenu view={() => editor?.view} />

@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { createSignal } from "solid-js";
 import { themeState, type Theme } from "./theme";
 import { fileTreeState } from "./filetree";
+import { feedbackState, type FeedbackPrefs } from "./feedback";
 
 export type FocusLevel = "off" | "block" | "sentence";
 const [focusMode, setFocusMode] = createSignal<FocusLevel>("off");
@@ -73,6 +74,7 @@ interface Preferences {
   selectedPreset?: string;
   userPresets?: UserPreset[];
   customShortcuts?: Record<string, string>;
+  feedback?: FeedbackPrefs;
 }
 
 async function loadPreferences() {
@@ -102,6 +104,7 @@ async function loadPreferences() {
     if (prefs.selectedPreset !== undefined) setSelectedPreset(prefs.selectedPreset);
     if (prefs.userPresets !== undefined) setUserPresets(prefs.userPresets);
     if (prefs.customShortcuts !== undefined) setCustomShortcuts(prefs.customShortcuts);
+    if (prefs.feedback) feedbackState.loadFeedbackPrefs(prefs.feedback);
   } catch {
     // Use defaults
   }
@@ -130,6 +133,7 @@ function savePreferences() {
       selectedPreset: selectedPreset(),
       userPresets: userPresets(),
       customShortcuts: customShortcuts(),
+      feedback: feedbackState.saveFeedbackPrefs(),
     };
     try {
       await invoke("write_preferences", { json: JSON.stringify(prefs) });

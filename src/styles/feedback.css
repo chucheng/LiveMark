@@ -1,0 +1,85 @@
+.lm-enjoyment-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--lm-overlay-backdrop);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-about);
+}
+
+.lm-enjoyment {
+  background: var(--lm-bg-elevated);
+  border: 1px solid var(--lm-border);
+  border-radius: var(--lm-radius-lg);
+  box-shadow: var(--lm-shadow-lg);
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 300px;
+  outline: none;
+}
+
+.lm-enjoyment-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--lm-text);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.lm-enjoyment-desc {
+  font-size: 13.5px;
+  color: var(--lm-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.lm-enjoyment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lm-enjoyment-btn {
+  border: none;
+  border-radius: var(--lm-radius-md);
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--lm-transition-fast);
+}
+
+.lm-enjoyment-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--lm-focus-ring-shadow);
+}
+
+.lm-enjoyment-yes {
+  background: var(--lm-accent);
+  color: var(--lm-text-on-emphasis);
+}
+
+.lm-enjoyment-yes:hover {
+  background: var(--lm-accent-emphasis);
+}
+
+.lm-enjoyment-no {
+  background: var(--lm-bg-muted);
+  color: var(--lm-text);
+}
+
+.lm-enjoyment-no:hover {
+  background: var(--lm-border);
+}
+
+.lm-enjoyment-later {
+  background: transparent;
+  color: var(--lm-text-faint);
+}
+
+.lm-enjoyment-later:hover {
+  background: var(--lm-bg-muted);
+  color: var(--lm-text-secondary);
+}

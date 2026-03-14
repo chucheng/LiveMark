@@ -263,6 +263,7 @@ src-tauri/
 | v2.1.3 | Show Tutorial command in command palette, read-only indicator in status bar and title bar |
 | v2.1.4 | Fix CJK characters clipped in headings |
 | v2.1.5 | Source view is now editable with cursor position sync |
+| v2.1.6 | In-app feedback flow: Send Feedback command, enjoyment prompt after 7 launches |
 
 ## Documentation
 
@@ -275,6 +276,10 @@ src-tauri/
 - [Test Plan](docs/v2/testing-v2.md) — Test strategy and test cases
 - [Ideas](docs/future/ideas.md) — Feature ideas and future directions
 - [Archive](docs/archive/) — Historical V1 planning and reference documents
+
+## Privacy Policy
+
+[Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html)
 
 ## License
 
