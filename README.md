@@ -2,9 +2,9 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.4.0-blue)
+![Version](https://img.shields.io/badge/version-2.5.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
 ## What is LiveMark?
 
@@ -27,7 +27,8 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Image preview** — inline rendering, drag-and-drop or paste to insert, HTML `<img>` width preservation
 - **Block handles** — hover any block for drag-to-move, context menu (move/duplicate/delete/copy link), and insert-new-block picker
 - **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
-- **Clickable links** — Cmd/Ctrl+click opens in default browser
+- **Smart link open** — local file links (e.g. `tutorial.md`) open in a tab; external URLs open in browser. Works in popover and Cmd+click
+- **Clickable links** — Cmd/Ctrl+click opens links (local files in-app, URLs in browser)
 - **Find & replace** — Cmd+F with selection pre-fill, jumps to nearest match, regex and case-sensitive toggles, replace all
 - **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts (`# `, `> `, `- [ ] `), undo/redo
 - **Large file lazy rendering** — IntersectionObserver-based viewport rendering
@@ -183,7 +184,8 @@ src/
       heading-collapse.ts — Heading fold/unfold
       find-replace.ts     — Search decorations + match navigation
       placeholder.ts      — Empty doc placeholder
-      link-click.ts       — Cmd+click opens links
+      link-click.ts       — Cmd+click opens links (smart local/external)
+      link-helpers.ts     — Shared link detection and path resolution
       link-popover.ts     — Link popover (Open, Copy, Edit, Unlink)
       image-drop-paste.ts — Image drag-drop/paste handler
       inline-decorations.ts — Inline mark decorations
@@ -249,39 +251,15 @@ src-tauri/
 | Version | Highlights |
 |---|---|
 | v1.0.0 | Full Markdown editor: inline live rendering, file operations, themes, export, command palette, find & replace |
-| v1.1.0 | Math rendering (KaTeX — `$...$` and `$$...$$`), tight list support |
-| v1.1.1 | Code block exit and click-below behavior fixes |
-| v1.2.0 | Review panel — document quality checks with premium minimal UI |
-| v1.3.0 | Auto-save — 30s debounce, preference toggle, status bar indicator |
-| v1.3.1 | Fix task list checkbox toggle and macOS window close button |
-| v1.3.2 | Remove app name from titlebar, center filename horizontally |
-| v1.3.3 | UI polish — refined design system, deep graphite dark mode, premium surfaces |
-| v1.3.4–v1.3.6 | Code block overlay alignment, inline mark decoration, scroll sync fixes |
-| v1.3.7 | Codebase review — 8 bug fixes (image error handling, PDF export race, save_image sanitization, preferences validation, find-replace ReDoS protection, scroll sync refactor) |
-| v1.3.8 | Upgrade Rust edition to 2024, docs reorganization (tutorial promoted to top-level) |
-| v1.3.9 | Font size zoom — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset editor font size (persisted) |
-| v1.3.10 | CLAUDE.md project guidance, dependency updates |
-| v1.3.11 | Multi-tab, sidebar file tree, block handles, mermaid diagrams, frontmatter, mind map, CI/CD pipeline |
-| v1.3.12 | Version sync script, v2 roadmap update, ideas cleanup |
-| v1.4.0 | Auto-update — in-app update banner via tauri-plugin-updater, settings panel UX improvements, chord keybinding fixes |
-| v2.0.0 | Typewriter mode, sentence focus, callout admonitions, block transform menu, block handles chord shortcuts |
-| v2.0.1 | Bug audit — fix sentence focus inside blockquotes/lists, inline atom offset mapping, callout empty body, badge DOM placement, remove dead shortcut |
-| v2.0.2 | Fix PDF export (open in browser instead of broken iframe print), 50 MB file size guard, export reentrancy lock |
-| v2.1.0 | Mind map zoom/pan (scroll wheel, drag, keyboard, header controls), custom Mermaid color palette, click-to-navigate scroll positioning, resilience hardening (tab/file/image limits, debouncing, URL filtering) |
-| v2.1.1 | Sync tauri.conf.json version, bump mermaid render debounce |
-| v2.1.2 | Quit app on macOS when window closed via X button, graceful read-only file handling |
-| v2.1.3 | Show Tutorial command in command palette, read-only indicator in status bar and title bar |
-| v2.1.4 | Fix CJK characters clipped in headings |
-| v2.1.5 | Source view is now editable with cursor position sync |
-| v2.1.6 | In-app feedback flow: Send Feedback command, enjoyment prompt after 7 launches |
-| v2.1.7 | Smart copy (Markdown as text/plain + styled HTML), callout type dropdown, HTML `<img>` width support |
-| v2.2.0 | DOCX export — Word document generation with headings, lists, tables, code blocks, math, images, and task lists |
-| v2.2.1 | Edge case hardening — auto-save failure feedback, external file deletion detection, disk-full error guidance, unsupported file drop feedback, improved encoding error messages |
-| v2.2.2 | Remove two-column layout mode for simplicity |
-| v2.3.0 | Document outline — sidebar tab with heading tree, active heading tracking, click-to-navigate (Cmd+Shift+O) |
-| v2.3.1 | Add DOCX to welcome.md export list |
+| v1.1.0–v1.3.7 | Math (KaTeX), review panel, auto-save, font size zoom, UI polish, 8-bug audit, misc fixes |
+| v1.3.8–v1.3.12 | Multi-tab, sidebar file tree, block handles, mermaid diagrams, frontmatter, mind map, CI/CD |
+| v1.4.0 | Auto-update, settings panel UX, chord keybinding fixes |
+| v2.0.0 | Typewriter mode, sentence focus, callout admonitions, block transform menu |
+| v2.0.1–v2.1.7 | Mind map zoom/pan, smart copy, editable source view, DOCX export prep, CJK fix, bug fixes |
+| v2.2.0–v2.3.1 | DOCX export, document outline sidebar, edge case hardening |
 | v2.4.0 | Link popover — click rendered links for compact URL preview with Open, Copy, Edit, Unlink actions |
 | v2.4.1 | Find & Replace UX — jump to nearest match on search, pre-fill from selection, auto-advance after replace, re-focus on Cmd+F |
+| v2.5.0 | Smart link open — local file links open in-app tabs, external URLs open in browser; works in popover and Cmd+click |
 
 ## Documentation
 
@@ -297,4 +275,4 @@ src-tauri/
 
 ## License
 
-[MIT](LICENSE)
+[AGPL-3.0](LICENSE)

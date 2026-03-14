@@ -1,11 +1,12 @@
 import { Plugin } from "prosemirror-state";
 import { open } from "@tauri-apps/plugin-shell";
-
-/** URL schemes that must never be opened. */
-const DANGEROUS_SCHEMES = /^(javascript|data|vbscript):/i;
+import { DANGEROUS_SCHEMES, isLocalFile, resolveRelativePath } from "./link-helpers";
+import { tabsState } from "@/state/tabs";
+import { openFileInTab } from "@/commands/file-commands";
 
 /**
- * Plugin that opens links in the default browser on Cmd/Ctrl+click.
+ * Plugin that opens links on Cmd/Ctrl+click.
+ * Local file links open in a tab; external URLs open in the browser.
  */
 export function linkClickPlugin(): Plugin {
   return new Plugin({
@@ -20,13 +21,22 @@ export function linkClickPlugin(): Plugin {
 
         const href = linkMark.attrs.href;
         if (href) {
-          // Block dangerous URL schemes
           if (DANGEROUS_SCHEMES.test(href.trim())) {
             event.preventDefault();
             return true;
           }
 
           event.preventDefault();
+
+          if (isLocalFile(href)) {
+            const currentPath = tabsState.filePath();
+            if (currentPath) {
+              const resolved = resolveRelativePath(currentPath, href);
+              openFileInTab(resolved);
+              return true;
+            }
+          }
+
           open(href).catch((err) => {
             import("@tauri-apps/plugin-dialog").then(({ message }) => {
               message(`Could not open link:\n${href}\n\n${err}`, {

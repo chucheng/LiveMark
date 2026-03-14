@@ -4,11 +4,11 @@ import { Mark, ResolvedPos } from "prosemirror-model";
 import { open } from "@tauri-apps/plugin-shell";
 import { clampMenuPosition } from "@/utils/viewport";
 import { schema } from "../schema";
+import { DANGEROUS_SCHEMES, isLocalFile, resolveRelativePath } from "./link-helpers";
+import { tabsState } from "@/state/tabs";
+import { openFileInTab } from "@/commands/file-commands";
 
 const pluginKey = new PluginKey("linkPopover");
-
-/** URL schemes that must never be opened. */
-const DANGEROUS_SCHEMES = /^(javascript|data|vbscript):/i;
 
 /**
  * Find the contiguous range of text carrying a given mark
@@ -152,6 +152,15 @@ class LinkPopover {
 
   private openLink() {
     if (DANGEROUS_SCHEMES.test(this.href.trim())) return;
+    if (isLocalFile(this.href)) {
+      const currentPath = tabsState.filePath();
+      if (currentPath) {
+        const resolved = resolveRelativePath(currentPath, this.href);
+        openFileInTab(resolved);
+        this.destroy();
+        return;
+      }
+    }
     open(this.href).catch(() => {});
     this.destroy();
   }
