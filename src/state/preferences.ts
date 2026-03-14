@@ -128,15 +128,20 @@ function savePreferences() {
   }, 500);
 }
 
+const PRESET_FONT_VALUES = new Set(["system", "serif", "mono"]);
+
 function fontFamilyCSS(): string {
-  switch (fontFamily()) {
+  const ff = fontFamily();
+  switch (ff) {
     case "serif":
       return '"Georgia", "Times New Roman", "Noto Serif", serif';
     case "mono":
       return "var(--lm-font-mono)";
     case "system":
-    default:
       return '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+    default:
+      // Custom font value — use it directly as CSS font-family
+      return ff;
   }
 }
 
@@ -169,6 +174,8 @@ function deletePreset(name: string) {
   if (selectedPreset() === name.toLowerCase()) setSelectedPreset("default");
   savePreferences();
 }
+
+export { PRESET_FONT_VALUES };
 
 export const preferencesState = {
   focusMode,

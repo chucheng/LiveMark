@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   padding-top: 40px;
-  z-index: 1000;
+  z-index: var(--z-modal);
 }
 
 .lm-settings-panel {
@@ -49,6 +49,11 @@
 
 .lm-settings-close:hover {
   color: var(--lm-text);
+}
+
+.lm-settings-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
 }
 
 .lm-settings-body {
@@ -177,6 +182,11 @@
   background: var(--lm-btn-bg-hover);
 }
 
+.lm-settings-stepper-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
+}
+
 .lm-settings-stepper-btn:active {
   background: var(--lm-btn-bg-active);
 }
@@ -225,9 +235,14 @@
   left: 2px;
   width: 16px;
   height: 16px;
-  background: white;
+  background: var(--lm-bg-elevated, white);
   border-radius: 50%;
   transition: transform var(--lm-transition-fast);
+}
+
+.lm-settings-toggle input:focus-visible + .lm-settings-toggle-track {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
 }
 
 .lm-settings-toggle input:checked + .lm-settings-toggle-track {
@@ -323,9 +338,15 @@
   background: var(--lm-btn-bg-hover);
 }
 
+.lm-settings-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
+}
+
 .lm-settings-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: default;
+  color: var(--lm-text-muted);
 }
 
 /* Keyboard shortcuts */
@@ -457,4 +478,27 @@
 
 .lm-settings-shortcut-reset:hover {
   color: var(--lm-accent);
+}
+
+/* [UX-004] Validation error state for inputs */
+.lm-settings-input-error {
+  border-color: var(--lm-severity-issue, #e53935) !important;
+}
+
+.lm-settings-input-error:focus {
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.25) !important;
+}
+
+.lm-settings-validation-msg {
+  font-size: 11.5px;
+  color: var(--lm-severity-issue, #e53935);
+  margin-top: 4px;
+}
+
+/* [SETTINGS-006] Preset save status feedback */
+.lm-settings-preset-status {
+  font-size: 11.5px;
+  color: var(--lm-text-muted);
+  margin-top: 6px;
+  padding: 0 2px;
 }

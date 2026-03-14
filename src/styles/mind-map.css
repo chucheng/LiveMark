@@ -2,7 +2,7 @@
 .lm-mindmap-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--z-modal);
   background: var(--lm-overlay-backdrop);
   display: flex;
   align-items: center;
@@ -48,6 +48,11 @@
 
 .lm-mindmap-close:hover {
   color: var(--lm-text);
+}
+
+.lm-mindmap-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
 }
 
 .lm-mindmap-content {

@@ -64,6 +64,11 @@
   background: var(--lm-hover);
 }
 
+.lm-review-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
+}
+
 /* ── Summary counts ── */
 
 .lm-review-summary {
@@ -117,7 +122,7 @@
 }
 
 .lm-review-body::-webkit-scrollbar-thumb {
-  background: var(--lm-border);
+  background: var(--lm-border-emphasis);
   border-radius: 2px;
 }
 

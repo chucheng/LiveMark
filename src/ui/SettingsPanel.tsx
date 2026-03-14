@@ -1,6 +1,6 @@
-import { createSignal, createEffect, For, Show, onMount } from "solid-js";
+import { createSignal, createEffect, For, Show, onMount, onCleanup } from "solid-js";
 import { uiState } from "../state/ui";
-import { preferencesState, BUILT_IN_PRESETS, type UserPreset } from "../state/preferences";
+import { preferencesState, BUILT_IN_PRESETS, PRESET_FONT_VALUES, type UserPreset } from "../state/preferences";
 import { getCommands, type Command } from "../commands/registry";
 import {
   normalizeKeyEvent,
@@ -24,20 +24,41 @@ const SPACING_OPTIONS = ["0.4em", "0.5em", "0.6em", "0.8em", "1.0em", "1.2em"];
 
 export default function SettingsPanel() {
   let panelRef!: HTMLDivElement;
+  let closeButtonRef!: HTMLButtonElement;
   const [shortcutSearch, setShortcutSearch] = createSignal("");
   const [capturingCmd, setCapturingCmd] = createSignal<string | null>(null);
   const [capturedShortcut, setCapturedShortcut] = createSignal("");
   const [captureConflict, setCaptureConflict] = createSignal<ConflictInfo>({});
   const [presetName, setPresetName] = createSignal("");
   const [customFont, setCustomFont] = createSignal("");
+  const [customFontError, setCustomFontError] = createSignal(false);
+  const [presetStatus, setPresetStatus] = createSignal("");
+  // Track the previous font family for reverting when custom input is left empty
+  const [previousFontFamily, setPreviousFontFamily] = createSignal("system");
 
-  function handleBackdropClick(e: MouseEvent) {
-    if ((e.target as HTMLElement).classList.contains("lm-settings-overlay")) {
-      uiState.setSettingsOpen(false);
+  // Track whether custom font input is shown (either persisted custom font or user just selected "Custom")
+  const [showCustomInput, setShowCustomInput] = createSignal(false);
+
+  // Derived: whether the current font is a custom (non-preset) value
+  const isCustomFontMode = () => !PRESET_FONT_VALUES.has(preferencesState.fontFamily());
+
+  // Keep showCustomInput in sync with whether the font is actually custom
+  createEffect(() => {
+    if (isCustomFontMode()) {
+      setShowCustomInput(true);
     }
-  }
+  });
 
-  function handleKeydown(e: KeyboardEvent) {
+  // [SETTINGS-001] Sync customFont signal from persisted preferences on mount
+  createEffect(() => {
+    const ff = preferencesState.fontFamily();
+    if (!PRESET_FONT_VALUES.has(ff)) {
+      setCustomFont(ff);
+    }
+  });
+
+  // [SETTINGS-005] Global keydown for Escape — works even when focus is on nested inputs
+  function handleGlobalKeydown(e: KeyboardEvent) {
     if (e.key === "Escape") {
       if (capturingCmd()) {
         setCapturingCmd(null);
@@ -47,6 +68,44 @@ export default function SettingsPanel() {
         uiState.setSettingsOpen(false);
       }
       e.preventDefault();
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener("keydown", handleGlobalKeydown);
+    // [UX-009] Auto-focus the close button when the panel opens
+    closeButtonRef?.focus();
+  });
+
+  onCleanup(() => {
+    document.removeEventListener("keydown", handleGlobalKeydown);
+  });
+
+  // [UX-009] Focus trap: wrap Tab from last to first, Shift+Tab from first to last
+  function handleFocusTrap(e: KeyboardEvent) {
+    if (e.key !== "Tab") return;
+    const focusable = panelRef?.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable || focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  function handleBackdropClick(e: MouseEvent) {
+    if ((e.target as HTMLElement).classList.contains("lm-settings-overlay")) {
+      uiState.setSettingsOpen(false);
     }
   }
 
@@ -144,16 +203,20 @@ export default function SettingsPanel() {
   function handleSavePreset() {
     const name = presetName().trim();
     if (!name) return;
+    // [SETTINGS-006] Check for duplicate name and show explicit feedback
+    const exists = preferencesState.userPresets().some((p) => p.name === name);
     preferencesState.saveCurrentAsPreset(name);
     setPresetName("");
+    setPresetStatus(exists ? `Preset "${name}" updated` : `Preset "${name}" saved`);
+    setTimeout(() => setPresetStatus(""), 2500);
   }
 
   return (
-    <div class="lm-settings-overlay" onClick={handleBackdropClick} onKeyDown={handleKeydown}>
-      <div class="lm-settings-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="lm-settings-overlay" onClick={handleBackdropClick}>
+      <div class="lm-settings-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Settings" onKeyDown={handleFocusTrap}>
         <div class="lm-settings-header">
           <h2 class="lm-settings-title">Settings</h2>
-          <button class="lm-settings-close" onClick={() => uiState.setSettingsOpen(false)}>
+          <button class="lm-settings-close" ref={closeButtonRef} onClick={() => uiState.setSettingsOpen(false)}>
             &times;
           </button>
         </div>
@@ -169,11 +232,20 @@ export default function SettingsPanel() {
               <div class="lm-settings-control">
                 <select
                   class="lm-settings-select"
-                  value={preferencesState.fontFamily()}
+                  value={isCustomFontMode() ? "custom" : preferencesState.fontFamily()}
                   onChange={(e) => {
                     const val = e.currentTarget.value;
-                    if (val === "custom") return; // handled by text input
+                    if (val === "custom") {
+                      // [SETTINGS-004] Don't persist "custom" — just switch to custom mode.
+                      // Save the current font so we can revert if user leaves input empty.
+                      setPreviousFontFamily(preferencesState.fontFamily());
+                      setShowCustomInput(true);
+                      setCustomFontError(false);
+                      return;
+                    }
                     preferencesState.setFontFamily(val);
+                    setShowCustomInput(false);
+                    setCustomFontError(false);
                   }}
                 >
                   <For each={FONT_OPTIONS}>
@@ -184,21 +256,56 @@ export default function SettingsPanel() {
               </div>
             </div>
 
-            <Show when={preferencesState.fontFamily() === "custom"}>
+            <Show when={showCustomInput()}>
               <div class="lm-settings-row">
                 <span class="lm-settings-label">Custom Font</span>
-                <input
-                  class="lm-settings-input"
-                  type="text"
-                  placeholder="e.g. 'Fira Sans', sans-serif"
-                  value={customFont()}
-                  onInput={(e) => setCustomFont(e.currentTarget.value)}
-                  onBlur={() => {
-                    if (customFont().trim()) {
-                      preferencesState.setFontFamily(customFont().trim());
-                    }
-                  }}
-                />
+                <div class="lm-settings-control" style="flex-direction: column; align-items: stretch;">
+                  <input
+                    class="lm-settings-input"
+                    classList={{ "lm-settings-input-error": customFontError() }}
+                    type="text"
+                    placeholder="e.g. 'Fira Sans', sans-serif"
+                    value={customFont()}
+                    onInput={(e) => {
+                      setCustomFont(e.currentTarget.value);
+                      if (e.currentTarget.value.trim()) {
+                        setCustomFontError(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      const val = customFont().trim();
+                      if (val) {
+                        // [SETTINGS-004] Only persist when there's a real value
+                        preferencesState.setFontFamily(val);
+                        setCustomFontError(false);
+                      } else {
+                        // [SETTINGS-004] Revert to previous font if empty
+                        setCustomFontError(true);
+                        const fallback = previousFontFamily();
+                        preferencesState.setFontFamily(PRESET_FONT_VALUES.has(fallback) ? fallback : "system");
+                        // If no custom value was ever set, hide the input
+                        if (!isCustomFontMode()) {
+                          setShowCustomInput(false);
+                          setCustomFontError(false);
+                        }
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const val = customFont().trim();
+                        if (val) {
+                          preferencesState.setFontFamily(val);
+                          setCustomFontError(false);
+                        }
+                      }
+                    }}
+                    ref={(el) => el.focus()}
+                  />
+                  {/* [UX-004] Validation message for empty custom font */}
+                  <Show when={customFontError()}>
+                    <span class="lm-settings-validation-msg">Enter a font family name</span>
+                  </Show>
+                </div>
               </div>
             </Show>
 
@@ -323,6 +430,10 @@ export default function SettingsPanel() {
                 Save Current
               </button>
             </div>
+            {/* [SETTINGS-006 / UX-005] Preset save status feedback */}
+            <Show when={presetStatus()}>
+              <div class="lm-settings-preset-status">{presetStatus()}</div>
+            </Show>
           </section>
 
           {/* ── Section: Keyboard Shortcuts ── */}

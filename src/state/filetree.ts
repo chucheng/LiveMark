@@ -131,6 +131,26 @@ async function refreshTree() {
   }
 }
 
+/** Expand all ancestor directories so filePath is visible in the tree. */
+async function revealPath(filePath: string) {
+  const root = rootPath();
+  if (!root || !filePath.startsWith(root)) return;
+
+  const relative = filePath.slice(root.length).replace(/^[/\\]/, "");
+  const parts = relative.split(/[/\\]/);
+  // Expand each parent dir (skip the last part — that's the file itself)
+  const expanded = new Set(expandedPaths());
+  let current = root;
+  for (let i = 0; i < parts.length - 1; i++) {
+    current = current + "/" + parts[i];
+    if (!expanded.has(current)) {
+      expanded.add(current);
+      await loadChildren(current);
+    }
+  }
+  setExpandedPaths(expanded);
+}
+
 export const fileTreeState = {
   rootPath,
   rootEntries,
@@ -143,6 +163,7 @@ export const fileTreeState = {
   closeFolder,
   toggleExpand,
   refreshTree,
+  revealPath,
   toggleSidebar() {
     setSidebarVisible(!sidebarVisible());
     import("./preferences").then(({ preferencesState }) => preferencesState.savePreferences());

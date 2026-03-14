@@ -1,4 +1,4 @@
-# LiveMark Tutorial
+# linkLiveMark Tutorial
 
 Welcome to **LiveMark** — a desktop Markdown editor with seamless inline live-preview. What you type is what you see, no split panes or preview toggles needed.
 
@@ -17,6 +17,10 @@ Markdown supports six levels of headings. Type `#` followed by a space to create
 ### Heading 3
 
 #### Heading 4
+
+- [ ] dd
+
+  Dd
 
 ##### Heading 5
 
@@ -370,7 +374,7 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 | `Cmd+W` | Close tab |
 | `Cmd+F` | Find & replace |
 | `Cmd+/` | Toggle source view |
-| `Cmd+\` | Toggle sidebar |
+| `Cmd+\\` | Toggle sidebar |
 | `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
 | `Cmd+Shift+F` | Toggle focus mode |
@@ -387,15 +391,15 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 
 ## Tips & Tricks
 
-1. **Click below the last block** to create a new paragraph at the end of the document
-2. **Press Enter at the end of a code block** to exit and create a new paragraph
-3. **Drag and drop images** from Finder directly into the editor
-4. **Paste images** from your clipboard — they auto-save next to your file
-5. **Use the status bar** at the bottom to see word count, line/column, and toggle themes
-6. **Open files from the terminal** with `livemark path/to/file.md`
-7. **Hover block handles** to quickly reorder, duplicate, or delete blocks
-8. **Use the `+` button** on block handles to insert any block type without memorizing syntax
-9. **Open multiple files in tabs** to work on several documents at once
+ 1. **Click below the last block** to create a new paragraph at the end of the document
+ 2. **Press Enter at the end of a code block** to exit and create a new paragraph
+ 3. **Drag and drop images** from Finder directly into the editor
+ 4. **Paste images** from your clipboard — they auto-save next to your file
+ 5. **Use the status bar** at the bottom to see word count, line/column, and toggle themes
+ 6. **Open files from the terminal** with `livemark path/to/file.md`
+ 7. **Hover block handles** to quickly reorder, duplicate, or delete blocks
+ 8. **Use the `+` button** on block handles to insert any block type without memorizing syntax
+ 9. **Open multiple files in tabs** to work on several documents at once
 10. **Toggle the sidebar** with `Cmd+\` for quick file navigation
 
 ---

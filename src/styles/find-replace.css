@@ -2,7 +2,7 @@
   position: absolute;
   top: 0;
   right: 16px;
-  z-index: 100;
+  z-index: var(--z-find-bar);
   background: var(--lm-bg-elevated);
   border: 1px solid var(--lm-border);
   border-top: none;
@@ -61,6 +61,11 @@
 .lm-find-btn:hover {
   color: var(--lm-text);
   background: var(--lm-hover);
+}
+
+.lm-find-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
 }
 
 .lm-find-toggle {

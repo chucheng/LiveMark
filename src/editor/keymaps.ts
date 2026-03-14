@@ -246,18 +246,17 @@ const insertLink: Command = (state, dispatch) => {
   if (dispatch) {
     const tr = state.tr;
     if (empty) {
-      // No selection — insert [link](url) and select "url" for easy typing
-      const linkText = "link";
-      const urlText = "url";
-      const mark = linkMark.create({ href: urlText });
-      tr.insertText(linkText, from);
-      tr.addMark(from, from + linkText.length, mark);
-      // Place cursor at the end of inserted link text so user can type
-      tr.setSelection(TextSelection.create(tr.doc, from, from + linkText.length));
+      // No selection — insert raw Markdown [text](url) and select "url" for easy typing
+      const raw = "[text](url)";
+      tr.insertText(raw, from);
+      // Select just "url" (positions: from + 7 to from + 10)
+      tr.setSelection(TextSelection.create(tr.doc, from + 7, from + 10));
     } else {
       // Selection exists — wrap selected text in a link with placeholder URL
       const mark = linkMark.create({ href: "" });
       tr.addMark(from, to, mark);
+      // Place cursor at end of selection so user can continue typing
+      tr.setSelection(TextSelection.create(tr.doc, to));
     }
     dispatch(tr.scrollIntoView());
   }
@@ -285,7 +284,9 @@ export function buildKeymaps() {
   for (let i = 1; i <= 6; i++) {
     keys[`Mod-${i}`] = headingCommand(i);
   }
-  keys["Mod-0"] = toParagraph;
+  // Mod-0 intentionally omitted — reserved for Reset Zoom (Cmd+0) in App.tsx
+  // Use Cmd+Shift+0 or command palette for "Convert to Paragraph"
+  keys["Mod-Shift-0"] = toParagraph;
 
   // Lists + Tables (Tab/Shift-Tab context-aware)
   keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item));

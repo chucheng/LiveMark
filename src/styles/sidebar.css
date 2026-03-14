@@ -66,6 +66,14 @@
   background: var(--lm-hover);
 }
 
+.lm-tree-node-active {
+  background: var(--lm-hover);
+}
+
+.lm-tree-node-active .lm-tree-label {
+  font-weight: 600;
+}
+
 .lm-tree-node-disabled {
   opacity: 0.4;
   cursor: default;
@@ -102,7 +110,7 @@
 
 .lm-sidebar-resize:hover {
   background: var(--lm-accent);
-  opacity: 0.3;
+  opacity: 0.6;
 }
 
 .lm-sidebar-empty {
@@ -135,6 +143,11 @@
 
 .lm-sidebar-open-btn:hover {
   background: var(--lm-btn-bg-hover);
+}
+
+.lm-sidebar-open-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lm-focus-ring);
 }
 
 .lm-sidebar-empty-hint {

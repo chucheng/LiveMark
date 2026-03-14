@@ -34,7 +34,9 @@ export async function exportHTML() {
 
   const markdown = editorRef.getMarkdown();
   const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
-  const html = generateHTML(markdown, title, currentTemplate());
+  const filePath = documentState.filePath();
+  const docDir = filePath ? filePath.replace(/[/\\][^/\\]+$/, "") : undefined;
+  const html = generateHTML(markdown, title, currentTemplate(), docDir);
 
   const path = await save({
     filters: [{ name: "HTML", extensions: ["html"] }],
@@ -66,7 +68,9 @@ export async function exportPDF() {
 
   const markdown = editorRef.getMarkdown();
   const title = documentState.fileName().replace(/\.(md|markdown)$/, "");
-  const html = generateHTML(markdown, title, currentTemplate());
+  const filePath = documentState.filePath();
+  const docDir = filePath ? filePath.replace(/[/\\][^/\\]+$/, "") : undefined;
+  const html = generateHTML(markdown, title, currentTemplate(), docDir);
 
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";

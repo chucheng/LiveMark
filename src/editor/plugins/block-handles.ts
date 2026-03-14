@@ -468,6 +468,7 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
             }));
             return false;
           }
+          // Validate that sourcePos is at a valid block boundary
           const srcIdx = indexOfPos(doc, sourcePos);
           if (srcIdx < 0) {
             // Clear drag state on failure
@@ -479,6 +480,16 @@ export function blockHandlesPlugin(): Plugin<BlockHandlesState> {
 
           const node = doc.child(srcIdx);
           const srcEnd = sourcePos + node.nodeSize;
+
+          // Validate that targetPos is at a valid block boundary
+          const targetIdx = indexOfPos(doc, targetPos);
+          // targetPos must either be a block start or the end of the last block
+          if (targetIdx < 0 && targetPos !== doc.content.size) {
+            view.dispatch(view.state.tr.setMeta(blockHandlesKey, {
+              dragSourcePos: null, dropTargetPos: null, hoveredPos: null,
+            }));
+            return false;
+          }
 
           // Skip if dropping at same position — just clear state
           if (targetPos === sourcePos || targetPos === srcEnd) {

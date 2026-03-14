@@ -77,13 +77,13 @@ function taskListRule(checked: boolean) {
 
     const tr = state.tr.delete(start, end);
     const $pos = tr.doc.resolve(tr.mapping.map(range.start));
-    const newRange = $pos.blockRange();
-    if (!newRange) return null;
+    const blockRange = $pos.blockRange();
+    if (!blockRange) return null;
 
-    const wrap = findWrapping(newRange, taskListType);
+    const wrap = findWrapping(blockRange, taskListType);
     if (!wrap) return null;
 
-    tr.wrap(newRange, wrap);
+    tr.wrap(blockRange, wrap);
     // Set the task_list_item attrs on the inner node
     const taskItemPos = tr.mapping.map(range.start) + 1;
     const taskItemNode = tr.doc.nodeAt(taskItemPos);

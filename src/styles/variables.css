@@ -84,6 +84,13 @@
 
   --lm-transition-fast: 120ms ease;
   --lm-transition-base: 160ms ease;
+
+  /* ── Z-Index Hierarchy ── */
+  --z-find-bar: 100;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-popover: 1050;
+  --z-about: 1100;
 }
 
 [data-theme="dark"] {

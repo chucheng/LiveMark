@@ -17,7 +17,7 @@
   color: var(--lm-text);
   white-space: pre-wrap;
   word-wrap: break-word;
-  background: transparent;
+  background: var(--lm-code-bg);
   user-select: text;
   letter-spacing: 0.01em;
 }

@@ -46,4 +46,12 @@ export class HeadingView implements NodeView {
     this.hintEl.textContent = "#".repeat(level) + " ";
     return true;
   }
+
+  selectNode() {
+    this.dom.classList.add("ProseMirror-selectednode");
+  }
+
+  deselectNode() {
+    this.dom.classList.remove("ProseMirror-selectednode");
+  }
 }

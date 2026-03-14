@@ -1,6 +1,7 @@
 import { For, Show, createSignal, onCleanup } from "solid-js";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { fileTreeState, type FileTreeNode } from "../state/filetree";
+import { documentState } from "../state/document";
 import { isOpenableFile } from "../commands/file-commands";
 import { isMac } from "../utils/platform";
 
@@ -12,6 +13,7 @@ function TreeNode(props: { node: FileTreeNode; depth: number; onFileClick: (path
   const isExpanded = () => fileTreeState.expandedPaths().has(props.node.path);
   const isDir = () => props.node.type === "directory";
   const openable = () => isDir() || isOpenableFile(props.node.path);
+  const isActive = () => !isDir() && props.node.path === documentState.filePath();
 
   function handleClick() {
     if (isDir()) {
@@ -32,7 +34,7 @@ function TreeNode(props: { node: FileTreeNode; depth: number; onFileClick: (path
     <>
       <div
         class="lm-tree-node"
-        classList={{ "lm-tree-node-disabled": !openable() }}
+        classList={{ "lm-tree-node-disabled": !openable(), "lm-tree-node-active": isActive() }}
         style={{ "padding-left": `${props.depth * 16 + 8}px` }}
         onClick={handleClick}
         title={openable() ? props.node.path : `${props.node.name} — unsupported file type`}

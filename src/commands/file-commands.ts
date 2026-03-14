@@ -4,6 +4,7 @@ import { documentState } from "../state/document";
 import { tabsState } from "../state/tabs";
 import { uiState } from "../state/ui";
 import { stampMtime, clearMtime, isExternallyModified } from "../state/file-watch";
+import { fileTreeState } from "../state/filetree";
 import type { EditorInstance } from "../editor/editor";
 
 const MD_FILTERS = [
@@ -109,6 +110,7 @@ export async function openFileInTab(path: string) {
       // Immediately snapshot so the tab has a saved editor state
       tabsState.snapshotActiveTab(editorRef.view, null);
       await stampMtime(path);
+      fileTreeState.revealPath(path);
       onFileChangeCallback?.();
       return;
     }
@@ -126,6 +128,7 @@ export async function openFileInTab(path: string) {
     // Immediately snapshot so the tab has a saved editor state
     tabsState.snapshotActiveTab(editorRef.view, null);
     await stampMtime(path);
+    fileTreeState.revealPath(path);
     onFileChangeCallback?.();
   } catch (err) {
     const errStr = String(err);
@@ -188,6 +191,9 @@ export async function saveFile() {
       await invoke("write_file", { path, content });
       documentState.setClean();
       await stampMtime(path);
+      // Snapshot editor state so it persists across tab switches
+      const scroller = editorRef.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+      tabsState.snapshotActiveTab(editorRef.view, scroller);
       uiState.showStatus("Saved");
     } catch (err) {
       await message(`Failed to save file:\n${err}`, {
@@ -243,6 +249,9 @@ export async function saveAsFile() {
     documentState.setFilePath(selected);
     documentState.setClean();
     await stampMtime(selected);
+    // Snapshot editor state so it persists across tab switches
+    const scroller = editorRef.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+    tabsState.snapshotActiveTab(editorRef.view, scroller);
     uiState.showStatus("Saved");
   } catch (err) {
     await message(`Failed to save file:\n${err}`, {

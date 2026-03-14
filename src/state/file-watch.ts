@@ -7,8 +7,14 @@ const lastKnownMtime = new Map<string, number>();
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
 let checking = false;
+let tabSwitchInProgress = false;
 
 const POLL_INTERVAL = 3000;
+
+/** Pause file-watch checks during tab switch to avoid race conditions. */
+export function setTabSwitchInProgress(value: boolean): void {
+  tabSwitchInProgress = value;
+}
 
 /** Record the current mtime for a file path (call after read/write). */
 export async function stampMtime(path: string): Promise<void> {
@@ -27,7 +33,7 @@ export function clearMtime(path: string): void {
 
 /** Check all open tabs for external changes. */
 async function checkForChanges(): Promise<void> {
-  if (checking) return;
+  if (checking || tabSwitchInProgress) return;
   checking = true;
 
   try {
@@ -88,9 +94,9 @@ async function handleCleanReload(tabId: string, filePath: string, isActive: bool
         }
       }
     } else {
-      // Background tab — update the snapshot
+      // Background tab — update the snapshot (only if we have a valid editorState)
       const tab = tabsState.tabs().find((t) => t.id === tabId);
-      if (tab?.editorState) {
+      if (tab && tab.editorState) {
         const { parseMarkdown } = await import("../editor/markdown/parser");
         const doc = parseMarkdown(content);
         const { EditorState } = await import("prosemirror-state");

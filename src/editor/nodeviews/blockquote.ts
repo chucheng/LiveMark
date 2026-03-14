@@ -24,4 +24,12 @@ export class BlockquoteView implements NodeView {
   update(node: Node): boolean {
     return node.type.name === "blockquote";
   }
+
+  selectNode() {
+    this.dom.classList.add("ProseMirror-selectednode");
+  }
+
+  deselectNode() {
+    this.dom.classList.remove("ProseMirror-selectednode");
+  }
 }

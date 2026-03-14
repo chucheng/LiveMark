@@ -21,6 +21,7 @@ export class ImageView implements NodeView {
     this.setSrc(node.attrs.src);
 
     this.img.onerror = () => {
+      if (!this.dom.isConnected) return;
       this.showError(this.node.attrs.alt || "Image not found");
     };
 

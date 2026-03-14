@@ -329,6 +329,16 @@ export function registerAllCommands() {
   });
 
   registerCommand({
+    id: "find.toggleReplace",
+    label: "Toggle Find and Replace",
+    shortcut: "Cmd+Shift+H",
+    category: "Edit",
+    execute: () => {
+      window.dispatchEvent(new CustomEvent("lm-toggle-replace"));
+    },
+  });
+
+  registerCommand({
     id: "view.review",
     label: "Toggle Review Panel",
     shortcut: "Cmd+Shift+R",

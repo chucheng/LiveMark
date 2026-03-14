@@ -46,7 +46,7 @@ import BlockTypePicker from "./BlockTypePicker";
 import MindMap from "./MindMap";
 import UpdateBanner from "./UpdateBanner";
 import { fileTreeState } from "../state/filetree";
-import { startFileWatch, stopFileWatch } from "../state/file-watch";
+import { startFileWatch, stopFileWatch, setTabSwitchInProgress } from "../state/file-watch";
 import { buildSyncMap, pmPosToMdLine, mdLineToPmPos } from "./scroll-sync";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import type { EditorView } from "prosemirror-view";
@@ -193,6 +193,7 @@ export default function App() {
   async function handleTabSwitch() {
     if (tabSwitching) return;
     tabSwitching = true;
+    setTabSwitchInProgress(true);
     try {
       // Dismiss open menus/overlays to prevent stale state across tabs
       uiState.setFindOpen(false);
@@ -200,6 +201,7 @@ export default function App() {
       await restoreTabState();
     } finally {
       tabSwitching = false;
+      setTabSwitchInProgress(false);
     }
   }
 
@@ -430,14 +432,12 @@ export default function App() {
     } else if (e.key === "f" && !e.shiftKey) {
       e.preventDefault();
       uiState.toggleFind();
+    } else if (e.key === "H" && e.shiftKey) {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent("lm-toggle-replace"));
     } else if (e.key === "F" && e.shiftKey) {
       e.preventDefault();
-      if (uiState.isFindOpen()) {
-        // When find bar is open, Cmd+Shift+F toggles replace row
-        window.dispatchEvent(new CustomEvent("lm-toggle-replace"));
-      } else {
-        preferencesState.toggleFocusMode();
-      }
+      preferencesState.toggleFocusMode();
     } else if (e.key === "R" && e.shiftKey) {
       e.preventDefault();
       uiState.toggleReview();

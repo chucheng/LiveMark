@@ -46,8 +46,18 @@ function templateOverrides(settings?: TemplateSettings): string {
  * Generate a full standalone HTML document from Markdown.
  * Uses the same markdown-it instance as the editor for consistent rendering.
  */
-export function generateHTML(markdown: string, title: string, template?: TemplateSettings): string {
-  const bodyHTML = md.render(markdown);
+export function generateHTML(markdown: string, title: string, template?: TemplateSettings, docDir?: string): string {
+  let bodyHTML = md.render(markdown);
+
+  // Resolve relative image paths to absolute file:// URLs so exported HTML works
+  // regardless of where the file is saved
+  if (docDir) {
+    bodyHTML = bodyHTML.replace(
+      /(<img\s[^>]*src=")(\.\/)([^"]+)(")/g,
+      (_match, prefix, _dot, rest, suffix) =>
+        `${prefix}file://${docDir}/${rest}${suffix}`,
+    );
+  }
   const css = getExportCSS();
   const overrideCSS = templateOverrides(template);
 

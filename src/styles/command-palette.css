@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   padding-top: 80px;
-  z-index: 1000;
+  z-index: var(--z-modal);
 }
 
 .lm-palette {
@@ -36,7 +36,8 @@
 }
 
 .lm-palette-input:focus {
-  box-shadow: inset 0 -1px 0 var(--lm-focus-ring);
+  border-bottom-color: var(--lm-focus-ring);
+  box-shadow: var(--lm-focus-ring-shadow);
 }
 
 .lm-palette-input::placeholder {
