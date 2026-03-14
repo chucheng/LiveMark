@@ -61,14 +61,20 @@ export function registerAllCommands() {
     label: "Toggle Sidebar",
     shortcut: "Cmd+\\",
     category: "View",
-    execute: () => fileTreeState.toggleSidebar(),
+    execute: () => {
+      fileTreeState.toggleSidebar();
+      uiState.showStatus(`Sidebar: ${fileTreeState.sidebarVisible() ? "On" : "Off"}`);
+    },
   });
 
   registerCommand({
     id: "file.toggleAutoSave",
     label: "Toggle Auto-Save",
     category: "File",
-    execute: () => preferencesState.toggleAutoSave(),
+    execute: () => {
+      preferencesState.toggleAutoSave();
+      uiState.showStatus(`Auto-save: ${preferencesState.autoSave() ? "On" : "Off"}`);
+    },
   });
 
   // Export
@@ -113,27 +119,43 @@ export function registerAllCommands() {
     label: "Toggle Theme",
     shortcut: "Cmd+Shift+T",
     category: "View",
-    execute: () => { themeState.cycleTheme(); preferencesState.savePreferences(); },
+    execute: () => {
+      themeState.cycleTheme();
+      preferencesState.savePreferences();
+      const labels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
+      uiState.showStatus(`Theme: ${labels[themeState.theme()]}`);
+    },
   });
   registerCommand({
     id: "view.sourceView",
     label: "Toggle Source View",
     shortcut: "Cmd+/",
     category: "View",
-    execute: () => uiState.toggleSourceView(),
+    execute: () => {
+      uiState.toggleSourceView();
+      uiState.showStatus(`Source view: ${uiState.isSourceView() ? "On" : "Off"}`);
+    },
   });
   registerCommand({
     id: "view.focusMode",
     label: "Toggle Focus Mode",
     shortcut: "Cmd+J F",
     category: "View",
-    execute: () => preferencesState.toggleFocusMode(),
+    execute: () => {
+      preferencesState.toggleFocusMode();
+      const level = preferencesState.focusMode();
+      const labels: Record<string, string> = { off: "Off", block: "Block", sentence: "Sentence" };
+      uiState.showStatus(`Focus: ${labels[level]}`);
+    },
   });
   registerCommand({
     id: "view.typewriterMode",
     label: "Toggle Typewriter Mode",
     category: "View",
-    execute: () => preferencesState.toggleTypewriterMode(),
+    execute: () => {
+      preferencesState.toggleTypewriterMode();
+      uiState.showStatus(`Typewriter: ${preferencesState.typewriterMode() ? "On" : "Off"}`);
+    },
   });
   registerCommand({
     id: "view.commandPalette",
@@ -148,40 +170,58 @@ export function registerAllCommands() {
     label: "Zoom In",
     shortcut: "Cmd+=",
     category: "View",
-    execute: () => preferencesState.zoomIn(),
+    execute: () => {
+      preferencesState.zoomIn();
+      uiState.showStatus(`Zoom: ${Math.round(preferencesState.fontSize() / 16 * 100)}%`);
+    },
   });
   registerCommand({
     id: "view.zoomOut",
     label: "Zoom Out",
     shortcut: "Cmd+-",
     category: "View",
-    execute: () => preferencesState.zoomOut(),
+    execute: () => {
+      preferencesState.zoomOut();
+      uiState.showStatus(`Zoom: ${Math.round(preferencesState.fontSize() / 16 * 100)}%`);
+    },
   });
   registerCommand({
     id: "view.zoomReset",
     label: "Reset Zoom",
     shortcut: "Cmd+0",
     category: "View",
-    execute: () => preferencesState.resetZoom(),
+    execute: () => {
+      preferencesState.resetZoom();
+      uiState.showStatus(`Zoom: ${Math.round(preferencesState.fontSize() / 16 * 100)}%`);
+    },
   });
 
   registerCommand({
     id: "view.widenContent",
     label: "Widen Content Area",
     category: "View",
-    execute: () => preferencesState.widenContent(),
+    execute: () => {
+      preferencesState.widenContent();
+      uiState.showStatus(`Width: ${preferencesState.contentWidth()}px`);
+    },
   });
   registerCommand({
     id: "view.narrowContent",
     label: "Narrow Content Area",
     category: "View",
-    execute: () => preferencesState.narrowContent(),
+    execute: () => {
+      preferencesState.narrowContent();
+      uiState.showStatus(`Width: ${preferencesState.contentWidth()}px`);
+    },
   });
   registerCommand({
     id: "view.resetContentWidth",
     label: "Reset Content Width",
     category: "View",
-    execute: () => preferencesState.resetContentWidth(),
+    execute: () => {
+      preferencesState.resetContentWidth();
+      uiState.showStatus(`Width: ${preferencesState.contentWidth()}px`);
+    },
   });
 
   registerCommand({
@@ -189,7 +229,10 @@ export function registerAllCommands() {
     label: "Toggle Mind Map",
     shortcut: "Cmd+T",
     category: "View",
-    execute: () => uiState.toggleMindMap(),
+    execute: () => {
+      uiState.toggleMindMap();
+      uiState.showStatus(`Mind map: ${uiState.isMindMapOpen() ? "On" : "Off"}`);
+    },
   });
   registerCommand({
     id: "view.settings",
@@ -214,13 +257,14 @@ export function registerAllCommands() {
     execute: async () => {
       const { documentState } = await import("../state/document");
       const fp = documentState.filePath();
-      if (!fp) return;
+      if (!fp) { uiState.showStatus("No file open"); return; }
       try {
         const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
         await writeText(fp);
       } catch {
         await navigator.clipboard.writeText(fp);
       }
+      uiState.showStatus("Path copied");
     },
   });
   registerCommand({
@@ -243,7 +287,12 @@ export function registerAllCommands() {
     label: "Cycle Theme",
     shortcut: "Cmd+J T",
     category: "View",
-    execute: () => { themeState.cycleTheme(); preferencesState.savePreferences(); },
+    execute: () => {
+      themeState.cycleTheme();
+      preferencesState.savePreferences();
+      const labels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
+      uiState.showStatus(`Theme: ${labels[themeState.theme()]}`);
+    },
   });
 
   // Block
@@ -269,6 +318,7 @@ export function registerAllCommands() {
         } catch {
           await navigator.clipboard.writeText(`#${anchor}`);
         }
+        uiState.showStatus("Link copied");
       }
     },
   });
@@ -329,6 +379,9 @@ export function registerAllCommands() {
     label: "Toggle Review Panel",
     shortcut: "Cmd+Shift+R",
     category: "View",
-    execute: () => uiState.toggleReview(),
+    execute: () => {
+      uiState.toggleReview();
+      uiState.showStatus(`Review: ${uiState.isReviewOpen() ? "On" : "Off"}`);
+    },
   });
 }
