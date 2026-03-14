@@ -37,7 +37,7 @@ export default function TabBar(props: TabBarProps) {
   }));
 
   return (
-    <Show when={tabsState.tabs().length >= 1}>
+    <Show when={tabsState.tabs().length > 1}>
       <div class="lm-tabbar-wrapper">
         <Show when={canScrollLeft()}>
           <button
