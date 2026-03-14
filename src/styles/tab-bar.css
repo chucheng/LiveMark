@@ -1,18 +1,53 @@
-.lm-tabbar {
+.lm-tabbar-wrapper {
   display: flex;
   align-items: stretch;
   height: 34px;
   background-color: var(--lm-bg);
   border-bottom: 1px solid var(--lm-border);
-  overflow-x: auto;
-  overflow-y: hidden;
   flex-shrink: 0;
   -webkit-app-region: no-drag;
+}
+
+.lm-tabbar {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
 }
 
 .lm-tabbar::-webkit-scrollbar {
   display: none;
+}
+
+.lm-tabbar-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+  background: var(--lm-bg);
+  border: none;
+  color: var(--lm-text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--lm-transition-fast), color var(--lm-transition-fast);
+}
+
+.lm-tabbar-arrow:hover {
+  background: var(--lm-hover);
+  color: var(--lm-text);
+}
+
+.lm-tabbar-arrow-left {
+  border-right: 1px solid var(--lm-border-subtle);
+}
+
+.lm-tabbar-arrow-right {
+  border-left: 1px solid var(--lm-border-subtle);
 }
 
 .lm-tab {
