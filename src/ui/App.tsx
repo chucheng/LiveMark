@@ -694,17 +694,52 @@ export default function App() {
       await checkFullscreen();
       unlistenResize = await appWindow.onResized(() => checkFullscreen());
 
+      // Check for CLI files first
+      let hasInitialFiles = false;
       try {
         const initialFiles = await invoke<string[]>("get_initial_files");
-        for (const file of initialFiles) {
-          try {
-            await openFileInTab(file);
-          } catch {
-            // Continue opening remaining files even if one fails
+        if (initialFiles.length > 0) {
+          hasInitialFiles = true;
+          for (const file of initialFiles) {
+            try {
+              await openFileInTab(file);
+            } catch {
+              // Continue opening remaining files even if one fails
+            }
           }
         }
       } catch {
         // No initial files
+      }
+
+      // First launch: open Welcome + Tutorial tabs
+      if (!hasInitialFiles && !preferencesState.hasSeenWelcome() && editor) {
+        const welcomeMd = (await import("../../docs/welcome.md?raw")).default;
+        const tutorialMd = (await import("../../docs/tutorial.md?raw")).default;
+
+        // Load welcome.md into the existing empty tab (tab 1)
+        editor.setMarkdown(welcomeMd);
+        tabsState.updateTab(tabsState.activeTabId()!, { fileName: "Welcome" });
+
+        // Create a second tab for tutorial.md
+        const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+        tabsState.snapshotActiveTab(editor.view, scroller);
+        const tutorialTab = tabsState.createTab();
+        if (tutorialTab) {
+          editor.setMarkdown(tutorialMd);
+          tabsState.updateTab(tutorialTab.id, { fileName: "Tutorial" });
+        }
+
+        // Switch back to the Welcome tab so it's the first thing the user sees
+        const welcomeTabId = tabsState.tabs()[0]?.id;
+        if (welcomeTabId) {
+          tabsState.snapshotActiveTab(editor.view, scroller);
+          tabsState.switchTab(welcomeTabId);
+          await handleTabSwitch();
+        }
+
+        preferencesState.setHasSeenWelcome(true);
+        updateWordCount();
       }
 
       // Listen for files opened from a second instance (e.g. double-clicking

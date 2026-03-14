@@ -18,6 +18,7 @@ const [editorPaddingY, setEditorPaddingY] = createSignal(32);
 const [twoColumn, setTwoColumn] = createSignal(false);
 const [selectedPreset, setSelectedPreset] = createSignal("default");
 const [customShortcuts, setCustomShortcuts] = createSignal<Record<string, string>>({});
+const [hasSeenWelcome, setHasSeenWelcome] = createSignal(false);
 
 export interface UserPreset {
   name: string;
@@ -74,6 +75,7 @@ interface Preferences {
   selectedPreset?: string;
   userPresets?: UserPreset[];
   customShortcuts?: Record<string, string>;
+  hasSeenWelcome?: boolean;
   feedback?: FeedbackPrefs;
 }
 
@@ -104,6 +106,7 @@ async function loadPreferences() {
     if (prefs.selectedPreset !== undefined) setSelectedPreset(prefs.selectedPreset);
     if (prefs.userPresets !== undefined) setUserPresets(prefs.userPresets);
     if (prefs.customShortcuts !== undefined) setCustomShortcuts(prefs.customShortcuts);
+    if (prefs.hasSeenWelcome !== undefined) setHasSeenWelcome(prefs.hasSeenWelcome);
     if (prefs.feedback) feedbackState.loadFeedbackPrefs(prefs.feedback);
   } catch {
     // Use defaults
@@ -133,6 +136,7 @@ function savePreferences() {
       selectedPreset: selectedPreset(),
       userPresets: userPresets(),
       customShortcuts: customShortcuts(),
+      hasSeenWelcome: hasSeenWelcome(),
       feedback: feedbackState.saveFeedbackPrefs(),
     };
     try {
@@ -332,6 +336,11 @@ export const preferencesState = {
   customShortcuts,
   setCustomShortcuts(value: Record<string, string>) {
     setCustomShortcuts(value);
+    savePreferences();
+  },
+  hasSeenWelcome,
+  setHasSeenWelcome(value: boolean) {
+    setHasSeenWelcome(value);
     savePreferences();
   },
   loadPreferences,
