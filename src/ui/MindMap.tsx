@@ -65,20 +65,20 @@ export default function MindMap(props: MindMapProps) {
   });
 
   function handleSvgClick(e: MouseEvent) {
-    const target = e.target as SVGElement;
+    const target = e.target as Element;
 
-    // Mermaid mindmap nodes are <g> groups containing shapes + <text>.
-    // Walk up to the nearest node group, then find <text> within it.
+    // Mermaid v11 mindmap nodes are <g class="mindmap-node ..."> groups.
+    // Labels may be SVG <text> or HTML inside <foreignObject> (markdown labelType).
     const nodeGroup =
       target.closest(".mindmap-node") ||
       target.closest(".node") ||
       target.closest("g");
     if (!nodeGroup) return;
 
+    // Extract visible text — try <text> first, then <foreignObject> HTML content
     const textEl = nodeGroup.querySelector("text");
-    if (!textEl) return;
-
-    const clickedText = textEl.textContent?.trim();
+    const foEl = nodeGroup.querySelector("foreignObject");
+    const clickedText = (textEl?.textContent || foEl?.textContent || "").trim();
     if (!clickedText) return;
 
     const heading = headingsRef.find(
