@@ -56,6 +56,14 @@ Insert images with `![alt text](url)` syntax:
 
 You can also **drag and drop** images directly into the editor, or **paste** them from your clipboard. LiveMark will automatically save the image alongside your document.
 
+### Resized Images
+
+Use HTML `<img>` tags to set a specific width:
+
+<img src="../src-tauri/icons/icon.png" alt="Small logo" width="64">
+
+LiveMark preserves the width attribute through editing and saving.
+
 ---
 
 ## Lists

@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.1.5-blue)
+![Version](https://img.shields.io/badge/version-2.1.7-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -24,7 +24,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **YAML frontmatter** — parse, edit, and serialize frontmatter blocks
 - **Table editing** — visual tables with Tab navigation between cells
 - **Task list checkboxes** — clickable checkboxes that toggle state
-- **Image preview** — inline rendering, drag-and-drop or paste to insert
+- **Image preview** — inline rendering, drag-and-drop or paste to insert, HTML `<img>` width preservation
 - **Block handles** — hover any block for drag-to-move, context menu (move/duplicate/delete/copy link), and insert-new-block picker
 - **Clickable links** — Cmd/Ctrl+click opens in default browser
 - **Find & replace** — Cmd+F, regex and case-sensitive toggles, replace all
@@ -49,7 +49,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Source view** — Cmd+/ toggles read-only raw Markdown
 - **Focus mode** — Cmd+J F cycles off → block → sentence focus (dims inactive blocks or non-active sentences)
 - **Typewriter mode** — keeps cursor vertically centered as you type
-- **Callout admonitions** — `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!CAUTION]`, `> [!IMPORTANT]` with styled badges
+- **Callout admonitions** — `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!CAUTION]`, `> [!IMPORTANT]` with styled badges and type dropdown
 - **Block transform** — right-click any block handle → "Turn Into" to convert between paragraph, heading, blockquote, code block, and list types
 - **Review panel** — Cmd+Shift+R, document quality checks (headings, images, links, code blocks)
 - **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset (12–28px, persisted)
@@ -61,6 +61,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - Copy as HTML (Cmd+Shift+C)
 - Copy as Markdown (Cmd+Alt+C) — selection-aware
 - Copy as Beautiful Doc — styled HTML for pasting into rich editors
+- **Smart copy** — copy/cut produces Markdown as text/plain + styled HTML as text/html
 
 ### Keyboard Shortcuts
 
@@ -170,6 +171,7 @@ src/
       math-plugin.ts      — Custom markdown-it plugin for math ($, $$)
       frontmatter-plugin.ts — Custom markdown-it plugin for YAML frontmatter
       callout-plugin.ts   — Custom markdown-it plugin for callout admonitions
+      html-image-plugin.ts — Custom markdown-it plugin for HTML <img> tags with width
     nodeviews/            — Cursor-aware NodeViews (heading, code-block, blockquote, math, mermaid, frontmatter, etc.)
     plugins/
       live-render.ts      — Active block detection + decorations
@@ -184,6 +186,7 @@ src/
       trailing-paragraph.ts — Ensures doc ends with paragraph
       typewriter.ts       — Typewriter mode (cursor vertical centering)
       sentence-focus.ts   — Sentence-level focus mode decorations
+      smart-copy.ts       — Smart copy/cut (Markdown + styled HTML clipboard)
   ui/
     App.tsx               — Root component
     StatusBar.tsx         — Status bar (line/col, words, zoom, theme toggle)
@@ -264,6 +267,7 @@ src-tauri/
 | v2.1.4 | Fix CJK characters clipped in headings |
 | v2.1.5 | Source view is now editable with cursor position sync |
 | v2.1.6 | In-app feedback flow: Send Feedback command, enjoyment prompt after 7 launches |
+| v2.1.7 | Smart copy (Markdown as text/plain + styled HTML), callout type dropdown, HTML `<img>` width support |
 
 ## Documentation
 
@@ -276,10 +280,6 @@ src-tauri/
 - [Test Plan](docs/v2/testing-v2.md) — Test strategy and test cases
 - [Ideas](docs/future/ideas.md) — Feature ideas and future directions
 - [Archive](docs/archive/) — Historical V1 planning and reference documents
-
-## Privacy Policy
-
-[Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html)
 
 ## License
 
