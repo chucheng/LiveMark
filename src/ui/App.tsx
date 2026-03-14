@@ -502,10 +502,15 @@ export default function App() {
 
   function handleMouseMove(e: MouseEvent) {
     if (!uiState.isFullscreen()) return;
-    if (e.clientY < 5) {
-      // Mouse at top edge — show chrome
+    const atEdge = e.clientY < 5 || e.clientY > window.innerHeight - 5;
+    if (atEdge) {
+      // Mouse at top or bottom edge — show chrome
       if (chromeLeaveTimer) { clearTimeout(chromeLeaveTimer); chromeLeaveTimer = null; }
+      if (chromeHideTimer) { clearTimeout(chromeHideTimer); chromeHideTimer = null; }
       uiState.showChrome();
+    } else if (!uiState.chromeHidden()) {
+      // Mouse moved away from edges — schedule hide
+      scheduleHideChrome();
     }
   }
 
@@ -536,6 +541,7 @@ export default function App() {
 
   function handleChromeMouseEnter() {
     if (chromeLeaveTimer) { clearTimeout(chromeLeaveTimer); chromeLeaveTimer = null; }
+    if (chromeHideTimer) { clearTimeout(chromeHideTimer); chromeHideTimer = null; }
   }
 
   function handleChromeMouseLeave() {
@@ -752,7 +758,13 @@ export default function App() {
       <BlockContextMenu view={() => editor?.view} />
       <BlockTypePicker view={() => editor?.view} />
 
-      <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} autoSaveStatus={autoSaveStatus} />
+      <div
+        class="lm-statusbar-chrome"
+        onMouseEnter={handleChromeMouseEnter}
+        onMouseLeave={handleChromeMouseLeave}
+      >
+        <StatusBar wordCount={wordCount} cursorInfo={cursorInfo} autoSaveStatus={autoSaveStatus} />
+      </div>
     </div>
   );
 }
