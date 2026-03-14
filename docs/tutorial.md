@@ -302,7 +302,7 @@ Press `Cmd+/` to toggle source view. This shows the raw Markdown source of your 
 
 ## Focus Mode
 
-Press `Cmd+Shift+F` to toggle focus mode. In focus mode, only the paragraph you're currently editing is fully visible — surrounding blocks are dimmed. This helps you concentrate on the content you're actively writing.
+Press `Cmd+J F` to toggle focus mode. In focus mode, only the paragraph you're currently editing is fully visible — surrounding blocks are dimmed. This helps you concentrate on the content you're actively writing.
 
 ---
 
@@ -371,8 +371,8 @@ LiveMark automatically saves your file 30 seconds after your last edit (when the
 | `Cmd+\\\\` | Toggle sidebar |
 | `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
-| `Cmd+Shift+F` | Toggle focus mode |
-| `Cmd+Shift+T` | Cycle theme |
+| `Cmd+J F` | Toggle focus mode |
+| `Cmd+J T` | Cycle theme |
 | `Cmd+=` | Zoom in |
 | `Cmd+-` | Zoom out |
 | `Cmd+0` | Reset zoom |

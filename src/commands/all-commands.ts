@@ -125,7 +125,7 @@ export function registerAllCommands() {
   registerCommand({
     id: "view.focusMode",
     label: "Toggle Focus Mode",
-    shortcut: "Ctrl+J F",
+    shortcut: "Cmd+J F",
     category: "View",
     execute: () => preferencesState.toggleFocusMode(),
   });
