@@ -68,7 +68,7 @@ Perfect for when you need to check or fine-tune the exact syntax, then flip back
 - **Multi-tab** — Open several files at once, each with its own editor state
 - **Sidebar File Tree** (`Cmd+\`) — Navigate your project without leaving the editor
 - **Document Outline** (`Cmd+Shift+O`) — Heading tree for quick navigation within your document
-- **Export** — HTML, PDF, copy as styled HTML, copy as Markdown
+- **Export** — Word (.docx), HTML, PDF, copy as styled HTML, copy as Markdown
 - **Auto-save** — Your work is saved automatically, toggleable from the status bar
 - **Themes** — Light, dark, or follow your system (`Cmd+Shift+T`)
 
