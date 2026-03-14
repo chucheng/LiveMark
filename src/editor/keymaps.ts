@@ -289,9 +289,9 @@ export function buildKeymaps() {
   keys["Mod-Shift-0"] = toParagraph;
 
   // Lists + Tables (Tab/Shift-Tab context-aware)
-  keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item));
-  keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item));
-  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item));
+  keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item), sinkListItem(schema.nodes.task_list_item));
+  keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item), liftListItem(schema.nodes.task_list_item));
+  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item), splitListItem(schema.nodes.task_list_item));
 
   // Block operations
   keys["Mod-Shift-c"] = toCodeBlock;
