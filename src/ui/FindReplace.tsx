@@ -1,4 +1,4 @@
-import { createSignal, createEffect, onMount, onCleanup } from "solid-js";
+import { createSignal, onMount, onCleanup } from "solid-js";
 import { uiState } from "../state/ui";
 import {
   setSearchQuery,
@@ -20,14 +20,15 @@ export default function FindReplace(props: FindReplaceProps) {
   const [query, setQuery] = createSignal("");
   const [replacement, setReplacement] = createSignal("");
   const [caseSensitive, setCaseSensitive] = createSignal(false);
+  const [isRegex, setIsRegex] = createSignal(false);
   const [showReplace, setShowReplace] = createSignal(false);
   const [matchInfo, setMatchInfo] = createSignal({ current: 0, total: 0 });
 
-  /** Run search immediately (no debounce) and update match info */
-  function runSearch() {
+  /** Run search with explicit values — no reactive deps */
+  function runSearch(q: string, cs: boolean, re?: boolean) {
     const v = props.view();
     if (v) {
-      setSearchQuery(v, query(), caseSensitive(), false);
+      setSearchQuery(v, q, cs, re ?? isRegex());
       setMatchInfo(getMatchInfo(v));
     }
   }
@@ -37,6 +38,8 @@ export default function FindReplace(props: FindReplaceProps) {
     if (initial) {
       setQuery(initial);
       uiState.setFindInitialQuery("");
+      // Run initial search after a microtask so editor view is ready
+      queueMicrotask(() => runSearch(initial, caseSensitive()));
     }
     findInputRef.focus();
     findInputRef.select();
@@ -54,14 +57,23 @@ export default function FindReplace(props: FindReplaceProps) {
     });
   });
 
-  // Re-run search whenever query or caseSensitive changes
-  createEffect(() => {
-    // Subscribe to reactive deps
-    query();
-    caseSensitive();
-    // Run search synchronously — no debounce
-    runSearch();
-  });
+  function onFindInput(e: InputEvent) {
+    const q = (e.currentTarget as HTMLInputElement).value;
+    setQuery(q);
+    runSearch(q, caseSensitive());
+  }
+
+  function toggleCaseSensitive() {
+    const newCS = !caseSensitive();
+    setCaseSensitive(newCS);
+    runSearch(query(), newCS);
+  }
+
+  function toggleRegex() {
+    const newRe = !isRegex();
+    setIsRegex(newRe);
+    runSearch(query(), caseSensitive(), newRe);
+  }
 
   function doNext() {
     const v = props.view();
@@ -91,8 +103,8 @@ export default function FindReplace(props: FindReplaceProps) {
     const v = props.view();
     if (v) {
       replaceAll(v, replacement());
-      setSearchQuery(v, query(), caseSensitive(), false);
-      setMatchInfo(getMatchInfo(v));
+      // Re-run search to update state after replace-all
+      runSearch(query(), caseSensitive());
     }
   }
 
@@ -124,7 +136,7 @@ export default function FindReplace(props: FindReplaceProps) {
           type="text"
           placeholder="Find…"
           value={query()}
-          onInput={(e) => setQuery(e.currentTarget.value)}
+          onInput={onFindInput}
           spellcheck={false}
           autocomplete="off"
           autocorrect="off"
@@ -140,10 +152,17 @@ export default function FindReplace(props: FindReplaceProps) {
         </span>
         <button
           class={`lm-find-toggle ${caseSensitive() ? "lm-find-toggle-active" : ""}`}
-          onClick={() => setCaseSensitive(!caseSensitive())}
+          onClick={toggleCaseSensitive}
           title="Case sensitive"
         >
           Aa
+        </button>
+        <button
+          class={`lm-find-toggle ${isRegex() ? "lm-find-toggle-active" : ""}`}
+          onClick={toggleRegex}
+          title="Regular expression"
+        >
+          .*
         </button>
         <button class="lm-find-btn" onClick={doPrev} title="Previous match">
           ↑

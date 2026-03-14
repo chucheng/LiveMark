@@ -16,6 +16,8 @@ So I built LiveMark.
 
 That's LiveMark. And now it's yours.
 
+That said — it's still a beta. So please, [send me your feedback](mailto:chase.livemark@gmail.com): bugs you hit, things that annoy you, features you wish existed. I read every single one, and I fix them as fast as I can.
+
 ---
 
 ## What You See Is What You Mean

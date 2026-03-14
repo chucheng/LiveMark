@@ -29,7 +29,7 @@ const SOFT_PATTERNS = [
  * Detect whether a plain-text string contains Markdown syntax
  * that would benefit from being parsed as structured content.
  */
-function hasMarkdownSyntax(text: string): boolean {
+export function hasMarkdownSyntax(text: string): boolean {
   const lines = text.split("\n");
 
   // Strong indicators: one match suffices
@@ -80,7 +80,7 @@ function cursorInCodeNode(view: import("prosemirror-view").EditorView): boolean 
  * structural content (not just wrapper boilerplate from apps like
  * VS Code or terminals that set trivial text/html).
  */
-function hasStructuralHTML(html: string): boolean {
+export function hasStructuralHTML(html: string): boolean {
   // Strip meta/style/head tags and whitespace — check if anything remains
   const stripped = html
     .replace(/<meta[^>]*>/gi, "")
@@ -120,7 +120,7 @@ export function markdownPastePlugin(): Plugin {
         if (html && hasStructuralHTML(html)) return false;
 
         const text = clipboardData.getData("text/plain");
-        if (!text || !hasMarkdownSyntax(text)) return false;
+        if (!text || text.length > 500_000 || !hasMarkdownSyntax(text)) return false;
 
         const doc = parseMarkdown(text);
         // B3: Guard against empty parse results

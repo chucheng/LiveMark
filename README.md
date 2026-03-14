@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.6.0-blue)
+![Version](https://img.shields.io/badge/version-2.7.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -29,7 +29,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
 - **Smart link open** — local file links (e.g. `tutorial.md`) open in a tab; external URLs open in browser. Works in popover and Cmd+click
 - **Clickable links** — Cmd/Ctrl+click opens links (local files in-app, URLs in browser)
-- **Find & replace** — Cmd+F with selection pre-fill, jumps to nearest match, case-sensitive toggle (Aa), replace and replace-all
+- **Find & replace** — Cmd+F with selection pre-fill, jumps to nearest match, case-sensitive toggle (Aa), regex toggle (.*), replace and replace-all; per-textblock search for accurate matching in tables and nested lists
 - **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts (`# `, `> `, `- [ ] `), undo/redo
 - **Large file lazy rendering** — IntersectionObserver-based viewport rendering
 
@@ -263,6 +263,7 @@ src-tauri/
 | v2.4.1 | Find & Replace UX — jump to nearest match on search, pre-fill from selection, auto-advance after replace, re-focus on Cmd+F |
 | v2.5.0 | Smart link open — local file links open in-app tabs, external URLs open in browser; works in popover and Cmd+click |
 | v2.6.0 | Smart Markdown paste — pasting Markdown text auto-parses into headings, lists, tables, etc.; skips code blocks; detects structural HTML; find & replace scroll fix |
+| v2.7.0 | Find & Replace overhaul — per-textblock search for accurate matching, regex support, sticky find bar; welcome beta feedback message; email update |
 
 ## Documentation
 

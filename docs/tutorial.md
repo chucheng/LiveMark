@@ -344,7 +344,7 @@ Press `Cmd+T` to open the **mind map view**. It renders your document's heading 
 
 ## Find & Replace
 
-Press `Cmd+F` to open the find bar. If you have text selected, it automatically becomes the search query. The editor jumps to the nearest match from your cursor — not the top of the document. Use `Enter` / `Shift+Enter` (or the arrow buttons) to cycle through matches. Press `Cmd+Shift+H` to toggle the replace field. Replacing a match auto-advances to the next one. It supports case-sensitive matching, regex, and replace-all across the entire document.
+Press `Cmd+F` to open the find bar. If you have text selected, it automatically becomes the search query. The editor jumps to the nearest match from your cursor — not the top of the document. Use `Enter` / `Shift+Enter` (or the arrow buttons) to cycle through matches. Press `Cmd+Shift+H` to toggle the replace field. Replacing a match auto-advances to the next one. Search is case-insensitive by default — click the **Aa** button to toggle case sensitivity. Click the **.\*** button to enable regex search. Replace-all replaces every match across the entire document.
 
 ---
 

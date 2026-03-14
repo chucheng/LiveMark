@@ -13,49 +13,10 @@ interface FindReplaceState {
 }
 
 /**
- * Build a mapping from text offsets (as produced by doc.textBetween)
- * to document positions. Mirrors ProseMirror's textBetween logic exactly:
- * only textblocks (paragraph, heading, code_block) and leaf blocks with
- * text contribute \n separators — not wrapper blocks like list_item or blockquote.
+ * Search each textblock individually and map positions directly from the
+ * node's children. This avoids the fragile global textBetween + posMap
+ * approach that drifts at node boundaries (tables, nested lists, etc.).
  */
-function buildTextPosMap(state: EditorState): number[] {
-  const map: number[] = [];
-  let first = true;
-
-  state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
-    // Mirror textBetween: separators only for textblocks and leaf blocks with content
-    if (node.isBlock && (node.isTextblock || (node.isLeaf && node.type.spec.leafText))) {
-      if (first) {
-        first = false;
-      } else {
-        map.push(pos); // \n separator
-      }
-    }
-
-    if (node.isText) {
-      for (let i = 0; i < node.text!.length; i++) {
-        map.push(pos + i);
-      }
-      return false;
-    }
-
-    if (node.type.name === "hard_break") {
-      map.push(pos);
-      return false;
-    }
-
-    // Non-text inline leaf nodes (images, math_inline) contribute \0
-    if (node.isLeaf && !node.isBlock && !node.isText) {
-      map.push(pos);
-      return false;
-    }
-
-    return true;
-  });
-
-  return map;
-}
-
 function findMatches(
   state: EditorState,
   query: string,
@@ -63,8 +24,6 @@ function findMatches(
   isRegex: boolean
 ): Array<{ from: number; to: number }> {
   if (!query) return [];
-
-  const text = state.doc.textBetween(0, state.doc.content.size, "\n", "\0");
 
   let regex: RegExp;
   try {
@@ -74,23 +33,49 @@ function findMatches(
     return [];
   }
 
-  const posMap = buildTextPosMap(state);
   const matches: Array<{ from: number; to: number }> = [];
-
   const MAX_MATCHES = 10_000;
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(text)) !== null) {
-    if (match[0].length === 0) {
-      regex.lastIndex++;
-      continue;
+
+  state.doc.descendants((node, pos) => {
+    if (!node.isTextblock) return true; // descend into wrappers
+    if (matches.length >= MAX_MATCHES) return false;
+
+    // Build text and a position array for this textblock.
+    // positions[i] = document position of the i-th text character.
+    const chars: string[] = [];
+    const positions: number[] = [];
+    const contentStart = pos + 1; // skip textblock open tag
+
+    node.forEach((child, childOffset) => {
+      if (child.isText) {
+        for (let i = 0; i < child.text!.length; i++) {
+          chars.push(child.text![i]);
+          positions.push(contentStart + childOffset + i);
+        }
+      }
+      // Non-text inline nodes (images, hard_break, math_inline) are
+      // skipped in the search text — they don't produce matchable chars.
+    });
+
+    const text = chars.join("");
+    regex.lastIndex = 0;
+
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(text)) !== null) {
+      if (match[0].length === 0) {
+        regex.lastIndex++;
+        continue;
+      }
+      const from = positions[match.index];
+      const lastIdx = match.index + match[0].length - 1;
+      const to = positions[lastIdx] + 1; // exclusive end
+      matches.push({ from, to });
+      if (matches.length >= MAX_MATCHES) break;
     }
-    const fromOffset = match.index;
-    const toOffset = match.index + match[0].length;
-    const from = fromOffset < posMap.length ? posMap[fromOffset] : state.doc.content.size;
-    const to = toOffset < posMap.length ? posMap[toOffset] : state.doc.content.size;
-    matches.push({ from, to });
-    if (matches.length >= MAX_MATCHES) break;
-  }
+
+    return false; // don't descend into textblock children
+  });
+
   return matches;
 }
 
@@ -313,9 +298,8 @@ function scrollToCurrentMatch(view: EditorView) {
   const pluginState = findReplaceKey.getState(view.state);
   if (!pluginState || pluginState.currentIndex < 0) return;
 
-  // Use DOM-based scrolling — ProseMirror's scrollIntoView only works
-  // reliably when the editor has focus, but during find/replace the
-  // focus is in the find bar input.
+  // Use DOM-based scrolling on the decoration element.
+  // Don't dispatch a selection change — that steals focus from the find bar.
   requestAnimationFrame(() => {
     const el = view.dom.querySelector(".lm-find-current");
     if (el) {

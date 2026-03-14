@@ -214,14 +214,14 @@ describe("Find/Replace: search in different node types", () => {
     expect(matchedText).toBe("code");
   });
 
-  it("match across heading and paragraph (newline separated)", () => {
+  it("no match across heading and paragraph (per-textblock search)", () => {
     const state = search(
       createState(doc(heading(1, "Title"), p("Body"))),
       "Title\nBody"
     );
     const ps = getPluginState(state);
-    // Block boundary produces \n in textBetween, so this could match
-    expect(ps.matches).toHaveLength(1);
+    // Per-textblock search doesn't match across block boundaries
+    expect(ps.matches).toHaveLength(0);
   });
 
   it("FR17: match with hard break in document", () => {

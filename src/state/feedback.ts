@@ -4,7 +4,7 @@ import { message } from "@tauri-apps/plugin-dialog";
 
 declare const __APP_VERSION__: string;
 
-const FEEDBACK_EMAIL = "chaselivemark@gmail.com";
+const FEEDBACK_EMAIL = "chase.livemark@gmail.com";
 const LAUNCH_THRESHOLD = 7;
 const DEFER_INCREMENT = 5;
 
