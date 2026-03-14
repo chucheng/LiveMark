@@ -25,17 +25,6 @@ function findMatches(
 ): Array<{ from: number; to: number }> {
   if (!query) return [];
 
-  console.log("[find] findMatches called, query:", JSON.stringify(query), "doc size:", state.doc.content.size);
-  let blockCount = 0;
-  state.doc.descendants((node, pos) => {
-    if (node.isTextblock) {
-      blockCount++;
-      if (blockCount <= 5) console.log(`[find]   textblock[${blockCount}] type=${node.type.name} pos=${pos} text=${JSON.stringify(node.textContent.slice(0, 80))}`);
-    }
-    return true;
-  });
-  console.log("[find]   total textblocks:", blockCount);
-
   let regex: RegExp;
   try {
     const flags = caseSensitive ? "g" : "gi";
