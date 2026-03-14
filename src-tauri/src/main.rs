@@ -10,11 +10,12 @@ use commands::preferences::{read_preferences, write_preferences};
 use std::sync::Mutex;
 use tauri::{Emitter, Manager};
 
-pub struct InitialFiles(pub Vec<String>);
+pub struct PendingFiles(pub Mutex<Vec<String>>);
 
 #[tauri::command]
-fn get_initial_files(state: tauri::State<InitialFiles>) -> Vec<String> {
-    state.0.clone()
+fn get_initial_files(state: tauri::State<PendingFiles>) -> Vec<String> {
+    let mut files = state.0.lock().unwrap();
+    std::mem::take(&mut *files)
 }
 
 /// Extract file paths from CLI args (skip flags, match supported extensions).
@@ -36,6 +37,7 @@ fn extract_file_args(args: &[String]) -> Vec<String> {
         .collect()
 }
 
+
 fn main() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -47,22 +49,18 @@ fn main() {
         .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
             let files = extract_file_args(&args);
             if !files.is_empty() {
-                // Emit event to frontend so it can open files in new tabs
                 let _ = app.emit("open-files", files);
             }
-            // Focus the existing window
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.set_focus();
             }
         }))
         .setup(|app| {
-            // Initialize watcher state
             app.manage(WatcherState(Mutex::new(None)));
 
-            // Pass CLI file args to frontend via managed state
             let args: Vec<String> = std::env::args().collect();
             let file_args = extract_file_args(&args);
-            app.manage(InitialFiles(file_args));
+            app.manage(PendingFiles(Mutex::new(file_args)));
 
             Ok(())
         })
@@ -86,34 +84,35 @@ fn main() {
         .expect("error while running LiveMark");
 
     app.run(|app_handle, event| {
-        match event {
-            // macOS: when a file is double-clicked in Finder (or opened via "Open With"),
-            // the OS sends an open-file event instead of CLI args.
-            tauri::RunEvent::Opened { urls } => {
-                let files: Vec<String> = urls
-                    .iter()
-                    .filter_map(|url| {
-                        // file:// URLs → path
-                        if url.scheme() == "file" {
-                            url.to_file_path().ok().map(|p| p.to_string_lossy().to_string())
-                        } else {
-                            None
-                        }
-                    })
-                    .collect();
-                if !files.is_empty() {
-                    let _ = app_handle.emit("open-files", files);
+        // macOS: double-click / "Open With" sends file URLs via Opened event.
+        // Store in PendingFiles for cold start AND emit for already-running frontend.
+        if let tauri::RunEvent::Opened { urls } = &event {
+            let files: Vec<String> = urls
+                .iter()
+                .filter_map(|u| {
+                    if u.scheme() == "file" {
+                        u.to_file_path().ok().map(|p| p.to_string_lossy().to_string())
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+            if !files.is_empty() {
+                if let Some(pending) = app_handle.try_state::<PendingFiles>() {
+                    pending.0.lock().unwrap().extend(files.clone());
                 }
+                let _ = app_handle.emit("open-files", files);
             }
-            // On macOS, quit when the main window is closed (instead of staying in dock)
-            #[cfg(target_os = "macos")]
-            tauri::RunEvent::WindowEvent {
-                event: tauri::WindowEvent::Destroyed,
-                ..
-            } => {
-                app_handle.exit(0);
-            }
-            _ => {}
+        }
+
+        // On macOS, quit when the main window is closed (instead of staying in dock)
+        #[cfg(target_os = "macos")]
+        if let tauri::RunEvent::WindowEvent {
+            event: tauri::WindowEvent::Destroyed,
+            ..
+        } = &event
+        {
+            app_handle.exit(0);
         }
     });
 }

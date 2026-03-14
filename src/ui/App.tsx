@@ -725,8 +725,19 @@ export default function App() {
       await preferencesState.loadPreferences();
       feedbackState.recordLaunch(() => preferencesState.savePreferences());
 
-      // Fullscreen detection
+      // Fullscreen detection + window close handler (register early, before file loading)
       const appWindow = getCurrentWindow();
+      unlistenClose = await appWindow.onCloseRequested(async (event) => {
+        try {
+          const canClose = await confirmAllUnsavedChanges();
+          if (!canClose) {
+            event.preventDefault();
+          }
+        } catch (err) {
+          console.error("[close] confirmAllUnsavedChanges failed:", err);
+          // Let the window close on error rather than trapping the user
+        }
+      });
       await checkFullscreen();
       unlistenResize = await appWindow.onResized(() => checkFullscreen());
 
@@ -811,13 +822,6 @@ export default function App() {
       });
 
       startFileWatch();
-
-      unlistenClose = await appWindow.onCloseRequested(async (event) => {
-        const canClose = await confirmAllUnsavedChanges();
-        if (!canClose) {
-          event.preventDefault();
-        }
-      });
     })();
   });
 
