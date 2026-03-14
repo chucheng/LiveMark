@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, on, onCleanup, onMount, Show } from "solid-js";
+import { createEffect, createSignal, For, on, onCleanup, Show } from "solid-js";
 import { tabsState } from "../state/tabs";
 
 interface TabBarProps {
@@ -7,7 +7,7 @@ interface TabBarProps {
 }
 
 export default function TabBar(props: TabBarProps) {
-  let scrollRef!: HTMLDivElement;
+  let scrollRef: HTMLDivElement | undefined;
   const [canScrollLeft, setCanScrollLeft] = createSignal(false);
   const [canScrollRight, setCanScrollRight] = createSignal(false);
 
@@ -22,13 +22,6 @@ export default function TabBar(props: TabBarProps) {
     scrollRef?.scrollBy({ left: delta, behavior: "smooth" });
   }
 
-  onMount(() => {
-    updateScrollState();
-    const ro = new ResizeObserver(() => updateScrollState());
-    ro.observe(scrollRef);
-    onCleanup(() => ro.disconnect());
-  });
-
   // Re-check overflow when tabs change
   createEffect(on(() => tabsState.tabs().length, () => {
     requestAnimationFrame(updateScrollState);
@@ -38,7 +31,7 @@ export default function TabBar(props: TabBarProps) {
   createEffect(on(() => tabsState.activeTabId(), (activeId) => {
     if (!activeId || !scrollRef) return;
     requestAnimationFrame(() => {
-      const el = scrollRef.querySelector(`[data-tab-id="${activeId}"]`);
+      const el = scrollRef!.querySelector(`[data-tab-id="${activeId}"]`);
       if (el) el.scrollIntoView({ inline: "nearest", block: "nearest" });
     });
   }));
@@ -58,7 +51,13 @@ export default function TabBar(props: TabBarProps) {
         <div
           class="lm-tabbar"
           role="tablist"
-          ref={scrollRef}
+          ref={(el) => {
+            scrollRef = el;
+            updateScrollState();
+            const ro = new ResizeObserver(() => updateScrollState());
+            ro.observe(el);
+            onCleanup(() => ro.disconnect());
+          }}
           onScroll={updateScrollState}
         >
           <For each={tabsState.tabs()}>
