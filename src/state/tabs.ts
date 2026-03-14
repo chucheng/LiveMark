@@ -7,6 +7,7 @@ export interface Tab {
   filePath: string | null;
   fileName: string;
   isModified: boolean;
+  isReadOnly: boolean;
   editorState: EditorState | null;
   scrollPosition: number;
 }
@@ -31,18 +32,20 @@ const activeTab = createMemo(() => tabs().find((t) => t.id === activeTabId()) ??
 const filePath = createMemo(() => activeTab()?.filePath ?? null);
 const isModified = createMemo(() => activeTab()?.isModified ?? false);
 const fileName = createMemo(() => activeTab()?.fileName ?? "Untitled");
+const isReadOnly = createMemo(() => activeTab()?.isReadOnly ?? false);
 
 function canCreateTab(): boolean {
   return tabs().length < MAX_TABS;
 }
 
-function createTab(filePath?: string | null): Tab | null {
+function createTab(filePath?: string | null, isReadOnly?: boolean): Tab | null {
   if (!canCreateTab()) return null;
   const tab: Tab = {
     id: generateTabId(),
     filePath: filePath ?? null,
     fileName: extractFileName(filePath ?? null),
     isModified: false,
+    isReadOnly: isReadOnly ?? false,
     editorState: null,
     scrollPosition: 0,
   };
@@ -70,6 +73,7 @@ function closeTab(tabId: string): CloseTabResult {
       filePath: null,
       fileName: "Untitled",
       isModified: false,
+      isReadOnly: false,
       editorState: null,
       scrollPosition: 0,
     };
@@ -115,7 +119,7 @@ function findTabByPath(path: string): Tab | undefined {
   return tabs().find((t) => t.filePath === path);
 }
 
-function updateTab(tabId: string, updates: Partial<Pick<Tab, "filePath" | "fileName" | "isModified" | "editorState" | "scrollPosition">>) {
+function updateTab(tabId: string, updates: Partial<Pick<Tab, "filePath" | "fileName" | "isModified" | "isReadOnly" | "editorState" | "scrollPosition">>) {
   setTabs((prev) =>
     prev.map((t) => {
       if (t.id !== tabId) return t;
@@ -146,9 +150,14 @@ function setActiveDirty() {
   setActiveModified(true);
 }
 
+function setActiveReadOnly(readonly: boolean) {
+  const id = activeTabId();
+  if (id) updateTab(id, { isReadOnly: readonly });
+}
+
 function resetActive() {
   const id = activeTabId();
-  if (id) updateTab(id, { filePath: null, isModified: false });
+  if (id) updateTab(id, { filePath: null, isModified: false, isReadOnly: false });
 }
 
 /**
@@ -181,6 +190,7 @@ export const tabsState = {
   activeTab,
   filePath,
   isModified,
+  isReadOnly,
   fileName,
   MAX_TABS,
   canCreateTab,
@@ -192,6 +202,7 @@ export const tabsState = {
   findTabByPath,
   updateTab,
   setActiveModified,
+  setActiveReadOnly,
   setActiveFilePath,
   setActiveClean,
   setActiveDirty,

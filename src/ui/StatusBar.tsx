@@ -1,4 +1,5 @@
 import { type Accessor, Show } from "solid-js";
+import { documentState } from "../state/document";
 import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
 import { preferencesState } from "../state/preferences";
@@ -45,6 +46,9 @@ export default function StatusBar(props: StatusBarProps) {
         </Show>
       </div>
       <div class="lm-statusbar-right">
+        <Show when={documentState.isReadOnly()}>
+          <span class="lm-statusbar-readonly">Read Only</span>
+        </Show>
         <span>{props.wordCount()} words</span>
         <button
           class="lm-statusbar-btn"

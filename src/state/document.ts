@@ -8,6 +8,8 @@ export const documentState = {
   filePath: tabsState.filePath,
   setFilePath: tabsState.setActiveFilePath,
   isModified: tabsState.isModified,
+  isReadOnly: tabsState.isReadOnly,
+  setReadOnly: tabsState.setActiveReadOnly,
   fileName: tabsState.fileName,
   setClean: tabsState.setActiveClean,
   setDirty: tabsState.setActiveDirty,

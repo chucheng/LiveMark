@@ -43,6 +43,12 @@
   box-shadow: var(--lm-focus-ring-shadow);
 }
 
+.lm-statusbar-readonly {
+  color: var(--lm-warning, #c4841d);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
 .lm-statusbar-autosave {
   opacity: 1;
   transition: opacity 0.3s ease;

@@ -736,7 +736,7 @@ export default function App() {
         <div class="lm-titlebar">
           <div class="lm-titlebar-traffic-light-spacer" />
           <span class="lm-titlebar-title">
-            {uiState.isSourceView() ? "[Source] " : ""}{displayPath()}
+            {uiState.isSourceView() ? "[Source] " : ""}{documentState.isReadOnly() ? "[Read Only] " : ""}{displayPath()}
             {documentState.isModified() ? " ●" : ""}
           </span>
           <div class="lm-titlebar-traffic-light-spacer" />

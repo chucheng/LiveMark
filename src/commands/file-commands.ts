@@ -101,11 +101,18 @@ export async function openFileInTab(path: string) {
     const content = await invoke<string>("read_file", { path });
     if (!editorRef) return;
 
+    // Check read-only status
+    let readonly = false;
+    try {
+      readonly = await invoke<boolean>("is_file_readonly", { path });
+    } catch { /* default to writable */ }
+
     // If current tab is untitled and unmodified, reuse it
     const active = tabsState.activeTab();
     if (active && !active.filePath && !active.isModified) {
       editorRef.setMarkdown(content);
       tabsState.setActiveFilePath(path);
+      tabsState.setActiveReadOnly(readonly);
       tabsState.setActiveClean();
       // Immediately snapshot so the tab has a saved editor state
       tabsState.snapshotActiveTab(editorRef.view, null);
@@ -120,7 +127,7 @@ export async function openFileInTab(path: string) {
     tabsState.snapshotActiveTab(editorRef.view, scroller);
 
     // Create new tab
-    const newTab = tabsState.createTab(path);
+    const newTab = tabsState.createTab(path, readonly);
     if (!newTab) {
       await message(
         `Tab limit reached (${tabsState.MAX_TABS}). Please close some tabs to open new files.`,
@@ -286,6 +293,7 @@ export async function saveAsFile() {
     const content = editorRef.getMarkdown();
     await invoke("write_file", { path: selected, content });
     documentState.setFilePath(selected);
+    documentState.setReadOnly(false);
     documentState.setClean();
     await stampMtime(selected);
     // Snapshot editor state so it persists across tab switches
