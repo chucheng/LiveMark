@@ -233,34 +233,14 @@ src-tauri/
 ## Documentation
 
 - [Tutorial](docs/tutorial.md) — All supported Markdown syntax and features (open in LiveMark)
-
-### Current System (V1)
-
-- [Architecture & System Design](docs/v1/architecture.md) — High-level architecture, module breakdown, data flows, all subsystems
-- [Tech Stack](docs/v1/tech-stack.md) — Technology choices with comparison tables
-- [Tech Decisions](docs/v1/tech-decisions.md) — Architecture Decision Records
-- [UX Principles](docs/v1/ux-principles.md) — Design principles and visual guidelines
-- [User Flows](docs/v1/user-flows.md) — Detailed user interaction flows
-- [Testing](docs/v1/testing.md) — UI test plan and test cases
-- [UX Audit](docs/v1/ux-audit.md) — UX audit findings and recommendations
-
-### V2 Planning
-
-- [PRD](docs/v2/prd-v2.md) — V2 product requirements
-- [Roadmap](docs/v2/roadmap-v2.md) — V2 milestones and progress (M1–M5 complete)
-- [Architecture](docs/v2/architecture-v2.md) — V2 architecture design
+- [PRD](docs/v2/prd-v2.md) — Product requirements
+- [Architecture](docs/v2/architecture-v2.md) — System architecture and module design
+- [Roadmap](docs/v2/roadmap-v2.md) — Milestones and progress (M1–M5, M7 complete)
 - [Design System](docs/v2/design-system-light-theme.md) — Light theme design system
-- [UX](docs/v2/ux-v2.md) — V2 UX specifications
-- [Testing](docs/v2/testing-v2.md) — V2 test plan
-- [Cross-Review](docs/v2/cross-review.md) — Cross-review notes
-
-### Future Work
-
-- [Ideas](docs/future/ideas.md) — Feature ideas, improvements, possible directions
-
-### Archive
-
-- [Vision](docs/archive/vision.md) | [PRD](docs/archive/prd-v1.md) | [Roadmap](docs/archive/roadmap-v1.md) | [Milestones](docs/archive/milestones-v1.md) — Historical V1 planning documents
+- [UX Specifications](docs/v2/ux-v2.md) — Interaction flows and component specs
+- [Test Plan](docs/v2/testing-v2.md) — Test strategy and test cases
+- [Ideas](docs/future/ideas.md) — Feature ideas and future directions
+- [Archive](docs/archive/) — Historical V1 planning and reference documents
 
 ## License
 
