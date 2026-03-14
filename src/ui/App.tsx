@@ -441,9 +441,11 @@ export default function App() {
       uiState.toggleSettings();
       return;
     } else if (e.key === "o" && e.shiftKey) {
-      // Cmd+Shift+O — open folder
+      // Cmd+Shift+O — show outline
       e.preventDefault();
-      handleOpenFolder();
+      fileTreeState.setSidebarVisible(true);
+      fileTreeState.setSidebarTab("outline");
+      uiState.showStatus("Outline");
       return;
     } else if (e.key === "o") {
       e.preventDefault();
@@ -848,7 +850,7 @@ export default function App() {
       </div>
 
       <div class="lm-main-area">
-        <Sidebar onFileClick={handleSidebarFileClick} />
+        <Sidebar onFileClick={handleSidebarFileClick} view={() => editor?.view} />
         <div
           class="lm-editor-wrapper"
           classList={{

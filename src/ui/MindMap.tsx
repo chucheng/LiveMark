@@ -1,8 +1,7 @@
 import { createSignal, onMount, onCleanup, Show, createEffect } from "solid-js";
-import { extractHeadings, headingsToMindmap, type HeadingEntry } from "../editor/mind-map";
+import { extractHeadings, headingsToMindmap, navigateToHeading, type HeadingEntry } from "../editor/mind-map";
 import { renderMermaid } from "../editor/mermaid-loader";
 import type { EditorView } from "prosemirror-view";
-import { TextSelection } from "prosemirror-state";
 
 interface MindMapProps {
   view: () => EditorView | undefined;
@@ -141,22 +140,8 @@ export default function MindMap(props: MindMapProps) {
     // Close the mind map first, then navigate
     props.onClose();
 
-    // Jump to heading and scroll to ~28% from top (golden reading zone)
     requestAnimationFrame(() => {
-      view.focus();
-      const tr = view.state.tr.setSelection(
-        TextSelection.near(view.state.doc.resolve(heading.pos + 1))
-      );
-      view.dispatch(tr);
-
-      const coords = view.coordsAtPos(heading.pos + 1);
-      const wrapper = view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
-      if (wrapper) {
-        const wrapperRect = wrapper.getBoundingClientRect();
-        const targetY = wrapperRect.top + wrapperRect.height * 0.28;
-        const delta = coords.top - targetY;
-        wrapper.scrollBy({ top: delta, behavior: "smooth" });
-      }
+      navigateToHeading(view, heading.pos);
     });
   }
 

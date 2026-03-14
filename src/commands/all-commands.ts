@@ -234,6 +234,18 @@ export function registerAllCommands() {
   });
 
   registerCommand({
+    id: "view.outline",
+    label: "Show Outline",
+    shortcut: "Cmd+Shift+O",
+    category: "View",
+    execute: () => {
+      fileTreeState.setSidebarVisible(true);
+      fileTreeState.setSidebarTab("outline");
+      uiState.showStatus("Outline");
+    },
+  });
+
+  registerCommand({
     id: "view.mindMap",
     label: "Toggle Mind Map",
     shortcut: "Cmd+T",

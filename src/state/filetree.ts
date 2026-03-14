@@ -21,6 +21,7 @@ const [rootEntries, setRootEntries] = createSignal<FileTreeNode[]>([]);
 const [expandedPaths, setExpandedPaths] = createSignal<Set<string>>(new Set<string>());
 const [sidebarVisible, setSidebarVisible] = createSignal(false);
 const [sidebarWidth, setSidebarWidth] = createSignal(220);
+const [sidebarTab, setSidebarTab] = createSignal<"files" | "outline">("files");
 
 let unlisten: (() => void) | null = null;
 
@@ -159,6 +160,8 @@ export const fileTreeState = {
   setSidebarVisible,
   sidebarWidth,
   setSidebarWidth,
+  sidebarTab,
+  setSidebarTab,
   openFolder,
   closeFolder,
   toggleExpand,

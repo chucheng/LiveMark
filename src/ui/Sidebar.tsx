@@ -4,9 +4,12 @@ import { fileTreeState, type FileTreeNode } from "../state/filetree";
 import { documentState } from "../state/document";
 import { isOpenableFile } from "../commands/file-commands";
 import { isMac } from "../utils/platform";
+import OutlineTree from "./OutlineTree";
+import type { EditorView } from "prosemirror-view";
 
 interface SidebarProps {
   onFileClick: (path: string) => void;
+  view: () => EditorView | undefined;
 }
 
 function TreeNode(props: { node: FileTreeNode; depth: number; onFileClick: (path: string) => void }) {
@@ -99,6 +102,8 @@ export default function Sidebar(props: SidebarProps) {
     resizeCleanup?.();
   });
 
+  const tab = () => fileTreeState.sidebarTab();
+
   return (
     <Show when={fileTreeState.sidebarVisible()}>
       <div
@@ -106,27 +111,45 @@ export default function Sidebar(props: SidebarProps) {
         classList={{ "lm-sidebar-resizing": isResizing() }}
         style={{ width: `${fileTreeState.sidebarWidth()}px` }}
       >
+        <div class="lm-sidebar-tabs">
+          <button
+            class="lm-sidebar-tab"
+            classList={{ "lm-sidebar-tab-active": tab() === "files" }}
+            onClick={() => fileTreeState.setSidebarTab("files")}
+          >Files</button>
+          <button
+            class="lm-sidebar-tab"
+            classList={{ "lm-sidebar-tab-active": tab() === "outline" }}
+            onClick={() => fileTreeState.setSidebarTab("outline")}
+          >Outline</button>
+        </div>
         <div class="lm-sidebar-header">
           <span class="lm-sidebar-title">
-            {fileTreeState.rootPath()?.replace(/\\/g, "/").split("/").pop() ?? "Files"}
+            {tab() === "files"
+              ? (fileTreeState.rootPath()?.replace(/\\/g, "/").split("/").pop() ?? "Files")
+              : "Outline"}
           </span>
         </div>
-        <Show when={fileTreeState.rootPath()} fallback={
-          <div class="lm-sidebar-empty">
-            <p class="lm-sidebar-empty-text">No folder opened</p>
-            <button class="lm-sidebar-open-btn" onClick={handleOpenFolder}>
-              Open Folder
-            </button>
-            <p class="lm-sidebar-empty-hint">{isMac ? "⌘⇧O" : "Ctrl+Shift+O"}</p>
-          </div>
-        }>
-          <div class="lm-sidebar-tree">
-            <For each={fileTreeState.rootEntries()}>
-              {(node) => (
-                <TreeNode node={node} depth={0} onFileClick={props.onFileClick} />
-              )}
-            </For>
-          </div>
+        <Show when={tab() === "files"}>
+          <Show when={fileTreeState.rootPath()} fallback={
+            <div class="lm-sidebar-empty">
+              <p class="lm-sidebar-empty-text">No folder opened</p>
+              <button class="lm-sidebar-open-btn" onClick={handleOpenFolder}>
+                Open Folder
+              </button>
+            </div>
+          }>
+            <div class="lm-sidebar-tree">
+              <For each={fileTreeState.rootEntries()}>
+                {(node) => (
+                  <TreeNode node={node} depth={0} onFileClick={props.onFileClick} />
+                )}
+              </For>
+            </div>
+          </Show>
+        </Show>
+        <Show when={tab() === "outline"}>
+          <OutlineTree view={props.view} />
         </Show>
         <div class="lm-sidebar-resize" onMouseDown={handleResizeStart} />
       </div>

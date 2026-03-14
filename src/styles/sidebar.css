@@ -113,6 +113,66 @@
   opacity: 0.6;
 }
 
+/* Tab bar */
+.lm-sidebar-tabs {
+  height: 30px;
+  display: flex;
+  border-bottom: 1px solid var(--lm-border-subtle);
+  flex-shrink: 0;
+}
+
+.lm-sidebar-tab {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--lm-text-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid transparent;
+  transition: color var(--lm-transition-fast), border-color var(--lm-transition-fast);
+}
+
+.lm-sidebar-tab:hover {
+  color: var(--lm-text-muted);
+}
+
+.lm-sidebar-tab-active {
+  color: var(--lm-text);
+  border-bottom-color: var(--lm-accent);
+}
+
+/* Outline */
+.lm-outline-tree {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.lm-outline-node-active {
+  background: var(--lm-hover);
+}
+
+.lm-outline-node-active .lm-outline-label {
+  font-weight: 600;
+}
+
+.lm-outline-level {
+  font-size: 9px;
+  color: var(--lm-text-faint);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.lm-outline-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .lm-sidebar-empty {
   flex: 1;
   display: flex;

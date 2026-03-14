@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.2.2-blue)
+![Version](https://img.shields.io/badge/version-2.3.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -43,6 +43,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 
 ### UI
 - **Sidebar file tree** — navigate and open files from a sidebar
+- **Document outline** — Cmd+Shift+O, heading tree with active heading tracking and click-to-navigate
 - **Light & dark themes** — system-follow or manual toggle (Cmd+Shift+T), persisted
 - **Mind map view** — Cmd+T, document headings as an interactive mind map with zoom/pan (scroll wheel, drag, keyboard)
 - **Command palette** — Cmd+Shift+P, fuzzy search across all actions
@@ -70,6 +71,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 |---|---|
 | `Cmd+W` | Close Tab |
 | `Cmd+\` | Toggle Sidebar |
+| `Cmd+Shift+O` | Show Outline |
 | `Cmd+,` | Settings |
 | `Cmd+K` | Insert Link |
 | `Cmd+Shift+H` | Toggle Find and Replace |
@@ -201,7 +203,8 @@ src/
     BlockTypePicker.tsx   — Block type insertion picker (+ button)
     MindMap.tsx           — Mind map view overlay (Cmd+T)
     SettingsPanel.tsx     — Settings panel (editor customization, shortcuts)
-    Sidebar.tsx           — File tree sidebar
+    Sidebar.tsx           — File tree sidebar with tab bar (Files/Outline)
+    OutlineTree.tsx       — Document outline tree (heading hierarchy)
     TabBar.tsx            — Multi-tab bar
   state/
     document.ts           — File path, modified flag, title signals
@@ -273,6 +276,7 @@ src-tauri/
 | v2.2.0 | DOCX export — Word document generation with headings, lists, tables, code blocks, math, images, and task lists |
 | v2.2.1 | Edge case hardening — auto-save failure feedback, external file deletion detection, disk-full error guidance, unsupported file drop feedback, improved encoding error messages |
 | v2.2.2 | Remove two-column layout mode for simplicity |
+| v2.3.0 | Document outline — sidebar tab with heading tree, active heading tracking, click-to-navigate (Cmd+Shift+O) |
 
 ## Documentation
 

@@ -2,9 +2,12 @@
 cd "$(dirname "$0")"
 
 if [ -n "$1" ]; then
-  # Open a specific file with LiveMark
-  filepath="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
-  pnpm tauri dev -- -- "$filepath"
+  # Resolve all file arguments to absolute paths
+  args=()
+  for f in "$@"; do
+    args+=("$(cd "$(dirname "$f")" && pwd)/$(basename "$f")")
+  done
+  pnpm tauri dev -- -- "${args[@]}"
 else
   pnpm tauri dev
 fi

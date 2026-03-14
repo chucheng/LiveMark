@@ -301,7 +301,14 @@ LiveMark supports **multi-tab editing** — open multiple files and switch betwe
 
 ## Sidebar
 
-Press `Cmd+\` to toggle the **file tree sidebar**. It shows files in the current directory so you can quickly navigate and open them. You can also drag and drop files from the sidebar into the editor area.
+Press `Cmd+\` to toggle the **sidebar**. It has two tabs:
+
+- **Files** — shows files in the current directory so you can quickly navigate and open them
+- **Outline** — shows your document's heading structure as a clickable tree
+
+### Document Outline
+
+Press `Cmd+Shift+O` to open the sidebar directly on the **Outline** tab. It displays all headings (H1–H6) in a hierarchical tree. Click any heading to jump to that location in the editor. The currently active heading (nearest above your cursor) is highlighted, and the tree updates live as you type.
 
 ---
 
@@ -475,6 +482,7 @@ Enter fullscreen via the standard macOS green button. In fullscreen mode, the ti
 | `Cmd+Shift+H` | Toggle replace bar |
 | `Cmd+/` | Toggle source view |
 | `Cmd+\` | Toggle sidebar |
+| `Cmd+Shift+O` | Show outline |
 | `Cmd+T` | Toggle mind map |
 | `Cmd+Shift+R` | Toggle review panel |
 | `Cmd+,` | Open settings |

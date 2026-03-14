@@ -1,8 +1,20 @@
 # Welcome to LiveMark
 
-Thanks for trying LiveMark! We'd love to hear what you think.
+Hi, I'm Chase.
 
-> **Send Feedback** — Open the command palette (`Cmd+Shift+P`) and search for "Send Feedback", or just keep writing — LiveMark will ask how you're enjoying it after a few sessions.
+I've been writing in Markdown for years. I love it — it's clean, portable, and gets out of your way. But the editors? They always made me compromise.
+
+MacDown was my first love, but I got tired of staring at a split screen — writing on the left, previewing on the right, never quite feeling like I was in *one* place. Typora came close — true inline preview, no split pane, beautifully minimal. But it's not free. And over time, it started to feel... *finished*. Not in a good way — in a "this is all you're going to get" way. A closed app that stopped evolving.
+
+And when I looked around, there were surprisingly few good, free Markdown editors that just let you write and see the result — right there, inline, no split pane.
+
+One day I copied a beautifully formatted document from my editor, pasted it into Google Docs, and watched every heading, every bold word, every table collapse into plain text. That was the moment I thought: *why doesn't this just work?*
+
+So I built LiveMark.
+
+**I wanted a free Markdown editor that just works.** Not "works with workarounds." Not "works if you don't need X." Just — *works*. You write, it renders. You copy, the formatting follows. You paste an image, it stays. You export, it looks exactly like what you see. No friction. No compromise. No paywall.
+
+That's LiveMark. And now it's yours.
 
 ---
 
@@ -55,6 +67,7 @@ Perfect for when you need to check or fine-tune the exact syntax, then flip back
 - **Find & Replace** (`Cmd+F`) — Regex support, case-sensitive toggle, replace all
 - **Multi-tab** — Open several files at once, each with its own editor state
 - **Sidebar File Tree** (`Cmd+\`) — Navigate your project without leaving the editor
+- **Document Outline** (`Cmd+Shift+O`) — Heading tree for quick navigation within your document
 - **Export** — HTML, PDF, copy as styled HTML, copy as Markdown
 - **Auto-save** — Your work is saved automatically, toggleable from the status bar
 - **Themes** — Light, dark, or follow your system (`Cmd+Shift+T`)
