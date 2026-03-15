@@ -15,6 +15,7 @@ import {
   copyAsMarkdown,
 } from "./export-commands";
 import { reviseSelection } from "./ai-commands";
+import { sourceViewGuard } from "./source-view-guard";
 import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
 import { preferencesState } from "../state/preferences";
@@ -344,6 +345,7 @@ export function registerAllCommands() {
     shortcut: "Cmd+K",
     category: "Edit",
     execute: async () => {
+      if (sourceViewGuard()) return;
       const { getEditorRef } = await import("./file-commands");
       const editor = getEditorRef();
       if (!editor) return;
@@ -377,6 +379,7 @@ export function registerAllCommands() {
     shortcut: "Cmd+F",
     category: "Edit",
     execute: async () => {
+      if (sourceViewGuard()) return;
       if (uiState.isFindOpen()) {
         // Already open — re-focus and select the find input
         window.dispatchEvent(new CustomEvent("lm-find-focus"));
@@ -402,6 +405,7 @@ export function registerAllCommands() {
     shortcut: "Cmd+Shift+I",
     category: "Edit",
     execute: async () => {
+      if (sourceViewGuard()) return;
       const { open } = await import("@tauri-apps/plugin-dialog");
       const selected = await open({
         multiple: false,

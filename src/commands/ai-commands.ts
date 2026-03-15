@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { preferencesState, AI_DEFAULT_PROMPT } from "../state/preferences";
 import { uiState } from "../state/ui";
+import { sourceViewGuard } from "./source-view-guard";
 import {
   aiReviseKey,
   startRevision,
@@ -108,6 +109,8 @@ let nextRevisionId = 1;
 export async function reviseSelection(
   getView: () => EditorView | undefined,
 ): Promise<void> {
+  if (sourceViewGuard()) return;
+
   const view = getView();
   if (!view) return;
 
