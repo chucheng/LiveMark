@@ -74,6 +74,7 @@ export function createEditor(
   const state = EditorState.create({
     doc,
     plugins: [
+      aiRevisePlugin(),
       smartCopyPlugin(),
       buildInputRules(),
       buildKeymaps(),
@@ -86,7 +87,6 @@ export function createEditor(
       imageDropPastePlugin(),
       markdownPastePlugin(),
       findReplacePlugin(),
-      aiRevisePlugin(),
       trailingParagraphPlugin(),
       headingCollapsePlugin(),
       lazyRenderPlugin(),

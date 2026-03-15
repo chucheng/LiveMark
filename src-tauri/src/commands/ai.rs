@@ -3,13 +3,27 @@ use std::time::Duration;
 use reqwest::StatusCode;
 use serde_json::{Value, json};
 
-const MODEL: &str = "claude-sonnet-4-20250514";
 const TIMEOUT_SECS: u64 = 30;
+
+/// Extract the first "text" content block from an Anthropic-format response.
+/// Skips "thinking" blocks (e.g. MiniMax-M2.5 extended thinking).
+fn extract_text(json: &Value) -> Option<String> {
+    json["content"]
+        .as_array()
+        .and_then(|arr| {
+            arr.iter()
+                .find(|c| c["type"].as_str() == Some("text"))
+                .or_else(|| arr.first())
+        })
+        .and_then(|c| c["text"].as_str())
+        .map(|s| s.to_string())
+}
 
 #[tauri::command]
 pub async fn ai_revise(
     base_url: String,
     api_key: String,
+    model: String,
     prompt: String,
     text: String,
 ) -> Result<String, String> {
@@ -19,11 +33,13 @@ pub async fn ai_revise(
         .map_err(|e| format!("AI revision failed — {e}"))?;
 
     let body = json!({
-        "model": MODEL,
+        "model": model,
         "max_tokens": 4096,
         "system": prompt,
         "messages": [{ "role": "user", "content": text }]
     });
+
+    eprintln!("[DEBUG ai_revise] url: {base_url}");
 
     let response = client
         .post(&base_url)
@@ -59,27 +75,34 @@ pub async fn ai_revise(
         .await
         .map_err(|e| format!("AI revision failed — invalid response: {e}"))?;
 
-    let revised = json["content"]
-        .as_array()
-        .and_then(|arr| arr.first())
-        .and_then(|c| c["text"].as_str())
-        .ok_or_else(|| "AI revision failed — unexpected response format".to_string())?;
+    eprintln!("[DEBUG ai_revise] response: {json}");
 
-    Ok(revised.to_string())
+    let revised = extract_text(&json)
+        .ok_or_else(|| {
+            let raw = json.to_string();
+            let preview = if raw.len() > 200 { &raw[..200] } else { &raw };
+            format!("AI revision failed — unexpected response format: {preview}")
+        })?;
+
+    Ok(revised)
 }
 
 const CHECK_TIMEOUT_SECS: u64 = 10;
 
 #[tauri::command]
-pub async fn ai_check(base_url: String, api_key: String) -> Result<(), String> {
+pub async fn ai_check(
+    base_url: String,
+    api_key: String,
+    model: String,
+) -> Result<(), String> {
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(CHECK_TIMEOUT_SECS))
         .build()
         .map_err(|e| format!("Connection check failed — {e}"))?;
 
     let body = json!({
-        "model": MODEL,
-        "max_tokens": 1,
+        "model": model,
+        "max_tokens": 128,
         "messages": [{ "role": "user", "content": "hi" }]
     });
 

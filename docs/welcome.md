@@ -24,7 +24,7 @@ I got tired of the copy-paste loop. Select text in my editor, switch to ChatGPT 
 
 So I built native AI revision right into the editor. Select text, press `Cmd+J R`, and get an inline diff — original text struck through, revised text highlighted in green. Press Enter to accept, Esc to reject. Your original is never touched until you say so.
 
-You bring your own API key (Anthropic, MiniMax, or any compatible endpoint). Your text goes straight from your machine to the API — no middleman, no proxy, no data collection. And you can customize the prompt to anything: "fix grammar", "make it concise", "translate to Japanese", "rewrite for a 5-year-old".
+You bring your own API key (Anthropic, MiniMax, or any Anthropic-compatible endpoint) and pick your model — Haiku for speed, Sonnet for balance, Opus for quality. Your text goes straight from your machine to the API — no middleman, no proxy, no data collection. And you can customize the prompt to anything: "fix grammar", "make it concise", "translate to Japanese", "rewrite for a 5-year-old".
 
 Set it up once in **Settings → AI Revision** (`Cmd+,`), and it just works. No more alt-tabbing.
 

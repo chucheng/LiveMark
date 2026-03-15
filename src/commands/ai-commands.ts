@@ -56,6 +56,7 @@ export async function reviseSelection(
     const revisedText = await invoke<string>("ai_revise", {
       baseUrl,
       apiKey,
+      model: preferencesState.getModel(),
       prompt: preferencesState.aiPrompt() || AI_DEFAULT_PROMPT,
       text,
     });

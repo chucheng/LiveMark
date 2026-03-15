@@ -403,8 +403,11 @@ LiveMark has built-in AI revision — no more copying text to ChatGPT and back.
 
 1. Press `Cmd+,` to open **Settings**
 2. Scroll to the **AI Revision** section
-3. Enter your API key (Anthropic, MiniMax, or any compatible endpoint)
-4. Optionally customize the revision prompt
+3. Choose a provider (Anthropic, MiniMax, or custom endpoint)
+4. Enter your API key
+5. Select a model from the dropdown (e.g., Haiku 4.5, MiniMax-M2)
+6. Click **Check Connection** to verify
+7. Optionally customize the revision prompt
 
 ### Usage
 

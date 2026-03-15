@@ -231,11 +231,20 @@ export function acceptRevision(view: EditorView): void {
   if (!state || state.status !== "diff") return;
 
   // Parse revised text through the markdown pipeline to preserve structure.
-  // Using schema.text() would collapse multi-paragraph text into a flat string.
   const revisedDoc = parseMarkdown(state.revisedText);
-  const content = revisedDoc
-    ? revisedDoc.content
-    : Fragment.from(view.state.schema.text(state.revisedText));
+  let content: Fragment;
+  if (revisedDoc) {
+    // If result is a single paragraph, extract its inline content
+    // to avoid splitting the parent paragraph (which adds a newline).
+    if (revisedDoc.content.childCount === 1
+        && revisedDoc.content.firstChild?.type.name === "paragraph") {
+      content = revisedDoc.content.firstChild.content;
+    } else {
+      content = revisedDoc.content;
+    }
+  } else {
+    content = Fragment.from(view.state.schema.text(state.revisedText));
+  }
 
   const tr = view.state.tr
     .replaceWith(state.originalFrom, state.originalTo, content)

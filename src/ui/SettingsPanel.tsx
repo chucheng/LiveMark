@@ -49,6 +49,7 @@ export default function SettingsPanel() {
     preferencesState.aiBaseURLPreset();
     preferencesState.aiCustomBaseURL();
     preferencesState.aiApiKey();
+    preferencesState.aiModel();
     // Capture version at effect creation; skip the initial run
     const v = aiCheckVersion;
     if (v > 0) setAICheckError("");
@@ -62,7 +63,11 @@ export default function SettingsPanel() {
     setAIChecking(true);
     setAICheckError("");
     try {
-      await invoke("ai_check", { baseUrl, apiKey });
+      await invoke("ai_check", {
+        baseUrl,
+        apiKey,
+        model: preferencesState.getModel(),
+      });
       preferencesState.setAIVerified(true);
     } catch (err) {
       preferencesState.setAIVerified(false);
@@ -577,11 +582,29 @@ export default function SettingsPanel() {
               </div>
             </div>
 
-            {/* Model label */}
+            {/* Model selector */}
             <div class="lm-settings-row">
               <span class="lm-settings-label">Model</span>
               <div class="lm-settings-control">
-                <span class="lm-settings-static-value">{preferencesState.AI_MODEL}</span>
+                <Show when={preferencesState.getModelOptions().length > 0} fallback={
+                  <input
+                    class="lm-settings-input"
+                    type="text"
+                    placeholder="e.g. claude-sonnet-4-20250514"
+                    value={preferencesState.aiModel()}
+                    onInput={(e) => preferencesState.setAIModel(e.currentTarget.value)}
+                  />
+                }>
+                  <select
+                    class="lm-settings-select"
+                    value={preferencesState.aiModel()}
+                    onChange={(e) => preferencesState.setAIModel(e.currentTarget.value)}
+                  >
+                    <For each={preferencesState.getModelOptions()}>
+                      {(m) => <option value={m.id} selected={m.id === preferencesState.aiModel()}>{m.label}</option>}
+                    </For>
+                  </select>
+                </Show>
               </div>
             </div>
           </section>

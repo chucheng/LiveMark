@@ -19,26 +19,63 @@ const [selectedPreset, setSelectedPreset] = createSignal("default");
 const [customShortcuts, setCustomShortcuts] = createSignal<Record<string, string>>({});
 const [hasSeenWelcome, setHasSeenWelcome] = createSignal(false);
 
-// AI Revision settings
+// AI Revision settings — all providers use Anthropic-compatible API format
 export type AIBaseURL = "anthropic" | "minimax" | "custom";
-const AI_BASE_URLS: Record<Exclude<AIBaseURL, "custom">, string> = {
-  anthropic: "https://api.anthropic.com/v1/messages",
-  minimax: "https://api.minimax.chat/v1/messages",
+
+export interface AIModelOption {
+  id: string;
+  label: string;
+}
+
+interface AIPresetConfig {
+  url: string;
+  defaultModel: string;
+  models: AIModelOption[];
+}
+
+const AI_PRESET_CONFIG: Record<Exclude<AIBaseURL, "custom">, AIPresetConfig> = {
+  anthropic: {
+    url: "https://api.anthropic.com/v1/messages",
+    defaultModel: "claude-haiku-4-5-20251001",
+    models: [
+      { id: "claude-haiku-4-5-20251001", label: "Haiku 4.5 (Recommended)" },
+      { id: "claude-sonnet-4-20250514", label: "Sonnet 4" },
+      { id: "claude-opus-4-20250514", label: "Opus 4" },
+    ],
+  },
+  minimax: {
+    url: "https://api.minimax.io/anthropic/v1/messages",
+    defaultModel: "MiniMax-M2",
+    models: [
+      { id: "MiniMax-M2", label: "MiniMax-M2 (Recommended)" },
+      { id: "MiniMax-M2.5", label: "MiniMax-M2.5" },
+    ],
+  },
 };
-export const AI_MODEL = "claude-sonnet-4-20250514";
 export const AI_DEFAULT_PROMPT =
   "Revise the following text to improve clarity, grammar, and flow while preserving the original meaning and tone. Return only the revised text with no explanation.";
 
 const [aiBaseURLPreset, setAIBaseURLPreset] = createSignal<AIBaseURL>("anthropic");
 const [aiCustomBaseURL, setAICustomBaseURL] = createSignal("");
+const [aiModel, setAIModel] = createSignal(AI_PRESET_CONFIG.anthropic.defaultModel);
 const [aiApiKey, setAIApiKey] = createSignal("");
 const [aiPrompt, setAIPrompt] = createSignal(AI_DEFAULT_PROMPT);
 const [aiVerified, setAIVerified] = createSignal(false);
 
 function getBaseURL(): string {
   const preset = aiBaseURLPreset();
-  return preset === "custom" ? aiCustomBaseURL() : AI_BASE_URLS[preset];
+  return preset === "custom" ? aiCustomBaseURL() : AI_PRESET_CONFIG[preset].url;
 }
+
+function getModel(): string {
+  return aiModel();
+}
+
+function getModelOptions(): AIModelOption[] {
+  const preset = aiBaseURLPreset();
+  return preset === "custom" ? [] : AI_PRESET_CONFIG[preset].models;
+}
+
 
 export interface UserPreset {
   name: string;
@@ -98,6 +135,7 @@ interface Preferences {
   feedback?: FeedbackPrefs;
   aiBaseURLPreset?: AIBaseURL;
   aiCustomBaseURL?: string;
+  aiModel?: string;
   aiApiKey?: string;
   aiPrompt?: string;
   aiVerified?: boolean;
@@ -133,6 +171,12 @@ async function loadPreferences() {
     if (prefs.feedback) feedbackState.loadFeedbackPrefs(prefs.feedback);
     if (prefs.aiBaseURLPreset !== undefined) setAIBaseURLPreset(prefs.aiBaseURLPreset);
     if (prefs.aiCustomBaseURL !== undefined) setAICustomBaseURL(prefs.aiCustomBaseURL);
+    if (prefs.aiModel !== undefined) {
+      setAIModel(prefs.aiModel);
+    } else if (prefs.aiBaseURLPreset && prefs.aiBaseURLPreset !== "custom") {
+      // Backwards compat: derive model from preset when upgrading from older prefs
+      setAIModel(AI_PRESET_CONFIG[prefs.aiBaseURLPreset].defaultModel);
+    }
     if (prefs.aiApiKey !== undefined) setAIApiKey(prefs.aiApiKey);
     if (prefs.aiPrompt !== undefined) setAIPrompt(prefs.aiPrompt);
     if (prefs.aiVerified !== undefined) setAIVerified(prefs.aiVerified);
@@ -167,6 +211,7 @@ function savePreferences() {
       feedback: feedbackState.saveFeedbackPrefs(),
       aiBaseURLPreset: aiBaseURLPreset(),
       aiCustomBaseURL: aiCustomBaseURL(),
+      aiModel: aiModel(),
       aiApiKey: aiApiKey(),
       aiPrompt: aiPrompt(),
       aiVerified: aiVerified(),
@@ -368,7 +413,12 @@ export const preferencesState = {
   },
   // AI Revision
   aiBaseURLPreset,
-  setAIBaseURLPreset(v: AIBaseURL) { setAIBaseURLPreset(v); setAIVerified(false); savePreferences(); },
+  setAIBaseURLPreset(v: AIBaseURL) {
+    setAIBaseURLPreset(v);
+    if (v !== "custom") setAIModel(AI_PRESET_CONFIG[v].defaultModel);
+    setAIVerified(false);
+    savePreferences();
+  },
   aiCustomBaseURL,
   setAICustomBaseURL(v: string) { setAICustomBaseURL(v); setAIVerified(false); savePreferences(); },
   aiApiKey,
@@ -377,8 +427,11 @@ export const preferencesState = {
   setAIPrompt(v: string) { setAIPrompt(v); savePreferences(); },
   aiVerified,
   setAIVerified(v: boolean) { setAIVerified(v); savePreferences(); },
+  aiModel,
+  setAIModel(v: string) { setAIModel(v); setAIVerified(false); savePreferences(); },
   getBaseURL,
-  AI_MODEL,
+  getModel,
+  getModelOptions,
   AI_DEFAULT_PROMPT,
   loadPreferences,
   savePreferences,
