@@ -255,7 +255,7 @@ src-tauri/
 | v2.8.2 | Warm paper light theme — off-white canvas with warm tones for reduced eye strain; smart theme toggle (auto → opposite, explicit → auto); persist theme on status bar click |
 | v2.8.3 | macOS file association — handle RunEvent::Opened for Finder double-click and "Open With" |
 | v2.8.4 | Window close fix — add missing Tauri window:allow-destroy permission; register close handler early; macOS file open via PendingFiles for cold start |
-| v2.8.5 | Insert Image command — Cmd+Shift+I opens native file picker, copies image alongside document, inserts inline |
+| v2.8.5 | Insert Image command — Cmd+Shift+I opens native file picker, copies image alongside document, inserts inline; macOS file open race fix — buffer early RunEvent::Opened files before setup() |
 
 ## Documentation
 

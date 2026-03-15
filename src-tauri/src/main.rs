@@ -12,18 +12,16 @@ use tauri::{Emitter, Manager};
 
 pub struct PendingFiles(pub Mutex<Vec<String>>);
 
-/// Debug log of all Opened events received (persists across drains).
-pub struct OpenedLog(pub Mutex<Vec<String>>);
+/// Global buffer for files received via RunEvent::Opened BEFORE setup() runs.
+/// On macOS, Finder "Open With" delivers the file URL via application:openURLs:
+/// which fires as RunEvent::Opened — but this can arrive before Tauri's setup()
+/// has created the PendingFiles managed state. This global catches those early files.
+static EARLY_FILES: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
 #[tauri::command]
 fn get_initial_files(state: tauri::State<PendingFiles>) -> Vec<String> {
     let mut files = state.0.lock().unwrap();
     std::mem::take(&mut *files)
-}
-
-#[tauri::command]
-fn get_opened_log(state: tauri::State<OpenedLog>) -> Vec<String> {
-    state.0.lock().unwrap().clone()
 }
 
 /// Extract file paths from CLI args (skip flags, match supported extensions).
@@ -65,16 +63,14 @@ fn main() {
         }))
         .setup(|app| {
             app.manage(WatcherState(Mutex::new(None)));
-            app.manage(OpenedLog(Mutex::new(Vec::new())));
 
+            // Collect CLI args + any early files from RunEvent::Opened
             let args: Vec<String> = std::env::args().collect();
-            let file_args = extract_file_args(&args);
+            let mut file_args = extract_file_args(&args);
 
-            // Debug: log CLI args to disk
-            let _ = std::fs::write("/tmp/livemark-open-debug.log", format!(
-                "[setup] args={:?}\nfile_args={:?}\n",
-                args, file_args
-            ));
+            // Drain the global early-files buffer (Opened events that arrived before setup)
+            let early = std::mem::take(&mut *EARLY_FILES.lock().unwrap());
+            file_args.extend(early);
 
             app.manage(PendingFiles(Mutex::new(file_args)));
 
@@ -89,7 +85,6 @@ fn main() {
             get_file_mtime,
             is_file_readonly,
             get_initial_files,
-            get_opened_log,
             save_image,
             copy_image,
             read_preferences,
@@ -102,15 +97,9 @@ fn main() {
         .expect("error while running LiveMark");
 
     app.run(|app_handle, event| {
-        // macOS: double-click / "Open With" sends file URLs via Opened event.
+        // macOS: Finder "Open With" / double-click delivers file URLs here.
+        // This event can arrive BEFORE setup() — use EARLY_FILES as fallback.
         if let tauri::RunEvent::Opened { urls } = &event {
-            // Debug: log to disk
-            let _ = std::fs::OpenOptions::new().create(true).append(true).open("/tmp/livemark-open-debug.log")
-                .and_then(|mut f| {
-                    use std::io::Write;
-                    writeln!(f, "[Opened] urls={:?}", urls)
-                });
-
             let files: Vec<String> = urls
                 .iter()
                 .filter_map(|u| {
@@ -121,23 +110,15 @@ fn main() {
                     }
                 })
                 .collect();
-
-            // Debug: log resolved files
-            let _ = std::fs::OpenOptions::new().create(true).append(true).open("/tmp/livemark-open-debug.log")
-                .and_then(|mut f| {
-                    use std::io::Write;
-                    writeln!(f, "[Opened] resolved files={:?}", files)
-                });
-
             if !files.is_empty() {
-                // Log to OpenedLog for frontend retrieval
-                if let Some(log) = app_handle.try_state::<OpenedLog>() {
-                    log.0.lock().unwrap().extend(files.clone());
-                }
+                // Try managed state first (available after setup)
                 if let Some(pending) = app_handle.try_state::<PendingFiles>() {
                     pending.0.lock().unwrap().extend(files.clone());
+                } else {
+                    // setup() hasn't run yet — buffer globally
+                    EARLY_FILES.lock().unwrap().extend(files.clone());
                 }
-                // Only emit if the webview window exists (i.e., frontend is likely ready)
+                // Emit to frontend if webview is ready
                 if let Some(window) = app_handle.get_webview_window("main") {
                     let _ = window.emit("open-files", files);
                 }
