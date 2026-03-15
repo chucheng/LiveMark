@@ -7,6 +7,7 @@ import {
   completeRevision,
   cancelRevision,
 } from "../editor/plugins/ai-revise";
+import { serializeMarkdown } from "../editor/markdown/serializer";
 import type { EditorView } from "prosemirror-view";
 import type { Node } from "prosemirror-model";
 
@@ -135,7 +136,10 @@ export async function reviseSelection(
     return;
   }
 
-  const text = view.state.doc.textBetween(from, to, "\n");
+  // Serialize selection as Markdown (preserves **bold**, *italic*, links, etc.)
+  const slice = view.state.doc.slice(from, to);
+  const tempDoc = view.state.schema.topNodeType.create(null, slice.content);
+  const text = serializeMarkdown(tempDoc).trim();
   if (text.length > MAX_SELECTION_LENGTH) {
     uiState.showStatus(`Selection too long (${text.length} chars) \u2014 max ${MAX_SELECTION_LENGTH} characters`);
     return;
@@ -228,3 +232,6 @@ export function cancelActiveRevision(
     cancelRevision(view);
   }
 }
+
+/** @internal — exported for testing only */
+export const _testing = { computeTimeout, validateSelection, countBlocks };

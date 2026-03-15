@@ -1,28 +1,33 @@
 # LiveMark
 
-A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
+**The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.2.0-blue)
+![Version](https://img.shields.io/badge/version-3.2.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
-## What is LiveMark?
+## Why LiveMark?
 
-LiveMark renders Markdown **inline as you type**. Headings become headings. Bold becomes bold. Links become clickable. There is no preview — the editor *is* the preview.
+You know the loop: write something, select it, copy, switch to Claude or some chatbot, paste, type "make this better", copy the result, switch back, paste over the original. Repeat for every paragraph. It's tedious.
 
-When your cursor enters a Markdown element, the raw syntax is revealed for editing. When you move away, it renders. The transition is instant and seamless.
+LiveMark puts AI revision **inside** your editor. Select any text, press `Cmd+J R`, and watch — deletions struck through in red, additions highlighted in green, right on top of your document. Press Enter to accept, Escape to reject. Your original text is never touched until you say so.
 
-## Features
+And underneath, LiveMark is a full-featured Markdown editor with **inline live rendering** — what you type is what you see. No split panes. No preview toggle. Headings render as headings. Bold renders as bold. Click into any element to see the raw syntax; click away and it renders. The editor *is* the preview.
 
-### AI Revise
-- **AI-powered text revision** — select text, press `Cmd+J R`, get an inline diff to accept or reject
-- **Bring your own key** — works with Anthropic, MiniMax, or any Anthropic-compatible API endpoint
-- **Model selection** — choose per-provider models (Anthropic: Haiku/Sonnet/Opus; MiniMax: M2/M2.5); custom endpoints accept any model name
-- **Custom prompts** — tailor the AI to your writing style ("fix grammar", "make concise", "translate to Japanese")
+## AI Revise
+
+- **One shortcut, inline results** — select text, `Cmd+J R`, get a diff you can accept or reject
+- **Bring your own API key** — works with [Anthropic](https://www.anthropic.com/) (Claude), [MiniMax](https://www.minimaxi.com/), or any Anthropic-compatible API endpoint
+- **Pick your model** — Anthropic: Haiku (fast) / Sonnet (balanced) / Opus (best quality); MiniMax: M2 / M2.5; custom endpoints accept any model name
+- **Custom prompts** — "fix grammar", "make concise", "translate to Japanese", "rewrite for a 5-year-old" — whatever you need
+- **Your text, your machine** — text goes directly from your machine to the API. No middleman, no proxy, no data collection
 - **Safe by design** — original text untouched until you explicitly accept; Cmd+Z to undo; input blocked during revision
-- **Smart selection guards** — blocks images, tables, code blocks, math, and frontmatter; warns on large multi-block selections; adaptive timeout scales with text length
+- **Smart guards** — blocks revision on images, tables, code blocks, math, and frontmatter; warns on large selections; adaptive timeout scales with text length
 
-### Editor
+Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
+
+## Editor
+
 - **Inline live rendering** — Markdown transforms visually as you type
 - **Cursor-aware editing** — raw syntax shown on focus, rendered on blur
 - **CommonMark + GFM** — headings, bold, italic, strikethrough, code, blockquotes, lists, links, images, tables, task lists, horizontal rules
@@ -32,62 +37,60 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **YAML frontmatter** — parse, edit, and serialize frontmatter blocks
 - **Table editing** — visual tables with Tab navigation between cells
 - **Task list checkboxes** — clickable checkboxes that toggle state
-- **Image preview** — inline rendering, drag-and-drop, paste, or Cmd+Shift+I to insert from disk; HTML `<img>` width preservation
-- **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
-- **Smart link open** — local file links (e.g. `tutorial.md`) open in a tab; external URLs open in browser. Works in popover and Cmd+click
-- **Clickable links** — Cmd/Ctrl+click opens links (local files in-app, URLs in browser)
-- **Find & replace** — Cmd+F with selection pre-fill, jumps to nearest match, case-sensitive toggle (Aa), regex toggle (.*), replace and replace-all; per-textblock search for accurate matching in tables and nested lists
-- **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts (`# `, `> `, `- [ ] `), undo/redo
-- **Large file lazy rendering** — IntersectionObserver-based viewport rendering
+- **Image preview** — inline rendering, drag-and-drop, paste, or Cmd+Shift+I to insert from disk
+- **Link popover** — click any rendered link for Open, Copy, Edit, and Unlink actions
+- **Smart links** — local file links open in a tab; external URLs open in browser
+- **Find & replace** — Cmd+F with regex, case-sensitive toggle, replace-all; per-textblock search for tables and nested lists
+- **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts, undo/redo
+- **Large file support** — IntersectionObserver-based lazy rendering
 
-### File Operations
-- **Multi-tab** — open multiple files in tabs with per-tab editor state
+## Writing Experience
+
+- **Focus mode** (`Cmd+T`) — dims every block except the one you're writing in
+- **Typewriter mode** — keeps your cursor vertically centered as you type
+- **Fullscreen** — titlebar, status bar, and sidebar auto-hide; move your mouse to the edges to bring them back
+- **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 (12–28px, persisted)
+
+## File & Project
+
+- **Multi-tab** — open multiple files with per-tab editor state
+- **Sidebar file tree** (`Cmd+\`) — navigate your project without leaving the editor
+- **Document outline** (`Cmd+Shift+O`) — heading tree with active tracking and click-to-navigate
+- **Auto-save** — 30s after last edit, toggleable from status bar
 - Open, save, save-as, new file (Cmd+O/S/Shift+S/N)
-- **Auto-save** — 30s after last edit, off by default, toggleable from status bar with confirmation; auto-disables after 3 consecutive failures
 - CLI argument support (`livemark file.md`)
 - Unsaved changes protection on close
 
-### App
-- **Auto-update** — planned (currently disabled)
+## Export
 
-### UI
-- **Sidebar file tree** — navigate and open files from a sidebar
-- **Document outline** — Cmd+Shift+O, heading tree with active heading tracking and click-to-navigate
-- **Light & dark themes** — system-follow or manual toggle (Cmd+Shift+T), persisted
-- **Command palette** — Cmd+Shift+P, fuzzy search across all actions
-- **Source view** — Cmd+/ toggles read-only raw Markdown
-- **Focus mode** — Cmd+T toggles off → block focus (dims inactive blocks)
-- **Typewriter mode** — keeps cursor vertically centered as you type
-- **Callout admonitions** — `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!CAUTION]`, `> [!IMPORTANT]` with styled badges and type dropdown
-- **Font size zoom** — Cmd+=/Cmd+-/Cmd+0 to increase, decrease, reset (12–28px, persisted)
-- **Status bar** — line/column, selection count, word count, zoom %, encoding, theme toggle
+- **Word document** (Cmd+Shift+D) — `.docx` with headings, lists, tables, code blocks, math, and images
+- **HTML** (Cmd+Shift+E) — standalone file with embedded styles
+- **PDF** (Cmd+P) — opens in browser for print/save
+- **Smart copy** — copy produces Markdown as text/plain + styled HTML as text/html; paste Markdown and it auto-renders
+- Copy as HTML (Cmd+Shift+C) · Copy as Markdown (Cmd+Alt+C)
 
-### Export
-- HTML export (Cmd+Shift+E) — standalone file with embedded styles
-- **Word document export** (Cmd+Shift+D) — `.docx` with headings, lists, tables, code blocks, math, and images
-- PDF export (Cmd+P) — opens in browser for print/save-as-PDF
-- Copy as HTML (Cmd+Shift+C)
-- Copy as Markdown (Cmd+Alt+C) — selection-aware
-- **Smart copy** — copy/cut produces Markdown as text/plain + styled HTML as text/html
-- **Smart paste** — pasting Markdown text auto-parses into structured content (headings, lists, tables, etc.); plain text pastes normally
+## UI
 
-### Keyboard Shortcuts
+- **Light & dark themes** — system-follow or manual toggle (Cmd+Shift+T)
+- **Command palette** (Cmd+Shift+P) — fuzzy search across all actions
+- **Source view** (Cmd+/) — toggle raw Markdown, scroll-synced
+- **Callout admonitions** — `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`, `> [!CAUTION]`, `> [!IMPORTANT]`
+- **Status bar** — line/column, selection count, word count, zoom %, encoding, theme
+
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 |---|---|
-| `Cmd+W` | Close Tab |
+| `Cmd+J R` | **AI: Revise Selection** |
+| `Cmd+T` | Toggle Focus Mode |
+| `Cmd+/` | Toggle Source View |
 | `Cmd+\` | Toggle Sidebar |
-| `Cmd+Shift+O` | Show Outline |
-| `Cmd+,` | Settings |
+| `Cmd+Shift+O` | Document Outline |
+| `Cmd+Shift+P` | Command Palette |
 | `Cmd+K` | Insert Link |
 | `Cmd+Shift+I` | Insert Image |
-| `Cmd+Shift+H` | Toggle Find and Replace |
-| `Cmd+Shift+X` | Strikethrough |
-| `Cmd+T` | Toggle Focus Mode (off → block) |
-| `Cmd+J P` | Copy File Path |
-| `Cmd+J W` | Close All Tabs |
-| `Cmd+J R` | AI: Revise Selection |
-| `Cmd+J T` | Cycle Theme |
+| `Cmd+F` | Find & Replace |
+| `Cmd+,` | Settings |
 
 ## Tech Stack
 
@@ -258,6 +261,7 @@ src-tauri/
 | **v3.0** | **AI Revise** — select text, Cmd+J R, inline diff with accept/reject. Bring your own API key (Anthropic, MiniMax, or compatible). Custom prompts, safe diff workflow, full dark mode support |
 | **v3.1** | AI multi-provider & model selection — per-provider model dropdown, correct MiniMax endpoint, thinking-block-aware response parsing |
 | **v3.2.0** | **AI Revise hardening** — selection validation (blocks images/tables/code), adaptive timeout, gradient shimmer + loading pill, input blocking during revision, source view tab-switch fix |
+| v3.2.1 | Dark mode diff readability fix, AI revise test suite (30 tests), README & welcome rewrite |
 
 ## Documentation
 

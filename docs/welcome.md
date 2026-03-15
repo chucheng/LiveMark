@@ -2,45 +2,27 @@
 
 Hi, I'm Chase.
 
-I've been writing in Markdown for years. I love it — it's clean, portable, and gets out of your way. But the editors? They always made me compromise.
+I write everything in Markdown — notes, drafts, docs, READMEs. And like everyone else, I started using AI to help me revise. Fix the grammar. Tighten a paragraph. Translate something. But the workflow was miserable: select text, copy, switch to Claude, paste, type a prompt, wait, copy the result, switch back, paste over the original. For every paragraph. Every time.
 
-MacDown was my first love, but I got tired of staring at a split screen — writing on the left, previewing on the right, never quite feeling like I was in *one* place. Typora came close — true inline preview, no split pane, beautifully minimal. But it's not free. And over time, it started to feel... *finished*. Not in a good way — in a "this is all you're going to get" way. A closed app that stopped evolving.
+I kept thinking — *why can't I just do this where I'm already writing?*
 
-And when I looked around, there were surprisingly few good, free Markdown editors that just let you write and see the result — right there, inline, no split pane.
+So I built LiveMark. Select any text, press `Cmd+J R`, and the AI revision appears as an inline diff — right on top of your document. Deletions struck through in red, additions in green. Press Enter to accept, Escape to reject. Done. No tab-switching. No copy-paste loop. No breaking your flow.
 
-One day I copied a beautifully formatted document from my editor, pasted it into Google Docs, and watched every heading, every bold word, every table collapse into plain text. That was the moment I thought: *why doesn't this just work?*
+You bring your own API key — [Anthropic](https://www.anthropic.com/) (Claude) or [MiniMax](https://www.minimaxi.com/) — pick your model, and customize the prompt to whatever you need. Your text goes directly from your machine to the API. No middleman. No data collection.
 
-So I built LiveMark.
-
-**I wanted a free Markdown editor that just works.** Not "works with workarounds." Not "works if you don't need X." Just — *works*. You write, it renders. You copy, the formatting follows. You paste an image, it stays. You export, it looks exactly like what you see. No friction. No compromise. No paywall.
-
-That's LiveMark. And now it's yours.
+Set it up once in **Settings → AI Revision** (`Cmd+,`), and it just works.
 
 ---
 
-## AI Revise — Stop Switching Between Your Editor and ChatGPT
+## And Underneath — The Markdown Editor I Always Wanted
 
-I got tired of the copy-paste loop. Select text in my editor, switch to ChatGPT or Claude, paste it in, ask for a revision, copy the result back, paste it over the original. Over and over. For every paragraph, every email, every draft.
+Once I was building an editor anyway, I made it the one I'd been searching for.
 
-So I built native AI revision right into the editor. Select text, press `Cmd+J R`, and get an inline diff — original text struck through, revised text highlighted in green. Press Enter to accept, Esc to reject. Your original is never touched until you say so.
+I loved Typora — true inline preview, no split panes, beautifully minimal. But it's not free. And over time it stopped evolving. When I looked around, there were surprisingly few good, free Markdown editors that let you write and see the result right there, inline.
 
-You bring your own API key (Anthropic, MiniMax, or any Anthropic-compatible endpoint) and pick your model — Haiku for speed, Sonnet for balance, Opus for quality. Your text goes straight from your machine to the API — no middleman, no proxy, no data collection. And you can customize the prompt to anything: "fix grammar", "make it concise", "translate to Japanese", "rewrite for a 5-year-old".
+So LiveMark renders Markdown **as you type**. Headings become headings. Bold becomes bold. Links become clickable. There's no preview pane — the editor *is* the preview. Click into any element to see the raw syntax; click away and it renders instantly.
 
-Set it up once in **Settings → AI Revision** (`Cmd+,`), and it just works. No more alt-tabbing.
-
----
-
-That said — it's still a beta. So please, [send me your feedback](mailto:chase.livemark@gmail.com): bugs you hit, things that annoy you, features you wish existed. I read every single one, and I fix them as fast as I can.
-
----
-
-## What You See Is What You Mean
-
-LiveMark is a Markdown editor where **the editor *is* the preview**. There are no split panes, no preview toggles — just your words, rendered beautifully as you type.
-
-When your cursor enters a Markdown element, the raw syntax appears for editing. Move away, and it renders instantly. It feels like writing in a rich text editor, but the file on disk is always clean, portable Markdown.
-
-Try it now — click on this heading, or the bold text above, and watch the syntax appear.
+It's free. It's fast. And it's built to keep getting better.
 
 ---
 
@@ -94,6 +76,10 @@ Perfect for when you need to check or fine-tune the exact syntax, then flip back
 To explore every Markdown feature LiveMark supports — headings, tables, task lists, code blocks, images, and more — open the full tutorial:
 
 **[Open the Tutorial](tutorial.md)** — or use the command palette (`Cmd+Shift+P` → "Show Tutorial")
+
+---
+
+That said — it's still a beta. So please, [send me your feedback](mailto:chase.livemark@gmail.com): bugs you hit, things that annoy you, features you wish existed. I read every single one, and I fix them as fast as I can.
 
 ---
 
