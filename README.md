@@ -239,23 +239,10 @@ src-tauri/
 | Version | Highlights |
 |---|---|
 | v1.0.0 | Full Markdown editor: inline live rendering, file operations, themes, export, command palette, find & replace |
-| v1.1.0–v1.3.7 | Math (KaTeX), review panel, auto-save, font size zoom, UI polish, 8-bug audit, misc fixes |
-| v1.3.8–v1.3.12 | Multi-tab, sidebar file tree, block handles, mermaid diagrams, frontmatter, mind map, CI/CD |
-| v1.4.0 | Auto-update, settings panel UX, chord keybinding fixes |
-| v2.0.0 | Typewriter mode, sentence focus, callout admonitions, block transform menu |
-| v2.0.1–v2.1.7 | Mind map zoom/pan, smart copy, editable source view, DOCX export prep, CJK fix, bug fixes |
-| v2.2.0–v2.3.1 | DOCX export, document outline sidebar, edge case hardening |
-| v2.4.0 | Link popover — click rendered links for compact URL preview with Open, Copy, Edit, Unlink actions |
-| v2.4.1 | Find & Replace UX — jump to nearest match on search, pre-fill from selection, auto-advance after replace, re-focus on Cmd+F |
-| v2.5.0 | Smart link open — local file links open in-app tabs, external URLs open in browser; works in popover and Cmd+click |
-| v2.6.0 | Smart Markdown paste — pasting Markdown text auto-parses into headings, lists, tables, etc.; skips code blocks; detects structural HTML; find & replace scroll fix |
-| v2.7.0 | Find & Replace overhaul — per-textblock search for accurate matching, regex support, sticky find bar; welcome beta feedback message; email update |
-| v2.8.0 | Feature cleanup — removed mind map, review panel, block handles, block transform, copy as beautiful doc, sentence focus; Cmd+T now toggles focus mode (off/block); simplified focus mode to 2-stage |
-| v2.8.1 | Auto-save safety — off by default with confirmation dialog on enable, auto-disables after 3 consecutive failures; tab dirty indicator changed to `*`; bundled JetBrains Mono font |
-| v2.8.2 | Warm paper light theme — off-white canvas with warm tones for reduced eye strain; smart theme toggle (auto → opposite, explicit → auto); persist theme on status bar click |
-| v2.8.3 | macOS file association — handle RunEvent::Opened for Finder double-click and "Open With" |
-| v2.8.4 | Window close fix — add missing Tauri window:allow-destroy permission; register close handler early; macOS file open via PendingFiles for cold start |
-| v2.8.5 | Insert Image command — Cmd+Shift+I opens native file picker, copies image alongside document, inserts inline; macOS file open race fix — buffer early RunEvent::Opened files before setup() |
+| v1.1–v1.4 | Math (KaTeX), auto-save, font zoom, multi-tab, sidebar file tree, mermaid diagrams, frontmatter, settings panel |
+| v2.0–v2.3 | Typewriter mode, callout admonitions, smart copy/paste, DOCX export, document outline, link popover |
+| v2.4–v2.7 | Smart link open (local files in-app, URLs in browser), regex find & replace, per-textblock search |
+| v2.8 | Feature cleanup, warm paper theme, auto-save safety, insert image (Cmd+Shift+I), macOS file association fixes |
 
 ## Documentation
 
