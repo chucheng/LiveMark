@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { EditorState, TextSelection, NodeSelection } from "prosemirror-state";
 import { schema } from "../schema";
-import { buildKeymaps } from "../keymaps";
+import { buildKeymaps, markBoundaryBackspace } from "../keymaps";
 import { history, undo, redo } from "prosemirror-history";
 import {
   toggleMark,
@@ -310,6 +310,67 @@ describe("Keymaps: edge cases", () => {
     if (result) {
       expect(result.doc.firstChild!.type.name).toBe("heading");
     }
+  });
+
+  it("mark boundary backspace: bold → italic at left boundary", () => {
+    // "This are **clearly** a good" — cursor at start of "clearly"
+    const d = doc(p("This are ", bold("clearly"), " a good"));
+    // Positions: doc(0) > paragraph opens at 0, content at 1
+    // "This are " = 9 chars: pos 1..9, "clearly" = 7 chars: pos 10..16
+    // Cursor at pos 10 = left boundary of bold mark
+    const state = createState(d, 10);
+
+    // Verify setup
+    const $head = state.selection.$head;
+    expect($head.nodeAfter?.marks.some(m => m.type === schema.marks.strong)).toBe(true);
+    expect($head.nodeBefore?.marks.some(m => m.type === schema.marks.strong)).toBeFalsy();
+
+    const result = applyCommand(state, markBoundaryBackspace);
+    expect(result).not.toBeNull();
+
+    // "clearly" should now have em (italic), not strong (bold)
+    const para = result!.doc.firstChild!;
+    let foundItalic = false;
+    para.forEach(child => {
+      if (child.text === "clearly") {
+        foundItalic = child.marks.some(m => m.type === schema.marks.em);
+        expect(child.marks.some(m => m.type === schema.marks.strong)).toBe(false);
+      }
+    });
+    expect(foundItalic).toBe(true);
+  });
+
+  it("mark boundary backspace: italic → plain at left boundary", () => {
+    const d = doc(p("This are ", italic("clearly"), " a good"));
+    const state = createState(d, 10);
+
+    const result = applyCommand(state, markBoundaryBackspace);
+    expect(result).not.toBeNull();
+
+    // "clearly" should now have no marks
+    const para = result!.doc.firstChild!;
+    para.forEach(child => {
+      if (child.text?.includes("clearly")) {
+        expect(child.marks.length).toBe(0);
+      }
+    });
+  });
+
+  it("mark boundary backspace: does NOT trigger inside mark", () => {
+    // Cursor inside "clearly" (not at boundary)
+    const d = doc(p("This are ", bold("clearly"), " a good"));
+    const state = createState(d, 13); // middle of "clearly"
+
+    const result = applyCommand(state, markBoundaryBackspace);
+    expect(result).toBeNull(); // command should NOT apply
+  });
+
+  it("mark boundary backspace: does NOT trigger on plain text", () => {
+    const d = doc(p("hello world"));
+    const state = createState(d, 6);
+
+    const result = applyCommand(state, markBoundaryBackspace);
+    expect(result).toBeNull();
   });
 
   it("multiple undos don't crash", () => {

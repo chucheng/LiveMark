@@ -23,6 +23,7 @@ import { markdownPastePlugin } from "./plugins/markdown-paste";
 import { imagePopoverPlugin } from "./plugins/image-popover";
 import { linkPopoverPlugin } from "./plugins/link-popover";
 import { italicBoldUpgradePlugin } from "./plugins/italic-bold-upgrade";
+import { markPatternFallbackPlugin } from "./plugins/mark-pattern-fallback";
 import { tableEditing, columnResizing } from "prosemirror-tables";
 import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
@@ -95,6 +96,7 @@ export function createEditor(
       typewriterPlugin(),
       imagePopoverPlugin(),
       linkPopoverPlugin(),
+      markPatternFallbackPlugin(),
       gapCursor(),
       columnResizing({ cellMinWidth: 60 }),
       tableEditing(),

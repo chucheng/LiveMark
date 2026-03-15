@@ -336,7 +336,7 @@ function findMarkRangeForward($pos: ResolvedPos, markType: MarkType): { from: nu
  *
  * This makes the widget-decoration syntax markers feel like real editable characters.
  */
-const markBoundaryBackspace: Command = (state, dispatch) => {
+export const markBoundaryBackspace: Command = (state, dispatch) => {
   const { $head, empty } = state.selection;
   if (!empty) return false;
 
