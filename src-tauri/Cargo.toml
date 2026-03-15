@@ -1,6 +1,11 @@
 [package]
 name = "livemark"
-version = "3.2.4"
+version = "3.2.5"
+description = "A desktop Markdown editor with inline live rendering and built-in AI revision"
+authors = ["Chase"]
+license = "AGPL-3.0"
+repository = "https://github.com/chucheng/LiveMark"
+homepage = "https://github.com/chucheng/LiveMark"
 edition = "2024"
 
 [[bin]]

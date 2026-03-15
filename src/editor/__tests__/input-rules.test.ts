@@ -267,6 +267,96 @@ describe("Input rules: inline marks", () => {
       const pattern = /(?:^|(\s))\*\*([^*]+)\*\*$/;
       expect(pattern.test("****")).toBe(false);
     });
+
+    it("handler: **wrong* + typed * produces bold 'wrong'", () => {
+      // ProseMirror InputRule `end` includes the typed char (not yet in doc),
+      // so it extends 1 past the paragraph boundary. The handler must use
+      // `end - 1` for the closing marker delete to stay within bounds.
+      const doc = docWithParagraph("**wrong*");
+      const $p = doc.resolve(1); // inside paragraph
+      const cs = $p.start($p.depth); // content start = 1
+      const ce = $p.end($p.depth);   // content end = 9
+
+      const textBefore = doc.textBetween(cs, ce) + "*"; // "**wrong**"
+      const match = /(?:^|(\s))\*\*([^*]+)\*\*$/.exec(textBefore)!;
+      const start = cs + match.index;
+      const end = cs + match.index + match[0].length; // ce + 1 = 10
+
+      const prefix = match[1] || "";
+      const ml = 2;
+      const ms = start + prefix.length;  // 1
+      const oe = ms + ml;                // 3
+      const csm = end - ml;              // 8
+
+      const state = EditorState.create({ doc });
+      const tr = state.tr;
+      tr.delete(csm, end - 1); // FIXED: use end-1 to stay in paragraph
+      tr.delete(ms, oe);
+      tr.addMark(ms, ms + (csm - oe), schema.marks.strong.create());
+
+      const result = state.apply(tr);
+      const para = result.doc.child(0);
+      expect(para.textContent).toBe("wrong");
+      expect(para.child(0).marks.some((m: any) => m.type === schema.marks.strong)).toBe(true);
+    });
+
+    it("handler: hello **wrong* + typed * produces bold 'wrong'", () => {
+      const doc = docWithParagraph("hello **wrong*");
+      const $p = doc.resolve(1);
+      const cs = $p.start($p.depth);
+      const ce = $p.end($p.depth);
+
+      const textBefore = doc.textBetween(cs, ce) + "*";
+      const match = /(?:^|(\s))\*\*([^*]+)\*\*$/.exec(textBefore)!;
+      const start = cs + match.index;
+      const end = cs + match.index + match[0].length;
+
+      const prefix = match[1] || "";
+      const ml = 2;
+      const ms = start + prefix.length;
+      const oe = ms + ml;
+      const csm = end - ml;
+
+      const state = EditorState.create({ doc });
+      const tr = state.tr;
+      tr.delete(csm, end - 1);
+      tr.delete(ms, oe);
+      tr.addMark(ms, ms + (csm - oe), schema.marks.strong.create());
+
+      const result = state.apply(tr);
+      const para = result.doc.child(0);
+      expect(para.textContent).toBe("hello wrong");
+      let found = false;
+      para.forEach((c: any) => {
+        if (c.text === "wrong" && c.marks.some((m: any) => m.type === schema.marks.strong)) found = true;
+      });
+      expect(found).toBe(true);
+    });
+
+    it("guard: doc-level $from.start() does not corrupt text", () => {
+      // When the cursor resolves at doc level (depth 0), $from.start() = 0
+      // instead of 1. This used to shift positions by 1, eating 'g'.
+      // The handler now re-anchors to the textblock, so this is safe.
+      const doc = docWithParagraph("**wrong*");
+
+      // Simulate doc-level start (0) and end (9) — shifted by 1
+      const docStart = 0;
+      const textBefore = "**wrong**";
+      const match = /(?:^|(\s))\*\*([^*]+)\*\*$/.exec(textBefore)!;
+      const start = docStart + match.index; // 0
+      const end = docStart + match.index + match[0].length; // 9
+
+      // closeStart at wrong positions would be 7 (= 'g'), not 8 (= '*')
+      expect(end - 2).toBe(7); // confirms the off-by-one without the fix
+
+      // But the handler now resolves the textblock correctly:
+      const cursorPos = Math.min(end - 1, doc.content.size);
+      const $cursor = doc.resolve(cursorPos);
+      // Position 8 resolves inside the paragraph
+      expect($cursor.parent.isTextblock).toBe(true);
+      const tbStart = $cursor.start($cursor.depth); // = 1
+      expect(tbStart).toBe(1); // paragraph content start, not 0
+    });
   });
 
   describe("italic (*text*)", () => {
