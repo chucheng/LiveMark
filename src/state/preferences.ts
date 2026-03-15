@@ -19,6 +19,26 @@ const [selectedPreset, setSelectedPreset] = createSignal("default");
 const [customShortcuts, setCustomShortcuts] = createSignal<Record<string, string>>({});
 const [hasSeenWelcome, setHasSeenWelcome] = createSignal(false);
 
+// AI Revision settings
+export type AIBaseURL = "anthropic" | "minimax" | "custom";
+const AI_BASE_URLS: Record<Exclude<AIBaseURL, "custom">, string> = {
+  anthropic: "https://api.anthropic.com/v1/messages",
+  minimax: "https://api.minimax.chat/v1/messages",
+};
+export const AI_MODEL = "claude-sonnet-4-20250514";
+export const AI_DEFAULT_PROMPT =
+  "Revise the following text to improve clarity, grammar, and flow while preserving the original meaning and tone. Return only the revised text with no explanation.";
+
+const [aiBaseURLPreset, setAIBaseURLPreset] = createSignal<AIBaseURL>("anthropic");
+const [aiCustomBaseURL, setAICustomBaseURL] = createSignal("");
+const [aiApiKey, setAIApiKey] = createSignal("");
+const [aiPrompt, setAIPrompt] = createSignal(AI_DEFAULT_PROMPT);
+
+function getBaseURL(): string {
+  const preset = aiBaseURLPreset();
+  return preset === "custom" ? aiCustomBaseURL() : AI_BASE_URLS[preset];
+}
+
 export interface UserPreset {
   name: string;
   fontSize: number;
@@ -75,6 +95,10 @@ interface Preferences {
   customShortcuts?: Record<string, string>;
   hasSeenWelcome?: boolean;
   feedback?: FeedbackPrefs;
+  aiBaseURLPreset?: AIBaseURL;
+  aiCustomBaseURL?: string;
+  aiApiKey?: string;
+  aiPrompt?: string;
 }
 
 async function loadPreferences() {
@@ -105,6 +129,10 @@ async function loadPreferences() {
     if (prefs.customShortcuts !== undefined) setCustomShortcuts(prefs.customShortcuts);
     if (prefs.hasSeenWelcome !== undefined) setHasSeenWelcome(prefs.hasSeenWelcome);
     if (prefs.feedback) feedbackState.loadFeedbackPrefs(prefs.feedback);
+    if (prefs.aiBaseURLPreset !== undefined) setAIBaseURLPreset(prefs.aiBaseURLPreset);
+    if (prefs.aiCustomBaseURL !== undefined) setAICustomBaseURL(prefs.aiCustomBaseURL);
+    if (prefs.aiApiKey !== undefined) setAIApiKey(prefs.aiApiKey);
+    if (prefs.aiPrompt !== undefined) setAIPrompt(prefs.aiPrompt);
   } catch {
     // Use defaults
   }
@@ -134,6 +162,10 @@ function savePreferences() {
       customShortcuts: customShortcuts(),
       hasSeenWelcome: hasSeenWelcome(),
       feedback: feedbackState.saveFeedbackPrefs(),
+      aiBaseURLPreset: aiBaseURLPreset(),
+      aiCustomBaseURL: aiCustomBaseURL(),
+      aiApiKey: aiApiKey(),
+      aiPrompt: aiPrompt(),
     };
     try {
       await invoke("write_preferences", { json: JSON.stringify(prefs) });
@@ -330,6 +362,18 @@ export const preferencesState = {
     setHasSeenWelcome(value);
     savePreferences();
   },
+  // AI Revision
+  aiBaseURLPreset,
+  setAIBaseURLPreset(v: AIBaseURL) { setAIBaseURLPreset(v); savePreferences(); },
+  aiCustomBaseURL,
+  setAICustomBaseURL(v: string) { setAICustomBaseURL(v); savePreferences(); },
+  aiApiKey,
+  setAIApiKey(v: string) { setAIApiKey(v); savePreferences(); },
+  aiPrompt,
+  setAIPrompt(v: string) { setAIPrompt(v); savePreferences(); },
+  getBaseURL,
+  AI_MODEL,
+  AI_DEFAULT_PROMPT,
   loadPreferences,
   savePreferences,
   // Constants for UI

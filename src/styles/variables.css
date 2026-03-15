@@ -85,6 +85,21 @@
   --lm-transition-fast: 120ms ease;
   --lm-transition-base: 160ms ease;
 
+  /* ── AI Revise ── */
+  --lm-ai-shimmer-from: rgba(99, 102, 241, 0.08);
+  --lm-ai-shimmer-to: rgba(99, 102, 241, 0.20);
+  --lm-ai-diff-delete: rgba(239, 68, 68, 0.15);
+  --lm-ai-diff-delete-text: #b91c1c;
+  --lm-ai-diff-insert: rgba(34, 197, 94, 0.12);
+  --lm-ai-diff-insert-border: #22c55e;
+  --lm-ai-diff-insert-text: var(--lm-text);
+  --lm-ai-action-bar-bg: var(--lm-bg-elevated);
+  --lm-ai-accept-text: #16a34a;
+  --lm-ai-accept-border: #22c55e;
+  --lm-ai-accept-hover: rgba(34, 197, 94, 0.1);
+  --lm-ai-reject-text: var(--lm-text-muted);
+  --lm-ai-reject-hover: var(--lm-hover);
+
   /* ── Z-Index Hierarchy ── */
   --z-find-bar: 100;
   --z-modal: 1000;
@@ -136,6 +151,20 @@
   --lm-btn-bg-active: #383c46;
   --lm-btn-border: #383c46;
   --lm-btn-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+
+  --lm-ai-shimmer-from: rgba(129, 140, 248, 0.06);
+  --lm-ai-shimmer-to: rgba(129, 140, 248, 0.18);
+  --lm-ai-diff-delete: rgba(239, 68, 68, 0.12);
+  --lm-ai-diff-delete-text: #f87171;
+  --lm-ai-diff-insert: rgba(34, 197, 94, 0.10);
+  --lm-ai-diff-insert-border: #4ade80;
+  --lm-ai-diff-insert-text: var(--lm-text);
+  --lm-ai-action-bar-bg: var(--lm-bg-elevated);
+  --lm-ai-accept-text: #4ade80;
+  --lm-ai-accept-border: #22c55e;
+  --lm-ai-accept-hover: rgba(74, 222, 128, 0.15);
+  --lm-ai-reject-text: var(--lm-text-muted);
+  --lm-ai-reject-hover: var(--lm-hover);
 }
 
 /* Smooth theme transition — applied temporarily during theme toggle */

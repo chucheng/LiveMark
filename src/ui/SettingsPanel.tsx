@@ -1,6 +1,6 @@
 import { createSignal, createEffect, For, Show, onMount, onCleanup } from "solid-js";
 import { uiState } from "../state/ui";
-import { preferencesState, BUILT_IN_PRESETS, PRESET_FONT_VALUES, type UserPreset } from "../state/preferences";
+import { preferencesState, BUILT_IN_PRESETS, PRESET_FONT_VALUES, AI_DEFAULT_PROMPT, type UserPreset, type AIBaseURL } from "../state/preferences";
 import { getCommands, type Command } from "../commands/registry";
 import {
   normalizeKeyEvent,
@@ -33,6 +33,12 @@ export default function SettingsPanel() {
   const [customFont, setCustomFont] = createSignal("");
   const [customFontError, setCustomFontError] = createSignal(false);
   const [presetStatus, setPresetStatus] = createSignal("");
+  // AI settings
+  const [showApiKey, setShowApiKey] = createSignal(false);
+  const [showCustomBaseURL, setShowCustomBaseURL] = createSignal(
+    preferencesState.aiBaseURLPreset() === "custom"
+  );
+
   // Track the previous font family for reverting when custom input is left empty
   const [previousFontFamily, setPreviousFontFamily] = createSignal("system");
 
@@ -422,6 +428,108 @@ export default function SettingsPanel() {
             <Show when={presetStatus()}>
               <div class="lm-settings-preset-status">{presetStatus()}</div>
             </Show>
+          </section>
+
+          {/* ── Section: AI Revision ── */}
+          <section class="lm-settings-section">
+            <h3 class="lm-settings-section-title">AI Revision</h3>
+
+            {/* API Key */}
+            <div class="lm-settings-row">
+              <span class="lm-settings-label">API Key</span>
+              <div class="lm-settings-control" style="position: relative;">
+                <input
+                  class="lm-settings-input"
+                  type={showApiKey() ? "text" : "password"}
+                  placeholder="Enter your API key"
+                  value={preferencesState.aiApiKey()}
+                  onInput={(e) => preferencesState.setAIApiKey(e.currentTarget.value)}
+                  style="padding-right: 32px;"
+                />
+                <button
+                  class="lm-settings-eye-toggle"
+                  onClick={() => setShowApiKey(!showApiKey())}
+                  title={showApiKey() ? "Hide API key" : "Show API key"}
+                  type="button"
+                >
+                  {showApiKey() ? "\u{1F441}" : "\u{1F441}\u{200D}\u{1F5E8}"}
+                </button>
+              </div>
+            </div>
+
+            {/* Base URL */}
+            <div class="lm-settings-row">
+              <span class="lm-settings-label">Base URL</span>
+              <div class="lm-settings-control">
+                <Show when={!showCustomBaseURL()} fallback={
+                  <div style="display: flex; flex-direction: column; align-items: stretch; gap: 4px; width: 100%;">
+                    <input
+                      class="lm-settings-input"
+                      type="text"
+                      placeholder="http(s)://api.example.com/v1/messages"
+                      value={preferencesState.aiCustomBaseURL()}
+                      onInput={(e) => preferencesState.setAICustomBaseURL(e.currentTarget.value)}
+                    />
+                    <button
+                      class="lm-settings-link-btn"
+                      onClick={() => {
+                        setShowCustomBaseURL(false);
+                        preferencesState.setAIBaseURLPreset("anthropic");
+                      }}
+                    >
+                      ← Back to presets
+                    </button>
+                  </div>
+                }>
+                  <select
+                    class="lm-settings-select"
+                    value={preferencesState.aiBaseURLPreset()}
+                    onChange={(e) => {
+                      const val = e.currentTarget.value as AIBaseURL;
+                      if (val === "custom") {
+                        setShowCustomBaseURL(true);
+                        preferencesState.setAIBaseURLPreset("custom");
+                      } else {
+                        preferencesState.setAIBaseURLPreset(val);
+                      }
+                    }}
+                  >
+                    <option value="anthropic">Anthropic</option>
+                    <option value="minimax">MiniMax</option>
+                    <option value="custom">Custom…</option>
+                  </select>
+                </Show>
+              </div>
+            </div>
+
+            {/* Prompt */}
+            <div class="lm-settings-row" style="align-items: flex-start;">
+              <span class="lm-settings-label" style="padding-top: 6px;">Prompt</span>
+              <div class="lm-settings-control" style="flex-direction: column; align-items: stretch; gap: 4px;">
+                <textarea
+                  class="lm-settings-input lm-settings-textarea"
+                  rows={4}
+                  value={preferencesState.aiPrompt()}
+                  onInput={(e) => preferencesState.setAIPrompt(e.currentTarget.value)}
+                />
+                <Show when={preferencesState.aiPrompt() !== AI_DEFAULT_PROMPT}>
+                  <button
+                    class="lm-settings-link-btn"
+                    onClick={() => preferencesState.setAIPrompt(AI_DEFAULT_PROMPT)}
+                  >
+                    Reset to Default
+                  </button>
+                </Show>
+              </div>
+            </div>
+
+            {/* Model label */}
+            <div class="lm-settings-row">
+              <span class="lm-settings-label">Model</span>
+              <div class="lm-settings-control">
+                <span class="lm-settings-static-value">{preferencesState.AI_MODEL}</span>
+              </div>
+            </div>
           </section>
 
           {/* ── Section: Keyboard Shortcuts ── */}

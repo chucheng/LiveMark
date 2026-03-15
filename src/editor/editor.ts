@@ -13,6 +13,7 @@ import { inlineDecorationsPlugin } from "./plugins/inline-decorations";
 import { linkClickPlugin } from "./plugins/link-click";
 import { imageDropPastePlugin } from "./plugins/image-drop-paste";
 import { findReplacePlugin } from "./plugins/find-replace";
+import { aiRevisePlugin } from "./plugins/ai-revise";
 import { trailingParagraphPlugin } from "./plugins/trailing-paragraph";
 import { headingCollapsePlugin } from "./plugins/heading-collapse";
 import { lazyRenderPlugin } from "./plugins/lazy-render";
@@ -85,6 +86,7 @@ export function createEditor(
       imageDropPastePlugin(),
       markdownPastePlugin(),
       findReplacePlugin(),
+      aiRevisePlugin(),
       trailingParagraphPlugin(),
       headingCollapsePlugin(),
       lazyRenderPlugin(),

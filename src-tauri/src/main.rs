@@ -3,8 +3,12 @@
 
 mod commands;
 
-use commands::file::{get_file_mtime, is_file_readonly, read_file, read_file_binary, write_binary_file, write_file, write_temp_html};
-use commands::filetree::{list_directory, unwatch_directory, watch_directory, WatcherState};
+use commands::ai::ai_revise;
+use commands::file::{
+    get_file_mtime, is_file_readonly, read_file, read_file_binary, write_binary_file, write_file,
+    write_temp_html,
+};
+use commands::filetree::{WatcherState, list_directory, unwatch_directory, watch_directory};
 use commands::image::{copy_image, save_image};
 use commands::preferences::{read_preferences, write_preferences};
 use std::sync::Mutex;
@@ -20,7 +24,7 @@ static EARLY_FILES: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
 #[tauri::command]
 fn get_initial_files(state: tauri::State<PendingFiles>) -> Vec<String> {
-    let mut files = state.0.lock().unwrap();
+    let mut files = state.0.lock().unwrap_or_else(|p| p.into_inner());
     std::mem::take(&mut *files)
 }
 
@@ -30,9 +34,7 @@ fn extract_file_args(args: &[String]) -> Vec<String> {
         .skip(1)
         .filter(|a| {
             !a.starts_with('-')
-                && (a.ends_with(".md")
-                    || a.ends_with(".markdown")
-                    || a.ends_with(".txt"))
+                && (a.ends_with(".md") || a.ends_with(".markdown") || a.ends_with(".txt"))
         })
         .map(|path| {
             std::fs::canonicalize(path)
@@ -42,7 +44,6 @@ fn extract_file_args(args: &[String]) -> Vec<String> {
         })
         .collect()
 }
-
 
 fn main() {
     let app = tauri::Builder::default()
@@ -69,7 +70,7 @@ fn main() {
             let mut file_args = extract_file_args(&args);
 
             // Drain the global early-files buffer (Opened events that arrived before setup)
-            let early = std::mem::take(&mut *EARLY_FILES.lock().unwrap());
+            let early = std::mem::take(&mut *EARLY_FILES.lock().unwrap_or_else(|p| p.into_inner()));
             file_args.extend(early);
 
             app.manage(PendingFiles(Mutex::new(file_args)));
@@ -91,7 +92,8 @@ fn main() {
             write_preferences,
             list_directory,
             watch_directory,
-            unwatch_directory
+            unwatch_directory,
+            ai_revise
         ])
         .build(tauri::generate_context!())
         .expect("error while running LiveMark");
@@ -104,7 +106,9 @@ fn main() {
                 .iter()
                 .filter_map(|u| {
                     if u.scheme() == "file" {
-                        u.to_file_path().ok().map(|p| p.to_string_lossy().to_string())
+                        u.to_file_path()
+                            .ok()
+                            .map(|p| p.to_string_lossy().to_string())
                     } else {
                         None
                     }
@@ -113,10 +117,17 @@ fn main() {
             if !files.is_empty() {
                 // Try managed state first (available after setup)
                 if let Some(pending) = app_handle.try_state::<PendingFiles>() {
-                    pending.0.lock().unwrap().extend(files.clone());
+                    pending
+                        .0
+                        .lock()
+                        .unwrap_or_else(|p| p.into_inner())
+                        .extend(files.clone());
                 } else {
                     // setup() hasn't run yet — buffer globally
-                    EARLY_FILES.lock().unwrap().extend(files.clone());
+                    EARLY_FILES
+                        .lock()
+                        .unwrap_or_else(|p| p.into_inner())
+                        .extend(files.clone());
                 }
                 // Emit to frontend if webview is ready
                 if let Some(window) = app_handle.get_webview_window("main") {

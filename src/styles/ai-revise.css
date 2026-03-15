@@ -1,0 +1,68 @@
+/* ── AI Revise — Shimmer (loading state) ── */
+@keyframes lm-ai-shimmer {
+  0%, 100% { background-color: var(--lm-ai-shimmer-from); }
+  50% { background-color: var(--lm-ai-shimmer-to); }
+}
+
+.lm-ai-shimmer {
+  animation: lm-ai-shimmer 1.5s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+/* ── AI Revise — Diff: original text (delete) ── */
+.lm-ai-diff-delete {
+  background: var(--lm-ai-diff-delete);
+  color: var(--lm-ai-diff-delete-text);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* ── AI Revise — Diff: revised text (insert widget) ── */
+.lm-ai-diff-insert-wrapper {
+  display: inline;
+}
+
+.lm-ai-diff-insert {
+  background: var(--lm-ai-diff-insert);
+  border-left: 2px solid var(--lm-ai-diff-insert-border);
+  color: var(--lm-ai-diff-insert-text);
+  padding: 0 4px;
+  border-radius: 2px;
+  margin-left: 4px;
+}
+
+/* ── AI Revise — Floating action bar ── */
+.lm-ai-action-bar {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.lm-ai-action-bar button {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--lm-border);
+  background: var(--lm-ai-action-bar-bg);
+  cursor: pointer;
+  transition: background var(--lm-transition-fast);
+  line-height: 1.5;
+}
+
+.lm-ai-action-bar .lm-ai-accept {
+  color: var(--lm-ai-accept-text);
+  border-color: var(--lm-ai-accept-border);
+}
+
+.lm-ai-action-bar .lm-ai-accept:hover {
+  background: var(--lm-ai-accept-hover);
+}
+
+.lm-ai-action-bar .lm-ai-reject {
+  color: var(--lm-ai-reject-text);
+}
+
+.lm-ai-action-bar .lm-ai-reject:hover {
+  background: var(--lm-ai-reject-hover);
+}

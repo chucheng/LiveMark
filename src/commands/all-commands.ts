@@ -5,6 +5,7 @@ import {
   saveAsFile,
   newFile,
   closeActiveTab,
+  getEditorRef,
 } from "./file-commands";
 import {
   exportHTML,
@@ -13,11 +14,15 @@ import {
   copyAsHTML,
   copyAsMarkdown,
 } from "./export-commands";
+import { reviseSelection } from "./ai-commands";
 import { themeState } from "../state/theme";
 import { uiState } from "../state/ui";
 import { preferencesState } from "../state/preferences";
 import { fileTreeState } from "../state/filetree";
 import { feedbackState } from "../state/feedback";
+
+/** View getter — re-resolves the EditorView on every call (safe across async boundaries). */
+function getEditorView() { return getEditorRef()?.view; }
 
 export function registerAllCommands() {
   // File
@@ -322,6 +327,15 @@ export function registerAllCommands() {
       const labels: Record<string, string> = { light: "Light", dark: "Dark", system: "Auto" };
       uiState.showStatus(`Theme: ${labels[themeState.theme()]}`);
     },
+  });
+
+  // AI
+  registerCommand({
+    id: "ai.revise",
+    label: "AI: Revise Selection",
+    shortcut: "Cmd+J R",
+    category: "AI",
+    execute: () => reviseSelection(getEditorView),
   });
 
   registerCommand({

@@ -10,6 +10,7 @@ import "./styles/live-render.css";
 import "./styles/status-bar.css";
 import "./styles/command-palette.css";
 import "./styles/find-replace.css";
+import "./styles/ai-revise.css";
 import "./styles/source-view.css";
 import "./styles/about.css";
 import "./styles/tab-bar.css";

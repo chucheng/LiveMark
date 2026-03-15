@@ -15,6 +15,7 @@ import {
   saveAsFile,
   newFile,
   setEditorRef,
+  getEditorRef,
   onFileChange,
   onTabSwitch,
   closeActiveTab,
@@ -23,6 +24,7 @@ import {
   silentSave,
   isOpenableFile,
 } from "../commands/file-commands";
+import { reviseSelection } from "../commands/ai-commands";
 import {
   exportHTML,
   exportPDF,
@@ -324,6 +326,10 @@ export default function App() {
         const level = preferencesState.focusMode();
         const labels: Record<string, string> = { off: "Off", block: "Block" };
         uiState.showStatus(`Focus: ${labels[level]}`);
+      },
+      r: () => {
+        // AI Revise — pass getter, not snapshot
+        reviseSelection(() => getEditorRef()?.view);
       },
     },
   };

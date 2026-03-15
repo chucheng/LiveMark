@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.8.5-blue)
+![Version](https://img.shields.io/badge/version-3.0.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -13,6 +13,12 @@ LiveMark renders Markdown **inline as you type**. Headings become headings. Bold
 When your cursor enters a Markdown element, the raw syntax is revealed for editing. When you move away, it renders. The transition is instant and seamless.
 
 ## Features
+
+### AI Revise
+- **AI-powered text revision** — select text, press `Cmd+J R`, get an inline diff to accept or reject
+- **Bring your own key** — works with Anthropic, MiniMax, or any compatible API endpoint
+- **Custom prompts** — tailor the AI to your writing style ("fix grammar", "make concise", "translate to Japanese")
+- **Safe by design** — original text untouched until you explicitly accept; Cmd+Z to undo
 
 ### Editor
 - **Inline live rendering** — Markdown transforms visually as you type
@@ -78,6 +84,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 | `Cmd+T` | Toggle Focus Mode (off → block) |
 | `Cmd+J P` | Copy File Path |
 | `Cmd+J W` | Close All Tabs |
+| `Cmd+J R` | AI: Revise Selection |
 | `Cmd+J T` | Cycle Theme |
 
 ## Tech Stack
@@ -177,6 +184,7 @@ src/
     plugins/
       live-render.ts      — Active block detection + decorations
       heading-collapse.ts — Heading fold/unfold
+      ai-revise.ts        — AI revision inline diff plugin
       find-replace.ts     — Search decorations + match navigation
       placeholder.ts      — Empty doc placeholder
       link-click.ts       — Cmd+click opens links (smart local/external)
@@ -211,6 +219,7 @@ src/
     file-watch.ts         — File system watcher for external changes
     shortcuts.ts          — Custom keyboard shortcut management
   commands/
+    ai-commands.ts        — AI revision command handler
     file-commands.ts      — File operation handlers
     export-commands.ts    — Export action handlers
     registry.ts           — Command registry with fuzzy search
@@ -224,6 +233,7 @@ src-tauri/
   src/
     main.rs               — Tauri entry point, command handlers
     commands/
+      ai.rs               — Rust AI revision HTTP command (Anthropic Messages API)
       file.rs             — Rust read_file/write_file (atomic writes)
       image.rs            — Rust save_image/copy_image commands
       preferences.rs      — Rust read/write preferences (atomic)
@@ -243,10 +253,14 @@ src-tauri/
 | v2.0–v2.3 | Typewriter mode, callout admonitions, smart copy/paste, DOCX export, document outline, link popover |
 | v2.4–v2.7 | Smart link open (local files in-app, URLs in browser), regex find & replace, per-textblock search |
 | v2.8 | Feature cleanup, warm paper theme, auto-save safety, insert image (Cmd+Shift+I), macOS file association fixes |
+| **v3.0** | **AI Revise** — select text, Cmd+J R, inline diff with accept/reject. Bring your own API key (Anthropic, MiniMax, or compatible). Custom prompts, safe diff workflow, full dark mode support |
 
 ## Documentation
 
 - [Tutorial](docs/tutorial.md) — All supported Markdown syntax and features (open in LiveMark)
+- [AI Revise PRD](docs/v3/prd.md) — AI Revise product requirements
+- [AI Revise UX](docs/v3/ux-design.md) — Interaction flows and visual states
+- [AI Revise Implementation](docs/v3/implementation.md) — Architecture and implementation plan
 - [PRD](docs/v2/prd-v2.md) — Product requirements
 - [Architecture](docs/v2/architecture-v2.md) — System architecture and module design
 - [Roadmap](docs/v2/roadmap-v2.md) — Milestones and progress (M1–M5, M7 complete)

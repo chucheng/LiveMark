@@ -502,3 +502,49 @@
   margin-top: 6px;
   padding: 0 2px;
 }
+
+/* ── AI Revision section ── */
+.lm-settings-eye-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  opacity: 0.5;
+  transition: opacity var(--lm-transition-fast);
+}
+
+.lm-settings-eye-toggle:hover {
+  opacity: 0.9;
+}
+
+.lm-settings-link-btn {
+  background: none;
+  border: none;
+  color: var(--lm-accent);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  text-align: left;
+}
+
+.lm-settings-link-btn:hover {
+  text-decoration: underline;
+}
+
+.lm-settings-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: var(--lm-font-body);
+  line-height: 1.5;
+}
+
+.lm-settings-static-value {
+  font-size: 13px;
+  color: var(--lm-text-muted);
+  font-family: var(--lm-font-mono);
+}

@@ -395,6 +395,38 @@ The settings panel includes a shortcut customization section where you can rebin
 
 ---
 
+## AI Revise
+
+LiveMark has built-in AI revision — no more copying text to ChatGPT and back.
+
+### Setup
+
+1. Press `Cmd+,` to open **Settings**
+2. Scroll to the **AI Revision** section
+3. Enter your API key (Anthropic, MiniMax, or any compatible endpoint)
+4. Optionally customize the revision prompt
+
+### Usage
+
+1. **Select text** you want to revise
+2. Press `Cmd+J R` (or use the command palette: "AI: Revise Selection")
+3. The selected text pulses with a shimmer while the AI works
+4. When the revision arrives, you see an inline diff:
+   - ~~Original text~~ shown with strikethrough
+   - Revised text shown in green
+   - Accept/Reject buttons appear inline
+5. Press **Enter** to accept or **Esc** to reject
+
+### Tips
+
+- `Cmd+Z` after accepting will undo the revision and restore the original
+- The editor is read-only while a diff is pending — no accidental edits
+- Maximum selection: 4000 characters
+- Customize the prompt for different tasks: "fix grammar only", "make more concise", "translate to Spanish"
+- Works across multiple paragraphs with mixed formatting
+
+---
+
 ## Heading Collapse
 
 Click the collapse arrow next to any heading to **fold** all content beneath it until the next heading of the same or higher level. This lets you hide sections you're not working on to keep the document compact. Click again to expand.
@@ -447,6 +479,7 @@ Enter fullscreen via the standard macOS green button. In fullscreen mode, the ti
 | `Cmd+,` | Open settings |
 | `Cmd+Shift+[` | Previous tab |
 | `Cmd+Shift+]` | Next tab |
+| `Cmd+J R` | AI: Revise Selection |
 | `Cmd+J F` | Toggle focus mode (chord) |
 | `Cmd+J T` | Cycle theme |
 | `Cmd+J P` | Copy file path |

@@ -3,7 +3,7 @@ export interface Command {
   label: string;
   shortcut?: string;
   defaultShortcut?: string;
-  category: "File" | "Edit" | "View" | "Export";
+  category: "File" | "Edit" | "View" | "Export" | "AI";
   execute: () => void | Promise<void>;
 }
 

@@ -16,6 +16,20 @@ So I built LiveMark.
 
 That's LiveMark. And now it's yours.
 
+---
+
+## AI Revise — Stop Switching Between Your Editor and ChatGPT
+
+I got tired of the copy-paste loop. Select text in my editor, switch to ChatGPT or Claude, paste it in, ask for a revision, copy the result back, paste it over the original. Over and over. For every paragraph, every email, every draft.
+
+So I built native AI revision right into the editor. Select text, press `Cmd+J R`, and get an inline diff — original text struck through, revised text highlighted in green. Press Enter to accept, Esc to reject. Your original is never touched until you say so.
+
+You bring your own API key (Anthropic, MiniMax, or any compatible endpoint). Your text goes straight from your machine to the API — no middleman, no proxy, no data collection. And you can customize the prompt to anything: "fix grammar", "make it concise", "translate to Japanese", "rewrite for a 5-year-old".
+
+Set it up once in **Settings → AI Revision** (`Cmd+,`), and it just works. No more alt-tabbing.
+
+---
+
 That said — it's still a beta. So please, [send me your feedback](mailto:chase.livemark@gmail.com): bugs you hit, things that annoy you, features you wish existed. I read every single one, and I fix them as fast as I can.
 
 ---
@@ -85,4 +99,4 @@ To explore every Markdown feature LiveMark supports — headings, tables, task l
 
 <sub>\[Privacy Policy\]\[^1\]</sub>
 
-\[^1\]: LiveMark respects your privacy. All your documents stay on your machine — we don't collect, store, or transmit any of your content. See the full [Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html) for details.
+\[^1\]: LiveMark respects your privacy. All your documents stay on your machine — we don't collect, store, or transmit any of your content. See the full [Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html) for details
