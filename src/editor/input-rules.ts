@@ -203,33 +203,34 @@ export function buildInputRules() {
 
       // Inline mark rules
       // **bold**: match "**text**" with the closing ** just typed
+      // Boundary: start-of-line, whitespace, or CJK/Hangul/Kana character
       markWrappingRule(
-        /(?:^|(\s))\*\*([^*]+)\*\*$/,
+        /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))\*\*([^*]+)\*\*$/,
         schema.marks.strong,
         2
       ),
       // *italic*: match "*text*" but not "**"
       markWrappingRule(
-        /(?:^|(\s))\*([^*]+)\*$/,
+        /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))\*([^*]+)\*$/,
         schema.marks.em,
         1,
         "italic-star-applied"
       ),
       // _italic_: match "_text_"
       markWrappingRule(
-        /(?:^|(\s))_([^_]+)_$/,
+        /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))_([^_]+)_$/,
         schema.marks.em,
         1
       ),
       // ~~strikethrough~~
       markWrappingRule(
-        /(?:^|(\s))~~([^~]+)~~$/,
+        /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))~~([^~]+)~~$/,
         schema.marks.strikethrough,
         2
       ),
       // `code`
       markWrappingRule(
-        /(?:^|(\s))`([^`]+)`$/,
+        /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))`([^`]+)`$/,
         schema.marks.code,
         1
       ),

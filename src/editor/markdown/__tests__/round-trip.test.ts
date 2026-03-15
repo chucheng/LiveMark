@@ -333,6 +333,36 @@ describe("Image with width round-trip", () => {
   });
 });
 
+describe("CJK round-trip", () => {
+  it("CJK bold", () => {
+    expectRoundTrip("這是**粗體**文字。");
+  });
+
+  it("CJK italic", () => {
+    expectRoundTrip("這是*斜體*文字。");
+  });
+
+  it("CJK inline code", () => {
+    expectRoundTrip("使用`程式碼`語法。");
+  });
+
+  it("CJK strikethrough", () => {
+    expectRoundTrip("~~刪除~~的文字。");
+  });
+
+  it("CJK heading", () => {
+    expectRoundTrip("# 中文標題");
+  });
+
+  it("CJK list item", () => {
+    expectStructuralRoundTrip("- 中文列表項目");
+  });
+
+  it("mixed English and CJK bold", () => {
+    expectRoundTrip("Hello**你好**world");
+  });
+});
+
 describe("Markdown round-trip: structural fidelity", () => {
   it("complex document preserves structure through double round-trip", () => {
     const md = `## Heading

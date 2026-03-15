@@ -417,3 +417,101 @@ describe("Input rules: inline marks", () => {
     });
   });
 });
+
+// --- CJK Boundary Support ---
+
+describe("Input rules: CJK support", () => {
+  // CJK boundary pattern used in the actual input rules
+  const CJK_BOUNDARY = String.raw`[\s\u3000-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF]`;
+
+  const boldPattern = new RegExp(`(?:^|(${CJK_BOUNDARY}))\\*\\*([^*]+)\\*\\*$`);
+  const italicPattern = new RegExp(`(?:^|(${CJK_BOUNDARY}))\\*([^*]+)\\*$`);
+  const codePattern = new RegExp(`(?:^|(${CJK_BOUNDARY}))\`([^\`]+)\`$`);
+  const strikePattern = new RegExp(`(?:^|(${CJK_BOUNDARY}))~~([^~]+)~~$`);
+
+  describe("bold (**text**)", () => {
+    it("**粗體** matches at line start", () => {
+      expect(boldPattern.test("**粗體**")).toBe(true);
+    });
+
+    it("中文**粗體** matches with CJK before", () => {
+      const match = "中文**粗體**".match(boldPattern);
+      expect(match).not.toBeNull();
+      expect(match![1]).toBe("文");
+      expect(match![2]).toBe("粗體");
+    });
+
+    it("テスト**太字** matches with Japanese before", () => {
+      expect(boldPattern.test("テスト**太字**")).toBe(true);
+    });
+
+    it("한국어**굵게** matches with Korean before", () => {
+      expect(boldPattern.test("한국어**굵게**")).toBe(true);
+    });
+  });
+
+  describe("italic (*text*)", () => {
+    it("*斜體* matches at line start", () => {
+      expect(italicPattern.test("*斜體*")).toBe(true);
+    });
+
+    it("中文*斜體* matches with CJK before", () => {
+      const match = "中文*斜體*".match(italicPattern);
+      expect(match).not.toBeNull();
+      expect(match![2]).toBe("斜體");
+    });
+  });
+
+  describe("code (`text`)", () => {
+    it("`程式碼` matches at line start", () => {
+      expect(codePattern.test("`程式碼`")).toBe(true);
+    });
+
+    it("中文`程式碼` matches with CJK before", () => {
+      const match = "中文`程式碼`".match(codePattern);
+      expect(match).not.toBeNull();
+      expect(match![2]).toBe("程式碼");
+    });
+  });
+
+  describe("strikethrough (~~text~~)", () => {
+    it("~~刪除線~~ matches at line start", () => {
+      expect(strikePattern.test("~~刪除線~~")).toBe(true);
+    });
+
+    it("中文~~刪除線~~ matches with CJK before", () => {
+      const match = "中文~~刪除線~~".match(strikePattern);
+      expect(match).not.toBeNull();
+      expect(match![2]).toBe("刪除線");
+    });
+  });
+
+  describe("mixed content", () => {
+    it("english**中文** matches", () => {
+      // 'english' ends with ASCII 'h', which is NOT a CJK boundary
+      expect(boldPattern.test("english**中文**")).toBe(false);
+    });
+
+    it("中文**english** matches", () => {
+      expect(boldPattern.test("中文**english**")).toBe(true);
+    });
+  });
+
+  describe("negative cases", () => {
+    it("café**bold** does NOT match (accented Latin is not a boundary)", () => {
+      expect(boldPattern.test("café**bold**")).toBe(false);
+    });
+
+    it("hello**bold** does NOT match (ASCII letter before)", () => {
+      expect(boldPattern.test("hello**bold**")).toBe(false);
+    });
+
+    it("existing behavior: space **bold** still works", () => {
+      expect(boldPattern.test("word **bold**")).toBe(true);
+    });
+
+    it("existing behavior: **bold** at start still works", () => {
+      expect(boldPattern.test("**bold**")).toBe(true);
+    });
+  });
+});

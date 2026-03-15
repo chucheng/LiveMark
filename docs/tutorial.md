@@ -39,6 +39,8 @@ LiveMark supports all standard inline formatting. These render live as you type:
 
 You can also **combine *formatting* together** for **~~bold strikethrough~~** and other combinations.
 
+**CJK support:** Inline marks work seamlessly after Chinese, Japanese, and Korean characters — no space needed. For example, typing `中文**粗體**` renders as 中文**粗體** automatically.
+
 ---
 
 ## Links

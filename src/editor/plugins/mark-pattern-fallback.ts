@@ -9,10 +9,10 @@ import { schema } from "../schema";
  * match[1] = optional leading space, match[2] = content between markers.
  */
 const MARK_PATTERNS = [
-  { regex: /(?:^|(\s))\*\*([^*]+)\*\*/, mark: schema.marks.strong, markerLen: 2 },
-  { regex: /(?:^|(\s))\*([^*]+)\*/, mark: schema.marks.em, markerLen: 1 },
-  { regex: /(?:^|(\s))~~([^~]+)~~/, mark: schema.marks.strikethrough, markerLen: 2 },
-  { regex: /(?:^|(\s))`([^`]+)`/, mark: schema.marks.code, markerLen: 1 },
+  { regex: /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))\*\*([^*]+)\*\*/, mark: schema.marks.strong, markerLen: 2 },
+  { regex: /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))\*([^*]+)\*/, mark: schema.marks.em, markerLen: 1 },
+  { regex: /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))~~([^~]+)~~/, mark: schema.marks.strikethrough, markerLen: 2 },
+  { regex: /(?:^|([\s\u2E80-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\uFF00-\uFFEF]))`([^`]+)`/, mark: schema.marks.code, markerLen: 1 },
 ];
 
 /**
