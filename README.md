@@ -22,6 +22,7 @@ And underneath, LiveMark is a full-featured Markdown editor with **inline live r
 - **Custom prompts** — "fix grammar", "make concise", "translate to Japanese", "rewrite for a 5-year-old" — whatever you need
 - **Your text, your machine** — text goes directly from your machine to the API. No middleman, no proxy, no data collection
 - **Safe by design** — original text untouched until you explicitly accept; Cmd+Z to undo; input blocked during revision
+- **Markdown-aware** — sends Markdown to the LLM (not plain text), so **bold**, *italic*, links, and other formatting are preserved through revision
 - **Smart guards** — blocks revision on images, tables, code blocks, math, and frontmatter; warns on large selections; adaptive timeout scales with text length
 
 Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
@@ -261,7 +262,7 @@ src-tauri/
 | **v3.0** | **AI Revise** — select text, Cmd+J R, inline diff with accept/reject. Bring your own API key (Anthropic, MiniMax, or compatible). Custom prompts, safe diff workflow, full dark mode support |
 | **v3.1** | AI multi-provider & model selection — per-provider model dropdown, correct MiniMax endpoint, thinking-block-aware response parsing |
 | **v3.2.0** | **AI Revise hardening** — selection validation (blocks images/tables/code), adaptive timeout, gradient shimmer + loading pill, input blocking during revision, source view tab-switch fix |
-| v3.2.1 | Dark mode diff readability fix, AI revise test suite (30 tests), README & welcome rewrite |
+| v3.2.1 | Markdown-aware AI revision (preserves formatting), dark mode diff readability, AI revise test suite, README & welcome rewrite |
 
 ## Documentation
 
