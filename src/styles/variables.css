@@ -154,8 +154,8 @@
 
   --lm-ai-shimmer-from: rgba(129, 140, 248, 0.10);
   --lm-ai-shimmer-to: rgba(129, 140, 248, 0.35);
-  --lm-ai-diff-delete: rgba(239, 68, 68, 0.12);
-  --lm-ai-diff-delete-text: #f87171;
+  --lm-ai-diff-delete: rgba(252, 129, 129, 0.14);
+  --lm-ai-diff-delete-text: #fca5a5;
   --lm-ai-diff-insert: rgba(34, 197, 94, 0.10);
   --lm-ai-diff-insert-border: #4ade80;
   --lm-ai-diff-insert-text: var(--lm-text);

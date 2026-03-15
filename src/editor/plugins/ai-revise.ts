@@ -37,6 +37,34 @@ function emptyState(): AIReviseState {
 /** Module-level view reference — updated by the plugin's view() lifecycle. */
 let activeView: EditorView | null = null;
 
+/** Check if AI revise is in a non-idle state (loading or diff). */
+export function isAIReviseActive(view: EditorView): boolean {
+  const state = aiReviseKey.getState(view.state);
+  return !!state && state.status !== "idle";
+}
+
+function createLoadingWidget(): HTMLElement {
+  const pill = document.createElement("span");
+  pill.className = "lm-ai-loading-pill";
+  pill.setAttribute("contenteditable", "false");
+
+  const dot = document.createElement("span");
+  dot.className = "lm-ai-loading-dot";
+  pill.appendChild(dot);
+
+  const label = document.createElement("span");
+  label.className = "lm-ai-loading-label";
+  label.textContent = "Revising\u2026";
+  pill.appendChild(label);
+
+  const hint = document.createElement("kbd");
+  hint.className = "lm-ai-loading-hint";
+  hint.textContent = "Esc";
+  pill.appendChild(hint);
+
+  return pill;
+}
+
 function createDiffWidget(
   revisedText: string,
   onAccept: () => void,
@@ -108,11 +136,11 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
         if (meta.type === "start") {
           const from = meta.from;
           const to = meta.to;
-          const decos = from < to
-            ? DecorationSet.create(newState.doc, [
-                Decoration.inline(from, to, { class: "lm-ai-shimmer" }),
-              ])
-            : DecorationSet.empty;
+          const decos: Decoration[] = [];
+          if (from < to) {
+            decos.push(Decoration.inline(from, to, { class: "lm-ai-shimmer" }));
+            decos.push(Decoration.widget(to, createLoadingWidget, { side: 1, key: "ai-loading-pill" }));
+          }
 
           return {
             status: "loading",
@@ -121,7 +149,9 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
             originalText: meta.text,
             revisedText: "",
             revisionId: meta.revisionId,
-            decorations: decos,
+            decorations: decos.length > 0
+              ? DecorationSet.create(newState.doc, decos)
+              : DecorationSet.empty,
           };
         }
 
@@ -168,6 +198,25 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
         const pluginState = aiReviseKey.getState(view.state);
         if (!pluginState || pluginState.status === "idle") return false;
 
+        if (pluginState.status === "loading") {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            cancelRevision(view);
+            return true;
+          }
+          // Block ALL editing input during loading — protect the shimmer range.
+          // Allow navigation, Cmd+Z, and modifier combos that don't edit.
+          if (!event.metaKey && !event.ctrlKey) {
+            const nav = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+                         "Home", "End", "PageUp", "PageDown", "Shift", "Alt",
+                         "Meta", "Control", "CapsLock"];
+            if (!nav.includes(event.key)) {
+              return true;
+            }
+          }
+          return false;
+        }
+
         if (pluginState.status === "diff") {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -191,12 +240,28 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
           }
         }
 
-        if (pluginState.status === "loading" && event.key === "Escape") {
+        return false;
+      },
+      /** Block clipboard paste and drop during loading/diff to protect state. */
+      handlePaste(view) {
+        const pluginState = aiReviseKey.getState(view.state);
+        if (pluginState && pluginState.status !== "idle") return true;
+        return false;
+      },
+      handleDrop(view) {
+        const pluginState = aiReviseKey.getState(view.state);
+        if (pluginState && pluginState.status !== "idle") return true;
+        return false;
+      },
+      /** Block clicks from changing cursor into the shimmer/diff region during loading. */
+      handleClick(view, _pos, event) {
+        const pluginState = aiReviseKey.getState(view.state);
+        if (!pluginState || pluginState.status === "idle") return false;
+        // During loading: block all clicks to prevent selection disruption
+        if (pluginState.status === "loading") {
           event.preventDefault();
-          cancelRevision(view);
           return true;
         }
-
         return false;
       },
     },
@@ -204,7 +269,11 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
       activeView = editorView;
       return {
         update(view) { activeView = view; },
-        destroy() { activeView = null; },
+        destroy() {
+          // If the view is destroyed while a revision is in flight,
+          // the revisionId guard in ai-commands.ts handles the stale response.
+          activeView = null;
+        },
       };
     },
   });

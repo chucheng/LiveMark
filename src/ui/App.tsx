@@ -26,7 +26,7 @@ import {
   silentSave,
   isOpenableFile,
 } from "../commands/file-commands";
-import { reviseSelection } from "../commands/ai-commands";
+import { reviseSelection, cancelActiveRevision } from "../commands/ai-commands";
 import {
   exportHTML,
   exportPDF,
@@ -232,8 +232,14 @@ export default function App() {
     tabSwitching = true;
     setTabSwitchInProgress(true);
     try {
+      // Cancel any in-flight AI revision before switching tabs
+      cancelActiveRevision(() => getEditorRef()?.view);
       // Dismiss open menus/overlays to prevent stale state across tabs
       uiState.setFindOpen(false);
+      if (uiState.isSourceView()) {
+        applySourceEdits();
+        uiState.setSourceView(false);
+      }
       window.dispatchEvent(new CustomEvent("lm-tab-switch"));
       await restoreTabState();
     } finally {
@@ -244,6 +250,9 @@ export default function App() {
 
   async function handleCloseTab(tabId: string) {
     if (!editor) return;
+
+    // Cancel any in-flight AI revision before closing
+    cancelActiveRevision(() => getEditorRef()?.view);
 
     // Snapshot current tab before any operations
     const scroller = editor.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
@@ -738,6 +747,8 @@ export default function App() {
       appWindow.setTitle(`LiveMark (v${__APP_VERSION__})`);
       unlistenClose = await appWindow.onCloseRequested(async (event) => {
         try {
+          // Cancel any in-flight AI revision before closing
+          cancelActiveRevision(() => getEditorRef()?.view);
           const canClose = await confirmAllUnsavedChanges();
           if (!canClose) {
             event.preventDefault();

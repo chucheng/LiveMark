@@ -1,13 +1,78 @@
-/* ── AI Revise — Shimmer (loading state) ── */
-@keyframes lm-ai-shimmer {
-  0%, 100% { background-color: var(--lm-ai-shimmer-from); }
-  50% { background-color: var(--lm-ai-shimmer-to); }
+/* ── AI Revise — Shimmer (loading state) — gradient sweep ── */
+@keyframes lm-ai-shimmer-sweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .lm-ai-shimmer {
-  animation: lm-ai-shimmer 1.2s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--lm-ai-shimmer-from) 0%,
+    var(--lm-ai-shimmer-to) 40%,
+    var(--lm-ai-shimmer-from) 60%,
+    var(--lm-ai-shimmer-from) 100%
+  );
+  background-size: 200% 100%;
+  animation: lm-ai-shimmer-sweep 1.8s ease-in-out infinite;
   border-radius: 3px;
   padding: 1px 0;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── AI Revise — Loading pill widget ── */
+@keyframes lm-ai-dot-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.lm-ai-loading-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  padding: 2px 10px 2px 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--lm-ai-loading-text, var(--lm-text-muted));
+  background: var(--lm-ai-loading-bg, var(--lm-bg-surface));
+  border: 1px solid var(--lm-ai-loading-border, var(--lm-border));
+  border-radius: 12px;
+  vertical-align: middle;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  animation: lm-ai-pill-fade-in 200ms ease-out;
+}
+
+@keyframes lm-ai-pill-fade-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lm-ai-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lm-accent);
+  animation: lm-ai-dot-pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.lm-ai-loading-label {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.lm-ai-loading-hint {
+  font-size: 10px;
+  font-family: inherit;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--lm-ai-loading-hint-bg, var(--lm-bg-inset));
+  border: 1px solid var(--lm-border-subtle);
+  color: var(--lm-text-faint);
+  line-height: 1.5;
 }
 
 /* ── AI Revise — Diff: original text (delete) ── */

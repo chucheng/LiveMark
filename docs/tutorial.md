@@ -413,7 +413,7 @@ LiveMark has built-in AI revision — no more copying text to ChatGPT and back.
 
 1. **Select text** you want to revise
 2. Press `Cmd+J R` (or use the command palette: "AI: Revise Selection")
-3. The selected text pulses with a shimmer while the AI works
+3. The selected text shimmers with a gradient sweep while the AI works, with a "Revising…" pill showing Esc to cancel
 4. When the revision arrives, you see an inline diff:
    - ~~Original text~~ shown with strikethrough
    - Revised text shown in green
@@ -423,10 +423,11 @@ LiveMark has built-in AI revision — no more copying text to ChatGPT and back.
 ### Tips
 
 - `Cmd+Z` after accepting will undo the revision and restore the original
-- The editor is read-only while a diff is pending — no accidental edits
-- Maximum selection: 4000 characters
+- The editor blocks all input during loading and while a diff is pending — no accidental edits
+- Images, tables, code blocks, math blocks, and frontmatter are automatically excluded — select prose only
+- Large multi-block selections show a helpful tip suggesting 1–2 paragraphs for best results
+- Maximum selection: 4000 characters; timeout scales with text length (10–30s)
 - Customize the prompt for different tasks: "fix grammar only", "make more concise", "translate to Spanish"
-- Works across multiple paragraphs with mixed formatting
 
 ---
 
