@@ -97,6 +97,26 @@
   margin-left: 4px;
 }
 
+/* ── AI Revise — Rendered Markdown inside diff insert ── */
+.lm-ai-diff-insert p {
+  display: inline;
+  margin: 0;
+}
+.lm-ai-diff-insert p + p::before {
+  content: "\A";
+  white-space: pre;
+}
+.lm-ai-diff-insert code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0 3px;
+  border-radius: 2px;
+  font-size: 0.9em;
+}
+.lm-ai-diff-insert a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 /* ── AI Revise — Floating action bar ── */
 .lm-ai-action-bar {
   display: inline-flex;

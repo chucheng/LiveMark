@@ -14,11 +14,21 @@ import {
   isAIReviseActive,
 } from "../ai-revise";
 
-// Mock parseMarkdown to avoid full markdown-it dependency in tests
+// Mock parseMarkdown and md to avoid full markdown-it dependency in tests
 vi.mock("../../markdown/parser", () => ({
   parseMarkdown: (text: string) => {
     const textNode = schema.text(text);
     return schema.node("doc", null, [schema.node("paragraph", null, [textNode])]);
+  },
+  md: {
+    render: (text: string) => {
+      // Minimal Markdown rendering for tests: **bold** → <strong>bold</strong>
+      const escaped = text
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>")
+        .replace(/`(.+?)`/g, "<code>$1</code>");
+      return `<p>${escaped}</p>\n`;
+    },
   },
 }));
 
@@ -256,6 +266,23 @@ describe("AI Revise: loading widget", () => {
 
     cancelRevision(view);
     expect(view.dom.querySelector(".lm-ai-loading-pill")).toBeNull();
+    view.destroy();
+  });
+});
+
+// --- Diff widget renders Markdown ---
+
+describe("AI Revise: diff widget Markdown rendering", () => {
+  it("diff widget renders Markdown formatting as HTML", () => {
+    const view = createView(doc(p("Hello world")));
+    startRevision(view, 1, 6, "Hello", 1);
+    completeRevision(view, "**Hi** there", 1);
+
+    const insert = view.dom.querySelector(".lm-ai-diff-insert");
+    expect(insert).not.toBeNull();
+    // Should contain rendered <strong>, not raw **
+    expect(insert!.innerHTML).toContain("<strong>");
+    expect(insert!.textContent).toContain("Hi");
     view.destroy();
   });
 });

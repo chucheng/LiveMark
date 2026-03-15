@@ -1,7 +1,7 @@
 import { Plugin, PluginKey } from "prosemirror-state";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
 import { Fragment } from "prosemirror-model";
-import { parseMarkdown } from "../markdown/parser";
+import { parseMarkdown, md } from "../markdown/parser";
 
 export const aiReviseKey = new PluginKey<AIReviseState>("ai-revise");
 
@@ -65,6 +65,15 @@ function createLoadingWidget(): HTMLElement {
   return pill;
 }
 
+/** Render revised Markdown to HTML for the diff widget preview. */
+function renderRevisedHTML(markdown: string): string {
+  let html = md.render(markdown).trim();
+  // Strip outer <p></p> for single-paragraph results to keep the widget inline
+  const match = html.match(/^<p>([\s\S]*)<\/p>$/);
+  if (match) html = match[1];
+  return html;
+}
+
 function createDiffWidget(
   revisedText: string,
   onAccept: () => void,
@@ -75,7 +84,7 @@ function createDiffWidget(
 
   const textEl = document.createElement("span");
   textEl.className = "lm-ai-diff-insert";
-  textEl.textContent = revisedText;
+  textEl.innerHTML = renderRevisedHTML(revisedText);
   wrapper.appendChild(textEl);
 
   const bar = document.createElement("span");
