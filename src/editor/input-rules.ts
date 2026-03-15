@@ -129,37 +129,29 @@ function markWrappingRule(
   metaKey?: string
 ) {
   return new InputRule(pattern, (state: EditorState, match, start, end) => {
-    // Guard: `end` includes the just-typed character (not yet in the doc).
-    // The cursor position is `end - 1`. Resolve it and verify we're inside
-    // a textblock — if $from resolved at the doc level the positions are
-    // shifted and the delete would corrupt adjacent characters.
-    const cursorPos = Math.min(end - 1, state.doc.content.size);
-    const $cursor = state.doc.resolve(cursorPos);
+    // `end` is the cursor position (from = to in handleTextInput).
+    // The typed char is NOT yet in the document.
+    const $cursor = state.doc.resolve(Math.min(end, state.doc.content.size));
     if (!$cursor.parent.isTextblock) return null;
 
-    // Re-anchor positions to the textblock content start so they are correct
-    // even when ProseMirror's InputRule computed `start` from a doc-level
-    // $from.start() instead of the paragraph-level one.
     const tbStart = $cursor.start($cursor.depth);
-    const textLen = $cursor.parent.textContent.length;
     const reStart = tbStart + (match.index ?? 0);
 
     // match[1] is the prefix before the marker (may be empty)
     const prefix = match[1] || "";
 
-    // Calculate positions
+    // Calculate positions using cursor (`end`), NOT textblock length.
+    // The closing marker chars in the doc are the (markerLength - 1) chars
+    // immediately before the cursor. The typed char is the last marker char.
     const markerStart = reStart + prefix.length;
     const openEnd = markerStart + markerLength;
-    // `end` includes the typed char; the actual closing marker in the doc
-    // has `markerLength - 1` characters (the last one is the typed char).
-    const closeStart = tbStart + textLen - (markerLength - 1);
+    const closeStart = end - (markerLength - 1);
 
-    // The text content is between the markers
     const tr = state.tr;
 
-    // Delete the existing closing marker characters (not the typed char)
-    if (closeStart < tbStart + textLen) {
-      tr.delete(closeStart, tbStart + textLen);
+    // Delete the closing marker chars already in the doc (higher positions first)
+    if (closeStart < end) {
+      tr.delete(closeStart, end);
     }
     // Delete opening marker
     tr.delete(markerStart, openEnd);
