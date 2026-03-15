@@ -407,7 +407,8 @@ export function registerAllCommands() {
         const savedPath = await invoke<string>("copy_image", { source: selected, docDir });
         const editor = getEditorRef();
         if (!editor) return;
-        const node = schema.nodes.image.create({ src: savedPath, alt: "" });
+        const fileName = selected.split("/").pop() ?? "";
+        const node = schema.nodes.image.create({ src: savedPath, alt: fileName });
         const tr = editor.view.state.tr.replaceSelectionWith(node);
         editor.view.dispatch(tr.scrollIntoView());
       } catch {
