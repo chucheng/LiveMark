@@ -1,4 +1,4 @@
-use notify_debouncer_mini::{new_debouncer, DebouncedEventKind};
+use notify_debouncer_mini::{DebouncedEventKind, new_debouncer};
 use serde::Serialize;
 use std::fs;
 use std::path::Path;
@@ -69,22 +69,32 @@ pub fn list_directory(path: String) -> Result<Vec<FileEntry>, String> {
     Ok(entries)
 }
 
-pub struct WatcherState(pub Mutex<Option<notify_debouncer_mini::Debouncer<notify::RecommendedWatcher>>>);
+pub struct WatcherState(
+    pub Mutex<Option<notify_debouncer_mini::Debouncer<notify::RecommendedWatcher>>>,
+);
 
 #[tauri::command]
 pub fn watch_directory(app: tauri::AppHandle, path: String) -> Result<(), String> {
     let state = app.state::<WatcherState>();
-    let mut guard = state.0.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    let mut guard = state
+        .0
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
 
     let app_handle = app.clone();
-    let mut debouncer = new_debouncer(Duration::from_millis(500), move |res: Result<Vec<notify_debouncer_mini::DebouncedEvent>, notify::Error>| {
-        if let Ok(events) = res {
-            let has_changes = events.iter().any(|e| matches!(e.kind, DebouncedEventKind::Any));
-            if has_changes {
-                let _ = app_handle.emit("fs-change", ());
+    let mut debouncer = new_debouncer(
+        Duration::from_millis(500),
+        move |res: Result<Vec<notify_debouncer_mini::DebouncedEvent>, notify::Error>| {
+            if let Ok(events) = res {
+                let has_changes = events
+                    .iter()
+                    .any(|e| matches!(e.kind, DebouncedEventKind::Any));
+                if has_changes {
+                    let _ = app_handle.emit("fs-change", ());
+                }
             }
-        }
-    })
+        },
+    )
     .map_err(|e| format!("Failed to create watcher: {e}"))?;
 
     debouncer
@@ -99,7 +109,10 @@ pub fn watch_directory(app: tauri::AppHandle, path: String) -> Result<(), String
 #[tauri::command]
 pub fn unwatch_directory(app: tauri::AppHandle) -> Result<(), String> {
     let state = app.state::<WatcherState>();
-    let mut guard = state.0.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    let mut guard = state
+        .0
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
     *guard = None;
     Ok(())
 }

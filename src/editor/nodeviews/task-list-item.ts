@@ -68,7 +68,5 @@ export class TaskListItemView implements NodeView {
 
   destroy() {
     this.checkboxEl.removeEventListener("mousedown", this.handleMousedown);
-    (this as any).view = null;
-    (this as any).getPos = null;
   }
 }

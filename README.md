@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue)
+![Version](https://img.shields.io/badge/version-3.0.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -254,6 +254,7 @@ src-tauri/
 | v2.4–v2.7 | Smart link open (local files in-app, URLs in browser), regex find & replace, per-textblock search |
 | v2.8 | Feature cleanup, warm paper theme, auto-save safety, insert image (Cmd+Shift+I), macOS file association fixes |
 | **v3.0** | **AI Revise** — select text, Cmd+J R, inline diff with accept/reject. Bring your own API key (Anthropic, MiniMax, or compatible). Custom prompts, safe diff workflow, full dark mode support |
+| v3.0.1 | Internal quality: poison-safe Mutex locks, cargo fmt, dead code cleanup, null guard in heading collapse |
 
 ## Documentation
 

@@ -1,4 +1,5 @@
 import { createSignal, createEffect, For, Show, onMount, onCleanup } from "solid-js";
+import { invoke } from "@tauri-apps/api/core";
 import { uiState } from "../state/ui";
 import { preferencesState, BUILT_IN_PRESETS, PRESET_FONT_VALUES, AI_DEFAULT_PROMPT, type UserPreset, type AIBaseURL } from "../state/preferences";
 import { getCommands, type Command } from "../commands/registry";
@@ -38,6 +39,39 @@ export default function SettingsPanel() {
   const [showCustomBaseURL, setShowCustomBaseURL] = createSignal(
     preferencesState.aiBaseURLPreset() === "custom"
   );
+  const [aiChecking, setAIChecking] = createSignal(false);
+  const [aiCheckError, setAICheckError] = createSignal("");
+  let aiCheckVersion = 0; // incremented on each check; effect uses it to skip post-check clears
+
+  // Clear stale error when user edits credentials after a check.
+  createEffect(() => {
+    // Subscribe to credential signals
+    preferencesState.aiBaseURLPreset();
+    preferencesState.aiCustomBaseURL();
+    preferencesState.aiApiKey();
+    // Capture version at effect creation; skip the initial run
+    const v = aiCheckVersion;
+    if (v > 0) setAICheckError("");
+  });
+
+  async function checkAIConnection() {
+    const baseUrl = preferencesState.getBaseURL();
+    const apiKey = preferencesState.aiApiKey();
+    if (!baseUrl) { setAICheckError("Set a base URL first"); return; }
+    if (!apiKey) { setAICheckError("Set an API key first"); return; }
+    setAIChecking(true);
+    setAICheckError("");
+    try {
+      await invoke("ai_check", { baseUrl, apiKey });
+      preferencesState.setAIVerified(true);
+    } catch (err) {
+      preferencesState.setAIVerified(false);
+      setAICheckError(String(err));
+    } finally {
+      aiCheckVersion++;
+      setAIChecking(false);
+    }
+  }
 
   // Track the previous font family for reverting when custom input is left empty
   const [previousFontFamily, setPreviousFontFamily] = createSignal("system");
@@ -498,6 +532,26 @@ export default function SettingsPanel() {
                     <option value="minimax">MiniMax</option>
                     <option value="custom">Custom…</option>
                   </select>
+                </Show>
+              </div>
+            </div>
+
+            {/* Check Connection */}
+            <div class="lm-settings-row">
+              <span class="lm-settings-label"></span>
+              <div class="lm-settings-control" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button
+                    class="lm-settings-link-btn"
+                    classList={{ "lm-ai-check-ok": preferencesState.aiVerified() && !aiChecking() }}
+                    disabled={aiChecking()}
+                    onClick={checkAIConnection}
+                  >
+                    {aiChecking() ? "Checking\u2026" : preferencesState.aiVerified() ? "\u2713 Connected" : "Check Connection"}
+                  </button>
+                </div>
+                <Show when={aiCheckError()}>
+                  <span class="lm-ai-check-error">{aiCheckError()}</span>
                 </Show>
               </div>
             </div>

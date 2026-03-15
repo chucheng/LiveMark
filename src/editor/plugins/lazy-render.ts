@@ -92,7 +92,6 @@ export function lazyRenderPlugin(): Plugin {
         if (state.doc.childCount < BLOCK_THRESHOLD) return DecorationSet.empty;
 
         const decos: Decoration[] = [];
-        let offset = 0;
         state.doc.forEach((node, pos) => {
           // Add data attribute for position tracking
           decos.push(
@@ -110,7 +109,6 @@ export function lazyRenderPlugin(): Plugin {
               })
             );
           }
-          offset++;
         });
 
         return DecorationSet.create(state.doc, decos);

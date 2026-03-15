@@ -25,6 +25,11 @@ export async function reviseSelection(
     return;
   }
 
+  if (!preferencesState.aiVerified()) {
+    uiState.showStatus("Check your AI connection in Settings \u2192 AI first");
+    return;
+  }
+
   const { from, to } = view.state.selection;
   if (from === to) {
     uiState.showStatus("Select text first, then revise");
@@ -38,16 +43,7 @@ export async function reviseSelection(
   }
 
   const apiKey = preferencesState.aiApiKey();
-  if (!apiKey) {
-    uiState.showStatus("Set your API key in Settings \u2192 AI");
-    return;
-  }
-
   const baseUrl = preferencesState.getBaseURL();
-  if (!baseUrl) {
-    uiState.showStatus("Set the API base URL in Settings \u2192 AI");
-    return;
-  }
 
   // Assign a revision ID so we can detect stale responses after await
   const revisionId = nextRevisionId++;

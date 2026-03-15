@@ -536,6 +536,23 @@
   text-decoration: underline;
 }
 
+.lm-settings-link-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  text-decoration: none;
+}
+
+.lm-ai-check-ok {
+  color: var(--lm-success, #22c55e);
+}
+
+.lm-ai-check-error {
+  color: var(--lm-danger, #ef4444);
+  font-size: 12px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 .lm-settings-textarea {
   resize: vertical;
   min-height: 60px;

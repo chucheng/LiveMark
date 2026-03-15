@@ -3,7 +3,7 @@
 
 mod commands;
 
-use commands::ai::ai_revise;
+use commands::ai::{ai_check, ai_revise};
 use commands::file::{
     get_file_mtime, is_file_readonly, read_file, read_file_binary, write_binary_file, write_file,
     write_temp_html,
@@ -93,7 +93,8 @@ fn main() {
             list_directory,
             watch_directory,
             unwatch_directory,
-            ai_revise
+            ai_revise,
+            ai_check
         ])
         .build(tauri::generate_context!())
         .expect("error while running LiveMark");

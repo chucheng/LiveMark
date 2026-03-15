@@ -29,17 +29,14 @@ pub fn write_file(path: String, content: String) -> Result<(), String> {
     // Use a unique temp filename to prevent concurrent write conflicts
     let tmp_name = format!(
         ".{}.{}.tmp",
-        target
-            .file_name()
-            .unwrap_or_default()
-            .to_string_lossy(),
+        target.file_name().unwrap_or_default().to_string_lossy(),
         std::process::id()
     );
     let tmp_path = target.with_file_name(&tmp_name);
 
     // Write to temporary file first
-    let mut file = fs::File::create(&tmp_path)
-        .map_err(|e| format!("Failed to create temp file: {e}"))?;
+    let mut file =
+        fs::File::create(&tmp_path).map_err(|e| format!("Failed to create temp file: {e}"))?;
     file.write_all(content.as_bytes())
         .map_err(|e| format!("Failed to write temp file: {e}"))?;
     file.sync_all()
@@ -76,16 +73,13 @@ pub fn write_binary_file(path: String, data: Vec<u8>) -> Result<(), String> {
 
     let tmp_name = format!(
         ".{}.{}.tmp",
-        target
-            .file_name()
-            .unwrap_or_default()
-            .to_string_lossy(),
+        target.file_name().unwrap_or_default().to_string_lossy(),
         std::process::id()
     );
     let tmp_path = target.with_file_name(&tmp_name);
 
-    let mut file = fs::File::create(&tmp_path)
-        .map_err(|e| format!("Failed to create temp file: {e}"))?;
+    let mut file =
+        fs::File::create(&tmp_path).map_err(|e| format!("Failed to create temp file: {e}"))?;
     file.write_all(&data)
         .map_err(|e| format!("Failed to write temp file: {e}"))?;
     file.sync_all()

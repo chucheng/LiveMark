@@ -42,7 +42,5 @@ export class HorizontalRuleView implements NodeView {
 
   destroy() {
     this.dom.removeEventListener("mousedown", this.handleMousedown);
-    (this as any).view = null;
-    (this as any).getPos = null;
   }
 }

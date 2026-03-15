@@ -33,6 +33,7 @@ const [aiBaseURLPreset, setAIBaseURLPreset] = createSignal<AIBaseURL>("anthropic
 const [aiCustomBaseURL, setAICustomBaseURL] = createSignal("");
 const [aiApiKey, setAIApiKey] = createSignal("");
 const [aiPrompt, setAIPrompt] = createSignal(AI_DEFAULT_PROMPT);
+const [aiVerified, setAIVerified] = createSignal(false);
 
 function getBaseURL(): string {
   const preset = aiBaseURLPreset();
@@ -99,6 +100,7 @@ interface Preferences {
   aiCustomBaseURL?: string;
   aiApiKey?: string;
   aiPrompt?: string;
+  aiVerified?: boolean;
 }
 
 async function loadPreferences() {
@@ -133,6 +135,7 @@ async function loadPreferences() {
     if (prefs.aiCustomBaseURL !== undefined) setAICustomBaseURL(prefs.aiCustomBaseURL);
     if (prefs.aiApiKey !== undefined) setAIApiKey(prefs.aiApiKey);
     if (prefs.aiPrompt !== undefined) setAIPrompt(prefs.aiPrompt);
+    if (prefs.aiVerified !== undefined) setAIVerified(prefs.aiVerified);
   } catch {
     // Use defaults
   }
@@ -166,6 +169,7 @@ function savePreferences() {
       aiCustomBaseURL: aiCustomBaseURL(),
       aiApiKey: aiApiKey(),
       aiPrompt: aiPrompt(),
+      aiVerified: aiVerified(),
     };
     try {
       await invoke("write_preferences", { json: JSON.stringify(prefs) });
@@ -364,13 +368,15 @@ export const preferencesState = {
   },
   // AI Revision
   aiBaseURLPreset,
-  setAIBaseURLPreset(v: AIBaseURL) { setAIBaseURLPreset(v); savePreferences(); },
+  setAIBaseURLPreset(v: AIBaseURL) { setAIBaseURLPreset(v); setAIVerified(false); savePreferences(); },
   aiCustomBaseURL,
-  setAICustomBaseURL(v: string) { setAICustomBaseURL(v); savePreferences(); },
+  setAICustomBaseURL(v: string) { setAICustomBaseURL(v); setAIVerified(false); savePreferences(); },
   aiApiKey,
-  setAIApiKey(v: string) { setAIApiKey(v); savePreferences(); },
+  setAIApiKey(v: string) { setAIApiKey(v); setAIVerified(false); savePreferences(); },
   aiPrompt,
   setAIPrompt(v: string) { setAIPrompt(v); savePreferences(); },
+  aiVerified,
+  setAIVerified(v: boolean) { setAIVerified(v); savePreferences(); },
   getBaseURL,
   AI_MODEL,
   AI_DEFAULT_PROMPT,

@@ -125,11 +125,13 @@ export function headingCollapsePlugin(): Plugin<CollapseState> {
         const decorations: Decoration[] = [];
 
         for (const headingPos of pluginState.collapsed) {
+          const headingNode = state.doc.nodeAt(headingPos);
+          if (!headingNode) continue;
           const range = getCollapseRange(state.doc, headingPos);
           if (range) {
             // Add a widget showing the collapse indicator on the heading
             decorations.push(
-              Decoration.widget(headingPos + state.doc.nodeAt(headingPos)!.nodeSize - 1, () => {
+              Decoration.widget(headingPos + headingNode.nodeSize - 1, () => {
                 const indicator = document.createElement("span");
                 indicator.className = "lm-collapse-indicator";
                 indicator.textContent = " ⋯";
