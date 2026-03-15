@@ -19,6 +19,24 @@ function headingRule(nodeType: NodeType, maxLevel: number) {
   );
 }
 
+/**
+ * When inside a heading, typing "# " at the start increases the heading level.
+ * E.g. H1 + "# " → H2, H2 + "# " → H3, up to H6.
+ */
+function headingUpgradeRule() {
+  return new InputRule(/^#\s$/, (state: EditorState, _match, start, end) => {
+    const $start = state.doc.resolve(start);
+    const parent = $start.parent;
+    if (parent.type !== schema.nodes.heading) return null;
+    const level = parent.attrs.level as number;
+    if (level >= 6) return null;
+    // Delete the typed "# " and increase the heading level
+    const tr = state.tr.delete(start, end);
+    tr.setNodeMarkup($start.before(), undefined, { level: level + 1 });
+    return tr;
+  });
+}
+
 function blockquoteRule(nodeType: NodeType) {
   return wrappingInputRule(/^\s*>\s$/, nodeType);
 }
@@ -182,6 +200,7 @@ export function buildInputRules() {
       // Task list rules must come before bullet list rule
       taskListRule(false),
       taskListRule(true),
+      headingUpgradeRule(),
       headingRule(schema.nodes.heading, 6),
       blockquoteRule(schema.nodes.blockquote),
       bulletListRule(schema.nodes.bullet_list),

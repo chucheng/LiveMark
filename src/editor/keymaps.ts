@@ -264,6 +264,31 @@ const insertLink: Command = (state, dispatch) => {
 };
 
 /**
+ * On Backspace at the start of a heading:
+ * - If level > 1, decrease heading level (e.g. H2 → H1)
+ * - If level === 1, convert to paragraph
+ */
+const headingBackspace: Command = (state, dispatch) => {
+  const { $head, empty } = state.selection;
+  if (!empty) return false;
+
+  const parent = $head.parent;
+  if (parent.type !== schema.nodes.heading) return false;
+  if ($head.parentOffset !== 0) return false;
+
+  if (dispatch) {
+    const pos = $head.before();
+    const level = parent.attrs.level as number;
+    if (level > 1) {
+      dispatch(state.tr.setNodeMarkup(pos, undefined, { level: level - 1 }).scrollIntoView());
+    } else {
+      dispatch(state.tr.setNodeMarkup(pos, schema.nodes.paragraph).scrollIntoView());
+    }
+  }
+  return true;
+};
+
+/**
  * On Enter in an empty heading, convert it to a paragraph.
  * This lets users "escape" a heading by pressing Enter on a blank line.
  */
@@ -311,6 +336,9 @@ export function buildKeymaps() {
   keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item), sinkListItem(schema.nodes.task_list_item));
   keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item), liftListItem(schema.nodes.task_list_item));
   keys["Enter"] = chainCommands(exitCodeBlockOnEnter, exitHeadingOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item), splitListItem(schema.nodes.task_list_item));
+
+  // Heading level adjustment
+  keys["Backspace"] = headingBackspace;
 
   // Block operations
   keys["Mod-Alt-c"] = toCodeBlock;

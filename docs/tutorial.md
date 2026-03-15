@@ -23,6 +23,8 @@ Markdown supports six levels of headings. Type `#` followed by a space to create
 ###### Heading 6
 
 > **Tip:** Press Enter at the end of a heading to start a new heading line. If that line is empty, press Enter again to convert it back to a normal paragraph — just like in Typora.
+>
+> **Level adjustment:** Type `# ` at the start of a heading to increase its level (H1 → H2 → … → H6). Press Backspace at the start to decrease the level (H2 → H1 → paragraph).
 
 ---
 
