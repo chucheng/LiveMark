@@ -1,6 +1,8 @@
 import { onMount, onCleanup, createSignal, createEffect, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+
+declare const __APP_VERSION__: string;
 import { listen } from "@tauri-apps/api/event";
 import { createEditor, type EditorInstance } from "../editor/editor";
 import { documentState } from "../state/document";
@@ -733,6 +735,7 @@ export default function App() {
 
       // Fullscreen detection + window close handler (register early, before file loading)
       const appWindow = getCurrentWindow();
+      appWindow.setTitle(`LiveMark (v${__APP_VERSION__})`);
       unlistenClose = await appWindow.onCloseRequested(async (event) => {
         try {
           const canClose = await confirmAllUnsavedChanges();
