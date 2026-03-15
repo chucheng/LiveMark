@@ -16,6 +16,10 @@ interface SourceViewProps {
 
 export default function SourceView(props: SourceViewProps) {
   let textareaRef!: HTMLTextAreaElement;
+  // Guard: ignore scroll events until initial scroll position is applied.
+  // Without this, the textarea fires onScroll(scrollTop=0) during mount,
+  // which clobbers the syncLine signal before onMount can read it.
+  let scrollReady = false;
 
   /** Compute the height of a single line from the textarea's font metrics. */
   function getLineHeight(): number {
@@ -45,7 +49,10 @@ export default function SourceView(props: SourceViewProps) {
     if (line > 0) {
       requestAnimationFrame(() => {
         scrollToLine(line);
+        scrollReady = true;
       });
+    } else {
+      scrollReady = true;
     }
     // Set initial cursor position
     const offset = props.initialCursorOffset?.() ?? 0;
@@ -57,7 +64,7 @@ export default function SourceView(props: SourceViewProps) {
   });
 
   function handleScroll() {
-    if (!textareaRef) return;
+    if (!scrollReady || !textareaRef) return;
     props.onTopLineChange?.(getTopVisibleLine());
   }
 

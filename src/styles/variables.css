@@ -100,6 +100,10 @@
   --lm-ai-reject-text: var(--lm-text-muted);
   --lm-ai-reject-hover: var(--lm-hover);
 
+  /* ── Scrollbar ── */
+  --lm-scrollbar-thumb: rgba(0, 0, 0, 0.18);
+  --lm-scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+
   /* ── Z-Index Hierarchy ── */
   --z-find-bar: 100;
   --z-modal: 1000;
@@ -151,6 +155,9 @@
   --lm-btn-bg-active: #383c46;
   --lm-btn-border: #383c46;
   --lm-btn-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+
+  --lm-scrollbar-thumb: rgba(255, 255, 255, 0.16);
+  --lm-scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
 
   --lm-ai-shimmer-from: rgba(129, 140, 248, 0.10);
   --lm-ai-shimmer-to: rgba(129, 140, 248, 0.35);

@@ -17,6 +17,25 @@
   overflow-y: auto;
   display: flex;
   justify-content: center;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lm-scrollbar-thumb) transparent;
+}
+
+.lm-editor-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lm-editor-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lm-editor-wrapper::-webkit-scrollbar-thumb {
+  background: var(--lm-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.lm-editor-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--lm-scrollbar-thumb-hover);
 }
 
 .lm-editor-mount {

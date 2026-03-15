@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.3.3-blue)
+![Version](https://img.shields.io/badge/version-3.3.4-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -278,6 +278,7 @@ src-tauri/
 | v3.3.1 | Heading level adjustment — Backspace at start of heading decreases level (H2→H1→paragraph); `# ` inside a heading increases level (H1→H2→…→H6) |
 | v3.3.2 | Fix source view scroll sync — toggling source view no longer loses scroll position (syncLine captured before unmount) |
 | v3.3.3 | Click-to-rename expanded — clicking anywhere in the titlebar title (including path) triggers rename, not just the filename |
+| v3.3.4 | Scroll sync fix part 2 — guard SourceView scroll handler during mount to prevent syncLine clobber; themed scrollbars (thin, light/dark) |
 
 ## Documentation
 
