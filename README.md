@@ -286,6 +286,7 @@ src-tauri/
 | v3.3.9 | Fix bold input rule corruption with trailing content |
 | **v3.4.0** | **CJK support** — inline mark input rules (**bold**, *italic*, `code`, ~~strikethrough~~) now trigger after Chinese, Japanese, and Korean characters without requiring a space boundary |
 | v3.4.1 | Expanded CJK test coverage — fullwidth punctuation boundaries, Japanese/Korean tests, prefix capture correctness, negative cases |
+| v3.4.2 | Fix scroll preservation on zoom/spacing changes; fix cursor sync on editor ↔ source view switch |
 
 ## Documentation
 

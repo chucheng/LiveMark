@@ -152,15 +152,64 @@ export default function App() {
   createEffect(() => {
     const fs = preferencesState.fontSize();
     const cw = preferencesState.contentWidth();
+    const ff = preferencesState.fontFamilyCSS();
+    const lh = preferencesState.lineHeight();
+    const ps = preferencesState.paragraphSpacing();
+    const px = preferencesState.editorPaddingX();
+    const py = preferencesState.editorPaddingY();
+
+    // --- Capture scroll anchor BEFORE applying CSS changes ---
+    // Editor mode: anchor a PM doc position near the top of the viewport
+    let anchorPos = -1;
+    let anchorOffsetFromTop = 0;
+    const view = editor?.view;
+    const scroller = view?.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+    if (view && scroller && !uiState.isSourceView() && scroller.scrollTop > 0) {
+      const scrollerRect = scroller.getBoundingClientRect();
+      const probeY = scrollerRect.top + Math.min(scrollerRect.height / 3, 100);
+      const pos = view.posAtCoords({ left: scrollerRect.left + 20, top: probeY });
+      if (pos) {
+        anchorPos = pos.pos;
+        try {
+          const coords = view.coordsAtPos(anchorPos);
+          anchorOffsetFromTop = coords.top - scrollerRect.top;
+        } catch { /* ignore */ }
+      }
+    }
+    // Source view mode: remember the top visible line (fractional)
+    let savedSourceLine = -1;
+    if (uiState.isSourceView()) {
+      savedSourceLine = syncLine();
+    }
+
+    // --- Apply CSS variables ---
     const root = document.documentElement.style;
     root.setProperty("--lm-font-size", fs + "px");
     root.setProperty("--lm-zoom-scale", String(fs / 16));
     root.setProperty("--lm-content-width", (cw * fs / 16) + "px");
-    root.setProperty("--lm-font-body", preferencesState.fontFamilyCSS());
-    root.setProperty("--lm-line-height", String(preferencesState.lineHeight()));
-    root.setProperty("--lm-paragraph-spacing", preferencesState.paragraphSpacing());
-    root.setProperty("--lm-editor-padding-x", preferencesState.editorPaddingX() + "px");
-    root.setProperty("--lm-editor-padding-y", preferencesState.editorPaddingY() + "px");
+    root.setProperty("--lm-font-body", ff);
+    root.setProperty("--lm-line-height", String(lh));
+    root.setProperty("--lm-paragraph-spacing", ps);
+    root.setProperty("--lm-editor-padding-x", px + "px");
+    root.setProperty("--lm-editor-padding-y", py + "px");
+
+    // --- Restore scroll after reflow ---
+    if (anchorPos >= 0 && view && scroller) {
+      requestAnimationFrame(() => {
+        try {
+          const coords = view.coordsAtPos(anchorPos);
+          const scrollerRect = scroller.getBoundingClientRect();
+          const newOffset = coords.top - scrollerRect.top;
+          scroller.scrollTop += newOffset - anchorOffsetFromTop;
+        } catch { /* ignore */ }
+      });
+    }
+    // Source view: dispatch a custom event so SourceView can re-scroll
+    if (savedSourceLine >= 0) {
+      requestAnimationFrame(() => {
+        window.dispatchEvent(new CustomEvent("lm-source-rescroll", { detail: savedSourceLine }));
+      });
+    }
   });
 
   // Apply custom shortcuts whenever they change
@@ -416,8 +465,13 @@ export default function App() {
     return lines.length - 1;
   }
 
+  /** Snapshot the source textarea text before applying edits, for cursor restoration. */
+  let sourceTextBeforeApply: string | null = null;
+
   /** Apply source-view edits back to ProseMirror and reset tracking. */
   function applySourceEdits() {
+    // Snapshot the text the cursor offset refers to (before round-trip)
+    sourceTextBeforeApply = sourceEditedText ?? editor?.getMarkdown() ?? null;
     if (sourceEditedText != null && editor) {
       editor.setMarkdown(sourceEditedText);
       documentState.setDirty();
@@ -430,13 +484,15 @@ export default function App() {
   function restoreCursorFromSource() {
     if (!editor) return;
     try {
-      const md = editor.getMarkdown();
+      // Use the text the cursor was positioned in (before round-trip normalization)
+      const md = sourceTextBeforeApply ?? editor.getMarkdown();
       const mdLine = offsetToMdLine(md, sourceCursorOffset);
       const map = buildSyncMap(editor.view.state.doc);
       const pos = mdLineToPmPos(map, mdLine, editor.view.state.doc.content.size);
       const sel = TextSelection.create(editor.view.state.doc, pos, pos);
-      editor.view.dispatch(editor.view.state.tr.setSelection(sel));
+      editor.view.dispatch(editor.view.state.tr.setSelection(sel).scrollIntoView());
     } catch { /* ignore */ }
+    sourceTextBeforeApply = null;
     editor.view.focus();
   }
 

@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { onMount, onCleanup } from "solid-js";
 
 interface SourceViewProps {
   markdown: () => string;
@@ -44,6 +44,14 @@ export default function SourceView(props: SourceViewProps) {
     props.onCursorChange?.(textareaRef.selectionStart);
   }
 
+  /** Handle layout changes (zoom, spacing) — re-scroll to the same logical line. */
+  function handleRescroll(e: Event) {
+    const line = (e as CustomEvent<number>).detail;
+    if (typeof line === "number" && line >= 0) {
+      scrollToLine(line);
+    }
+  }
+
   onMount(() => {
     const line = props.initialLine?.() ?? 0;
     if (line > 0) {
@@ -61,6 +69,12 @@ export default function SourceView(props: SourceViewProps) {
       textareaRef.selectionEnd = offset;
     }
     textareaRef.focus();
+
+    window.addEventListener("lm-source-rescroll", handleRescroll);
+  });
+
+  onCleanup(() => {
+    window.removeEventListener("lm-source-rescroll", handleRescroll);
   });
 
   function handleScroll() {
