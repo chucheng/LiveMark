@@ -280,7 +280,7 @@ src-tauri/
 | v3.3.3 | Click-to-rename expanded — clicking anywhere in the titlebar title (including path) triggers rename, not just the filename |
 | v3.3.4 | Scroll sync fix part 2 — guard SourceView scroll handler during mount to prevent syncLine clobber; themed scrollbars (thin, light/dark) |
 | v3.3.5–3.3.6 | Mark boundary Backspace (bold→italic→plain peeling); table column resizing; scroll sync accuracy improvements |
-| v3.3.7 | Open-source readiness — CONTRIBUTING.md, GitHub issue/PR templates, Cargo.toml metadata, marketing strategy doc |
+| v3.3.7 | Scroll sync cursor fix — toggling source view no longer shifts cursor by one line; open-source readiness (CONTRIBUTING.md, issue/PR templates) |
 
 ## Documentation
 
