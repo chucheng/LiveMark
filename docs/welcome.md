@@ -95,4 +95,4 @@ That said — it's still a beta. So please, [send me your feedback](mailto:chase
 
 <sub>\[Privacy Policy\]\[^1\]</sub>
 
-\[^1\]: LiveMark respects your privacy. All your documents stay on your machine — we don't collect, store, or transmit any of your content. See the full [Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html) for details
+\[^1\]: LiveMark respects your privacy. All your documents stay on your machine — we don't collect, store, or transmit any of your content. See the full [Privacy Policy](privacy-policy.md) for details

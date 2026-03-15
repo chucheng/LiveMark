@@ -55,7 +55,7 @@ Create links with `[text](url)` syntax:
 
 - [LiveMark on GitHub](https://github.com/user/livemark)
 - [Markdown Guide](https://www.markdownguide.org "The Markdown Guide")
-- [Privacy Policy](https://chaselivemark.github.io/policy/livemark-privacy-policy.html) — try clicking this link!
+- [Privacy Policy](privacy-policy.md) — try clicking this link!
 
 **Tip:** Click any rendered link to see a **link popover** with the URL preview and quick actions — Open, Copy, Edit, or Unlink. Hold `Cmd` (or `Ctrl`) and click to open the link directly.
 

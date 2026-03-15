@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.4.3-blue)
+![Version](https://img.shields.io/badge/version-3.4.4-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -282,6 +282,7 @@ src-tauri/
 - [Design System](docs/v2/design-system-light-theme.md) — Light theme design system
 - [UX Specifications](docs/v2/ux-v2.md) — Interaction flows and component specs
 - [Test Plan](docs/v2/testing-v2.md) — Test strategy and test cases
+- [Privacy Policy](docs/privacy-policy.md) — How LiveMark handles your data
 - [Ideas](docs/future/ideas.md) — Feature ideas and future directions
 - [Archive](docs/archive/) — Historical V1 planning and reference documents
 
