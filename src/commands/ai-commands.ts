@@ -8,19 +8,19 @@ import {
   completeRevision,
   cancelRevision,
 } from "../editor/plugins/ai-revise";
-import { serializeMarkdown } from "../editor/markdown/serializer";
+import { extractPlainTextAndMarks } from "../editor/ai-format-preservation";
 import type { EditorView } from "prosemirror-view";
 import type { Node } from "prosemirror-model";
 
 const MAX_SELECTION_LENGTH = 4000;
 const MULTI_BLOCK_WARN_THRESHOLD = 3;
 
-/** Base timeout: 10s for short text, +2s per 500 chars beyond 500. Cap at 30s. */
+/** Base timeout: 30s for short text, +2s per 500 chars beyond 500. Cap at 60s. */
 function computeTimeout(textLength: number): number {
-  const BASE_MS = 10_000;
+  const BASE_MS = 30_000;
   const extra = Math.max(0, textLength - 500);
   const additional = Math.floor(extra / 500) * 2000;
-  return Math.min(BASE_MS + additional, 30_000);
+  return Math.min(BASE_MS + additional, 60_000);
 }
 
 /**
@@ -129,10 +129,9 @@ export async function reviseSelection(
     return;
   }
 
-  // Serialize selection as Markdown (preserves **bold**, *italic*, links, etc.)
-  const slice = view.state.doc.slice(from, to);
-  const tempDoc = view.state.schema.topNodeType.create(null, slice.content);
-  const text = serializeMarkdown(tempDoc).trim();
+  // Extract plain text + mark map (marks stripped for LLM, re-applied after)
+  const extraction = extractPlainTextAndMarks(view.state.doc, from, to);
+  const text = extraction.plainText.trim();
   if (text.length > MAX_SELECTION_LENGTH) {
     uiState.showStatus(`Selection too long (${text.length} chars) \u2014 max ${MAX_SELECTION_LENGTH} characters`);
     return;
@@ -154,7 +153,7 @@ export async function reviseSelection(
   const revisionId = nextRevisionId++;
 
   // Start loading decoration (shimmer + pill)
-  startRevision(view, from, to, text, revisionId);
+  startRevision(view, from, to, extraction, revisionId);
   uiState.showStatus("Revising\u2026");
 
   try {

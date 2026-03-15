@@ -14,6 +14,8 @@ import {
   isAIReviseActive,
 } from "../ai-revise";
 
+import type { ExtractionResult } from "../../ai-format-preservation";
+
 // Mock parseMarkdown and md to avoid full markdown-it dependency in tests
 vi.mock("../../markdown/parser", () => ({
   parseMarkdown: (text: string) => {
@@ -31,6 +33,20 @@ vi.mock("../../markdown/parser", () => ({
     },
   },
 }));
+
+// Mock reapplyMarks to passthrough in these state-machine tests
+vi.mock("../../ai-format-preservation", () => ({
+  reapplyMarks: (_extraction: ExtractionResult, revisedText: string) => revisedText,
+}));
+
+/** Helper: create a dummy ExtractionResult for testing. */
+function dummyExtraction(text: string): ExtractionResult {
+  return {
+    plainText: text,
+    markMap: Array.from({ length: text.length }, () => []),
+    codePlaceholders: new Map(),
+  };
+}
 
 // --- Node builders ---
 
@@ -120,13 +136,13 @@ describe("AI Revise plugin: state machine", () => {
 
   it("start transitions to loading with shimmer + pill decorations", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
 
     const ps = getPluginState(view.state);
     expect(ps.status).toBe("loading");
     expect(ps.originalFrom).toBe(1);
     expect(ps.originalTo).toBe(6);
-    expect(ps.originalText).toBe("Hello");
+    expect(ps.originalExtraction?.plainText).toBe("Hello");
     expect(ps.revisionId).toBe(1);
 
     // Should have 2 decorations: inline shimmer + widget pill
@@ -137,7 +153,7 @@ describe("AI Revise plugin: state machine", () => {
 
   it("cancel from loading returns to idle", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
     expect(getPluginState(view.state).status).toBe("loading");
 
     cancelRevision(view);
@@ -147,7 +163,7 @@ describe("AI Revise plugin: state machine", () => {
 
   it("complete with matching revisionId transitions to diff", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 42);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 42);
     completeRevision(view, "Hi there", 42);
 
     const ps = getPluginState(view.state);
@@ -158,7 +174,7 @@ describe("AI Revise plugin: state machine", () => {
 
   it("complete with stale revisionId is ignored", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 42);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 42);
     completeRevision(view, "Hi there", 99); // wrong ID
 
     const ps = getPluginState(view.state);
@@ -168,7 +184,7 @@ describe("AI Revise plugin: state machine", () => {
 
   it("reject from diff returns to idle", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
     completeRevision(view, "Hi", 1);
     expect(getPluginState(view.state).status).toBe("diff");
 
@@ -197,14 +213,14 @@ describe("AI Revise: isAIReviseActive", () => {
 
   it("returns true when loading", () => {
     const view = createView(doc(p("Hello")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
     expect(isAIReviseActive(view)).toBe(true);
     view.destroy();
   });
 
   it("returns true when diff", () => {
     const view = createView(doc(p("Hello")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
     completeRevision(view, "Hi", 1);
     expect(isAIReviseActive(view)).toBe(true);
     view.destroy();
@@ -216,7 +232,7 @@ describe("AI Revise: isAIReviseActive", () => {
 describe("AI Revise: decoration remapping", () => {
   it("remaps positions when text is inserted before the shimmer range", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
 
     // Insert "XX" at position 1 (before "Hello")
     const tr = view.state.tr.insertText("XX", 1, 1);
@@ -230,7 +246,7 @@ describe("AI Revise: decoration remapping", () => {
 
   it("cancels if the shimmer range collapses to zero", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
 
     // Delete the entire "Hello" range
     const tr = view.state.tr.delete(1, 6);
@@ -247,7 +263,7 @@ describe("AI Revise: decoration remapping", () => {
 describe("AI Revise: loading widget", () => {
   it("loading pill widget has expected structure", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
 
     // Find the widget in the DOM
     const pill = view.dom.querySelector(".lm-ai-loading-pill");
@@ -261,7 +277,7 @@ describe("AI Revise: loading widget", () => {
 
   it("loading pill disappears after cancel", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
     expect(view.dom.querySelector(".lm-ai-loading-pill")).not.toBeNull();
 
     cancelRevision(view);
@@ -275,7 +291,7 @@ describe("AI Revise: loading widget", () => {
 describe("AI Revise: diff widget Markdown rendering", () => {
   it("diff widget renders Markdown formatting as HTML", () => {
     const view = createView(doc(p("Hello world")));
-    startRevision(view, 1, 6, "Hello", 1);
+    startRevision(view, 1, 6, dummyExtraction("Hello"), 1);
     completeRevision(view, "**Hi** there", 1);
 
     const insert = view.dom.querySelector(".lm-ai-diff-insert");

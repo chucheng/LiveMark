@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.2.5-blue)
+![Version](https://img.shields.io/badge/version-3.2.6-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -22,7 +22,7 @@ And underneath, LiveMark is a full-featured Markdown editor with **inline live r
 - **Custom prompts** — "fix grammar", "make concise", "translate to Japanese", "rewrite for a 5-year-old" — whatever you need
 - **Your text, your machine** — text goes directly from your machine to the API. No middleman, no proxy, no data collection
 - **Safe by design** — original text untouched until you explicitly accept; Cmd+Z to undo; input blocked during revision
-- **Markdown-aware** — sends Markdown to the LLM (not plain text), so **bold**, *italic*, links, and other formatting are preserved through revision
+- **Formatting preservation** — strips marks before sending to the LLM, then uses diff-based alignment to re-apply **bold**, *italic*, `code`, links, and other formatting to the revised text. Works reliably even with weaker models that strip Markdown
 - **Smart guards** — blocks revision on images, tables, code blocks, math, and frontmatter; warns on large selections; adaptive timeout scales with text length
 
 Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
@@ -176,6 +176,7 @@ src/
     schema.ts             — ProseMirror schema (1:1 Markdown mapping)
     editor.ts             — Editor init, getMarkdown/setMarkdown API
     highlight.ts          — highlight.js wrapper (syntax highlighting)
+    ai-format-preservation.ts — Diff-based mark extraction and re-application for AI revision
     input-rules.ts        — Auto-transforms (# heading, **bold**, etc.)
     keymaps.ts            — Keyboard shortcuts
     mermaid-loader.ts     — Lazy mermaid.js loader and renderer
@@ -270,6 +271,7 @@ src-tauri/
 | v3.2.3 | AI diff widget renders Markdown formatting (bold, italic, code, links) instead of showing raw syntax |
 | v3.2.4 | AI formatting preservation — post-processor re-applies **bold**/*italic*/`code` stripped by the LLM; improved AI prompt; italic-to-bold upgrade (`*text*` → `**text**`); `_italic_` input rule |
 | v3.2.5 | Fix bold input rule character corruption — `**wrong*` + `*` no longer loses the last character before the closing marker |
+| v3.2.6 | **Diff-based formatting preservation** — strips marks before LLM, re-applies via `diff-match-patch` alignment; code spans protected with `{{CODE_N}}` placeholders; works reliably with weaker models |
 
 ## Documentation
 

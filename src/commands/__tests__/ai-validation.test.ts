@@ -95,28 +95,28 @@ function createView(d: Node): EditorView {
 // --- computeTimeout ---
 
 describe("computeTimeout", () => {
-  it("returns 10s for short text (≤500 chars)", () => {
-    expect(computeTimeout(0)).toBe(10_000);
-    expect(computeTimeout(100)).toBe(10_000);
-    expect(computeTimeout(500)).toBe(10_000);
+  it("returns 30s for short text (≤500 chars)", () => {
+    expect(computeTimeout(0)).toBe(30_000);
+    expect(computeTimeout(100)).toBe(30_000);
+    expect(computeTimeout(500)).toBe(30_000);
   });
 
   it("adds 2s per 500 chars beyond 500", () => {
-    expect(computeTimeout(1000)).toBe(12_000); // 500 extra → +2s
-    expect(computeTimeout(1500)).toBe(14_000); // 1000 extra → +4s
-    expect(computeTimeout(2000)).toBe(16_000); // 1500 extra → +6s
+    expect(computeTimeout(1000)).toBe(32_000); // 500 extra → +2s
+    expect(computeTimeout(1500)).toBe(34_000); // 1000 extra → +4s
+    expect(computeTimeout(2000)).toBe(36_000); // 1500 extra → +6s
   });
 
   it("partial 500-char blocks round down", () => {
-    expect(computeTimeout(700)).toBe(10_000); // 200 extra → floor(200/500)*2000 = 0
-    expect(computeTimeout(999)).toBe(10_000); // 499 extra → floor(499/500)*2000 = 0
-    expect(computeTimeout(1001)).toBe(12_000); // 501 extra → floor(501/500)*2000 = 2000
+    expect(computeTimeout(700)).toBe(30_000); // 200 extra → floor(200/500)*2000 = 0
+    expect(computeTimeout(999)).toBe(30_000); // 499 extra → floor(499/500)*2000 = 0
+    expect(computeTimeout(1001)).toBe(32_000); // 501 extra → floor(501/500)*2000 = 2000
   });
 
-  it("caps at 30s", () => {
-    expect(computeTimeout(4000)).toBe(24_000); // 3500 extra → +14s
-    expect(computeTimeout(10000)).toBe(30_000); // would be 48s, capped
-    expect(computeTimeout(50000)).toBe(30_000);
+  it("caps at 60s", () => {
+    expect(computeTimeout(4000)).toBe(44_000); // 3500 extra → +14s
+    expect(computeTimeout(10000)).toBe(60_000); // would be 68s, capped
+    expect(computeTimeout(50000)).toBe(60_000);
   });
 });
 

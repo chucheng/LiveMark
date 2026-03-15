@@ -53,11 +53,11 @@ const AI_PRESET_CONFIG: Record<Exclude<AIBaseURL, "custom">, AIPresetConfig> = {
   },
 };
 export const AI_DEFAULT_PROMPT =
-  "Revise the following Markdown text to improve clarity, grammar, and flow while preserving the original meaning and tone. " +
-  "CRITICAL: You MUST preserve all inline Markdown formatting exactly. " +
-  "If a word is wrapped in **bold**, keep it **bold**. If a word is in *italic*, keep it *italic*. " +
-  "Preserve `inline code`, [links](url), and all other Markdown syntax on the same words. " +
-  "Return ONLY the revised Markdown — no explanations, no wrapping in code fences.";
+  "Revise the given text to improve clarity, grammar, and flow. " +
+  "Preserve the original meaning and tone. " +
+  "Do not modify text inside {{CODE_N}} placeholders — keep them exactly as-is. " +
+  "Return ONLY the revised text — no explanations, no code fences, no prefixes.";
+
 
 const [aiBaseURLPreset, setAIBaseURLPreset] = createSignal<AIBaseURL>("anthropic");
 const [aiCustomBaseURL, setAICustomBaseURL] = createSignal("");

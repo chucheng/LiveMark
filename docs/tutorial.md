@@ -424,10 +424,10 @@ LiveMark has built-in AI revision — no more copying text to ChatGPT and back.
 
 - `Cmd+Z` after accepting will undo the revision and restore the original
 - The editor blocks all input during loading and while a diff is pending — no accidental edits
-- **Markdown-aware** — the selected text is sent as Markdown, so **bold**, *italic*, links, and other formatting are preserved through revision. A post-processor also re-applies any inline formatting the AI may have accidentally stripped
+- **Formatting preservation** — LiveMark strips inline marks before sending text to the LLM, then uses diff-based alignment to re-apply **bold**, *italic*, `code`, links, and other formatting to the revised text. Code spans are protected with placeholders so the LLM cannot mangle them. This works reliably even with weaker models that strip Markdown
 - Images, tables, code blocks, math blocks, and frontmatter are automatically excluded — select prose only
 - Large multi-block selections show a helpful tip suggesting 1–2 paragraphs for best results
-- Maximum selection: 4000 characters; timeout scales with text length (10–30s)
+- Maximum selection: 4000 characters; timeout scales with text length (30–60s)
 - Customize the prompt for different tasks: "fix grammar only", "make more concise", "translate to Spanish"
 
 ---
