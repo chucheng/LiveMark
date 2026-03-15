@@ -448,10 +448,12 @@ export default function App() {
       e.preventDefault();
       applySourceEdits();
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
+      // Capture syncLine BEFORE toggle — unmounting SourceView resets scrollTop→0 which clobbers the signal
+      const savedLine = syncLine();
       uiState.toggleSourceView();
       requestAnimationFrame(() => {
         if (editor && editorScroller) {
-          scrollEditorToLine(editor.view, editorScroller, syncLine());
+          scrollEditorToLine(editor.view, editorScroller, savedLine);
         }
         restoreCursorFromSource();
       });
@@ -556,11 +558,13 @@ export default function App() {
       const editorScroller = editor?.view.dom.closest(".lm-editor-wrapper") as HTMLElement | null;
       if (uiState.isSourceView()) {
         applySourceEdits();
+        // Capture syncLine BEFORE toggle — unmounting SourceView resets scrollTop→0 which clobbers the signal
+        const savedLine = syncLine();
         uiState.toggleSourceView();
         uiState.showStatus("Source view: Off");
         requestAnimationFrame(() => {
           if (editor && editorScroller) {
-            scrollEditorToLine(editor.view, editorScroller, syncLine());
+            scrollEditorToLine(editor.view, editorScroller, savedLine);
           }
           restoreCursorFromSource();
         });
