@@ -55,6 +55,16 @@ Perfect for when you need to check or fine-tune the exact syntax, then flip back
 
 ---
 
+## CJK-Native — Write in Any Language
+
+Most Markdown editors were built for English. Their formatting shortcuts assume words are separated by spaces — so when you type `中文**粗體**` or `日本語*斜体*`, nothing happens. You have to add an awkward space before the `**` or give up and use keyboard shortcuts instead of the natural Markdown syntax.
+
+LiveMark doesn't have that problem. Inline marks — **bold**, *italic*, `code`, ~~strikethrough~~ — trigger seamlessly after Chinese, Japanese, and Korean characters. No spaces needed. No workarounds. Just type Markdown the way it was meant to be typed, in any language.
+
+If you write in Chinese, Japanese, or Korean (or mix CJK with English), LiveMark is one of the few editors that gets this right.
+
+---
+
 ## More Things to Love
 
 - **Command Palette** (`Cmd+Shift+P`) — Every action in one search bar

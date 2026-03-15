@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.4.1-blue)
+![Version](https://img.shields.io/badge/version-3.4.3-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -43,6 +43,7 @@ Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
 - **Smart links** — local file links open in a tab; external URLs open in browser
 - **Find & replace** — Cmd+F with regex, case-sensitive toggle, replace-all; per-textblock search for tables and nested lists
 - **Italic-to-bold upgrade** — type `*text*` to get italic, then type `*` to upgrade to bold; also supports `_text_` for italic
+- **CJK-native** — inline marks (`**bold**`, `*italic*`, `` `code` ``, `~~strike~~`) trigger seamlessly after Chinese, Japanese, and Korean characters with no space needed — because CJK languages don't have spaces between words, and your editor shouldn't require them
 - **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts, undo/redo
 - **Large file support** — IntersectionObserver-based lazy rendering
 
@@ -287,6 +288,7 @@ src-tauri/
 | **v3.4.0** | **CJK support** — inline mark input rules (**bold**, *italic*, `code`, ~~strikethrough~~) now trigger after Chinese, Japanese, and Korean characters without requiring a space boundary |
 | v3.4.1 | Expanded CJK test coverage — fullwidth punctuation boundaries, Japanese/Korean tests, prefix capture correctness, negative cases |
 | v3.4.2 | Fix scroll preservation on zoom/spacing changes; fix cursor sync on editor ↔ source view switch |
+| v3.4.3 | Docs: highlight CJK-native support as a key feature across README, tutorial, and welcome — because most editors get CJK wrong |
 
 ## Documentation
 

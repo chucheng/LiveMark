@@ -39,7 +39,13 @@ LiveMark supports all standard inline formatting. These render live as you type:
 
 You can also **combine *formatting* together** for **~~bold strikethrough~~** and other combinations.
 
-**CJK support:** Inline marks work seamlessly after Chinese, Japanese, and Korean characters — no space needed. For example, typing `中文**粗體**` renders as 中文**粗體** automatically.
+**CJK support:** Most Markdown editors require a space before `**` or `*` markers — which breaks the flow for Chinese, Japanese, and Korean text where words aren't separated by spaces. LiveMark handles this natively. Inline marks trigger seamlessly after CJK characters:
+
+- 中文**粗體**測試 — bold after Chinese
+- 日本語*斜体*テスト — italic after Japanese
+- 한국어`코드`테스트 — code after Korean
+- 中文~~刪除線~~測試 — strikethrough after Chinese
+- Mixed: English中文**混合bold** — works across scripts
 
 ---
 
