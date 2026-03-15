@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.2.6-blue)
+![Version](https://img.shields.io/badge/version-3.2.7-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -272,6 +272,7 @@ src-tauri/
 | v3.2.4 | AI formatting preservation — post-processor re-applies **bold**/*italic*/`code` stripped by the LLM; improved AI prompt; italic-to-bold upgrade (`*text*` → `**text**`); `_italic_` input rule |
 | v3.2.5 | Fix bold input rule character corruption — `**wrong*` + `*` no longer loses the last character before the closing marker |
 | v3.2.6 | **Diff-based formatting preservation** — strips marks before LLM, re-applies via `diff-match-patch` alignment; code spans protected with `{{CODE_N}}` placeholders; works reliably with weaker models |
+| v3.2.7 | Empty heading exits to paragraph on Enter (Typora-style); outline sidebar scales with zoom level |
 
 ## Documentation
 

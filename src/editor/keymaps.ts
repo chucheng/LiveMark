@@ -263,6 +263,25 @@ const insertLink: Command = (state, dispatch) => {
   return true;
 };
 
+/**
+ * On Enter in an empty heading, convert it to a paragraph.
+ * This lets users "escape" a heading by pressing Enter on a blank line.
+ */
+const exitHeadingOnEnter: Command = (state, dispatch) => {
+  const { $head, empty } = state.selection;
+  if (!empty) return false;
+
+  const parent = $head.parent;
+  if (parent.type !== schema.nodes.heading) return false;
+  if (parent.textContent.length !== 0) return false;
+
+  if (dispatch) {
+    const pos = $head.before();
+    dispatch(state.tr.setNodeMarkup(pos, schema.nodes.paragraph).scrollIntoView());
+  }
+  return true;
+};
+
 export function buildKeymaps() {
   const keys: Record<string, Command> = {};
 
@@ -291,7 +310,7 @@ export function buildKeymaps() {
   // Lists + Tables (Tab/Shift-Tab context-aware)
   keys["Tab"] = chainCommands(goToNextCell(1), sinkListItem(schema.nodes.list_item), sinkListItem(schema.nodes.task_list_item));
   keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item), liftListItem(schema.nodes.task_list_item));
-  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item), splitListItem(schema.nodes.task_list_item));
+  keys["Enter"] = chainCommands(exitCodeBlockOnEnter, exitHeadingOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item), splitListItem(schema.nodes.task_list_item));
 
   // Block operations
   keys["Mod-Alt-c"] = toCodeBlock;

@@ -118,6 +118,7 @@ export default function App() {
     const cw = preferencesState.contentWidth();
     const root = document.documentElement.style;
     root.setProperty("--lm-font-size", fs + "px");
+    root.setProperty("--lm-zoom-scale", String(fs / 16));
     root.setProperty("--lm-content-width", (cw * fs / 16) + "px");
     root.setProperty("--lm-font-body", preferencesState.fontFamilyCSS());
     root.setProperty("--lm-line-height", String(preferencesState.lineHeight()));
