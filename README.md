@@ -261,34 +261,14 @@ src-tauri/
 
 | Version | Highlights |
 |---|---|
-| v1.0.0 | Full Markdown editor: inline live rendering, file operations, themes, export, command palette, find & replace |
-| v1.1–v1.4 | Math (KaTeX), auto-save, font zoom, multi-tab, sidebar file tree, mermaid diagrams, frontmatter, settings panel |
-| v2.0–v2.3 | Typewriter mode, callout admonitions, smart copy/paste, DOCX export, document outline, link popover |
-| v2.4–v2.7 | Smart link open (local files in-app, URLs in browser), regex find & replace, per-textblock search |
-| v2.8 | Feature cleanup, warm paper theme, auto-save safety, insert image (Cmd+Shift+I), macOS file association fixes |
-| **v3.0** | **AI Revise** — select text, Cmd+J R, inline diff with accept/reject. Bring your own API key (Anthropic, MiniMax, or compatible). Custom prompts, safe diff workflow, full dark mode support |
-| **v3.1** | AI multi-provider & model selection — per-provider model dropdown, correct MiniMax endpoint, thinking-block-aware response parsing |
-| **v3.2.0** | **AI Revise hardening** — selection validation (blocks images/tables/code), adaptive timeout, gradient shimmer + loading pill, input blocking during revision, source view tab-switch fix |
-| v3.2.1 | Markdown-aware AI revision (preserves formatting), dark mode diff readability, AI revise test suite, README & welcome rewrite |
-| v3.2.2 | Source view guard — editor-only commands (AI Revise, Find, Insert Link/Image) show a helpful message instead of silently failing |
-| v3.2.3 | AI diff widget renders Markdown formatting (bold, italic, code, links) instead of showing raw syntax |
-| v3.2.4 | AI formatting preservation — post-processor re-applies **bold**/*italic*/`code` stripped by the LLM; improved AI prompt; italic-to-bold upgrade (`*text*` → `**text**`); `_italic_` input rule |
-| v3.2.5 | Fix bold input rule character corruption — `**wrong*` + `*` no longer loses the last character before the closing marker |
-| v3.2.6 | **Diff-based formatting preservation** — strips marks before LLM, re-applies via `diff-match-patch` alignment; code spans protected with `{{CODE_N}}` placeholders; works reliably with weaker models |
-| v3.2.7 | Empty heading exits to paragraph on Enter (Typora-style); outline sidebar scales with zoom level |
-| **v3.3.0** | **Click-to-rename** — click the filename in the titlebar to rename the file inline; Escape cancels, Enter/blur confirms; untitled files trigger Save As |
-| v3.3.1 | Heading level adjustment — Backspace at start of heading decreases level (H2→H1→paragraph); `# ` inside a heading increases level (H1→H2→…→H6) |
-| v3.3.2 | Fix source view scroll sync — toggling source view no longer loses scroll position (syncLine captured before unmount) |
-| v3.3.3 | Click-to-rename expanded — clicking anywhere in the titlebar title (including path) triggers rename, not just the filename |
-| v3.3.4 | Scroll sync fix part 2 — guard SourceView scroll handler during mount to prevent syncLine clobber; themed scrollbars (thin, light/dark) |
-| v3.3.5–3.3.6 | Mark boundary Backspace (bold→italic→plain peeling); table column resizing; scroll sync accuracy improvements |
-| v3.3.7 | Scroll sync cursor fix — toggling source view no longer shifts cursor by one line; open-source readiness (CONTRIBUTING.md, issue/PR templates) |
-| v3.3.8 | Mark pattern fallback — inline marks (**bold**, *italic*, ~~strikethrough~~, `code`) now apply reliably in Tauri/WKWebView when `handleTextInput` isn't called |
-| v3.3.9 | Fix bold input rule corruption with trailing content |
-| **v3.4.0** | **CJK support** — inline mark input rules (**bold**, *italic*, `code`, ~~strikethrough~~) now trigger after Chinese, Japanese, and Korean characters without requiring a space boundary |
-| v3.4.1 | Expanded CJK test coverage — fullwidth punctuation boundaries, Japanese/Korean tests, prefix capture correctness, negative cases |
-| v3.4.2 | Fix scroll preservation on zoom/spacing changes; fix cursor sync on editor ↔ source view switch |
-| v3.4.3 | Docs: highlight CJK-native support as a key feature across README, tutorial, and welcome — because most editors get CJK wrong |
+| **v1.0** | Full Markdown editor: inline live rendering, file operations, themes, export, command palette, find & replace |
+| **v1.1–1.4** | Math (KaTeX), auto-save, font zoom, multi-tab, sidebar file tree, mermaid diagrams, frontmatter, settings panel |
+| **v2.0–2.3** | Typewriter mode, callout admonitions, smart copy/paste, DOCX export, document outline, link popover |
+| **v2.4–2.8** | Smart link open (local/external), regex find & replace, per-textblock search, insert image, macOS file association |
+| **v3.0–3.1** | **AI Revise** — select text, `Cmd+J R`, inline diff with accept/reject. Multi-provider (Anthropic, MiniMax, custom endpoint), model selection, custom prompts |
+| **v3.2** | **AI Revise hardening** — diff-based formatting preservation (strips marks → LLM → re-applies via `diff-match-patch`), selection validation, adaptive timeout, loading animation, input blocking, italic-to-bold upgrade |
+| **v3.3** | **Click-to-rename**, heading level adjustment (Backspace/`#`), mark boundary Backspace (bold→italic→plain), table column resizing, WKWebView mark pattern fallback, scroll sync fixes |
+| **v3.4** | **CJK-native** — inline marks trigger seamlessly after Chinese, Japanese, and Korean characters with no space needed |
 
 ## Documentation
 
