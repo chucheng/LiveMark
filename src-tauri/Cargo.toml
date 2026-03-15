@@ -2,7 +2,7 @@
 name = "livemark"
 version = "3.4.4"
 description = "A desktop Markdown editor with inline live rendering and built-in AI revision"
-authors = ["Chase"]
+authors = ["Chucheng"]
 license = "AGPL-3.0"
 repository = "https://github.com/chucheng/LiveMark"
 homepage = "https://github.com/chucheng/LiveMark"

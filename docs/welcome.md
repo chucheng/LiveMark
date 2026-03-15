@@ -1,6 +1,6 @@
 # Welcome to LiveMark
 
-Hi, I'm Chase.
+Hi, I'm Chucheng.
 
 I write everything in Markdown — notes, drafts, docs, READMEs. And like everyone else, I started using AI to help me revise. Fix the grammar. Tighten a paragraph. Translate something. But the workflow was miserable: select text, copy, switch to Claude, paste, type a prompt, wait, copy the result, switch back, paste over the original. For every paragraph. Every time.
 
