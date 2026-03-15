@@ -330,6 +330,39 @@ export async function saveAsFile() {
   }
 }
 
+/**
+ * Rename the current file on disk. Returns true on success.
+ */
+export async function renameFile(newName: string): Promise<boolean> {
+  const oldPath = documentState.filePath();
+  if (!oldPath) return false;
+
+  // Validate: no slashes, not empty, must have extension
+  const trimmed = newName.trim();
+  if (!trimmed || trimmed.includes("/") || trimmed.includes("\\")) return false;
+  if (!trimmed.includes(".")) return false;
+
+  // Compute new full path
+  const dir = oldPath.replace(/\\/g, "/").split("/").slice(0, -1).join("/");
+  const newPath = dir + "/" + trimmed;
+
+  // Same name — no-op
+  if (newPath === oldPath) return true;
+
+  try {
+    await invoke("rename_file", { oldPath, newPath });
+  } catch (err) {
+    await message(String(err), { title: "Rename Error", kind: "error" });
+    return false;
+  }
+
+  // Update state
+  documentState.setFilePath(newPath);
+  await stampMtime(newPath);
+  uiState.showStatus("Renamed");
+  return true;
+}
+
 export async function newFile() {
   if (!editorRef) return;
 

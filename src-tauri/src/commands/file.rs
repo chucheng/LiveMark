@@ -114,6 +114,19 @@ pub fn is_file_readonly(path: String) -> Result<bool, String> {
 }
 
 #[tauri::command]
+pub fn rename_file(old_path: String, new_path: String) -> Result<(), String> {
+    let target = Path::new(&new_path);
+    if target.exists() {
+        return Err(format!(
+            "A file named \"{}\" already exists in this location.",
+            target.file_name().unwrap_or_default().to_string_lossy()
+        ));
+    }
+    fs::rename(&old_path, &new_path).map_err(|e| format!("Failed to rename file: {e}"))?;
+    Ok(())
+}
+
+#[tauri::command]
 pub fn get_file_mtime(path: String) -> Result<f64, String> {
     let meta = fs::metadata(&path).map_err(|e| format!("Failed to read metadata: {e}"))?;
     let modified = meta

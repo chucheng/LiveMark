@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.2.7-blue)
+![Version](https://img.shields.io/badge/version-3.3.0-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -55,6 +55,7 @@ Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
 
 ## File & Project
 
+- **Click-to-rename** — click the filename in the titlebar to rename the file inline
 - **Multi-tab** — open multiple files with per-tab editor state
 - **Sidebar file tree** (`Cmd+\`) — navigate your project without leaving the editor
 - **Document outline** (`Cmd+Shift+O`) — heading tree with active tracking and click-to-navigate
@@ -273,6 +274,7 @@ src-tauri/
 | v3.2.5 | Fix bold input rule character corruption — `**wrong*` + `*` no longer loses the last character before the closing marker |
 | v3.2.6 | **Diff-based formatting preservation** — strips marks before LLM, re-applies via `diff-match-patch` alignment; code spans protected with `{{CODE_N}}` placeholders; works reliably with weaker models |
 | v3.2.7 | Empty heading exits to paragraph on Enter (Typora-style); outline sidebar scales with zoom level |
+| **v3.3.0** | **Click-to-rename** — click the filename in the titlebar to rename the file inline; Escape cancels, Enter/blur confirms; untitled files trigger Save As |
 
 ## Documentation
 

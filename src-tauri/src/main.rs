@@ -5,8 +5,8 @@ mod commands;
 
 use commands::ai::{ai_check, ai_revise};
 use commands::file::{
-    get_file_mtime, is_file_readonly, read_file, read_file_binary, write_binary_file, write_file,
-    write_temp_html,
+    get_file_mtime, is_file_readonly, read_file, read_file_binary, rename_file, write_binary_file,
+    write_file, write_temp_html,
 };
 use commands::filetree::{WatcherState, list_directory, unwatch_directory, watch_directory};
 use commands::image::{copy_image, save_image};
@@ -84,6 +84,7 @@ fn main() {
             write_binary_file,
             write_temp_html,
             get_file_mtime,
+            rename_file,
             is_file_readonly,
             get_initial_files,
             save_image,

@@ -16,6 +16,7 @@ import {
   saveFile,
   saveAsFile,
   newFile,
+  renameFile,
   setEditorRef,
   getEditorRef,
   onFileChange,
@@ -111,6 +112,41 @@ export default function App() {
       return "~/" + fp.slice(home.length + 1);
     }
     return fp;
+  }
+
+  const [isRenaming, setIsRenaming] = createSignal(false);
+
+  function handleTitleClick() {
+    const fp = documentState.filePath();
+    if (!fp) {
+      // Untitled — trigger Save As
+      saveAsFile();
+      return;
+    }
+    if (documentState.isReadOnly() || documentState.isDeleted()) return;
+    setIsRenaming(true);
+  }
+
+  async function confirmRename(newName: string) {
+    setIsRenaming(false);
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    if (trimmed === documentState.fileName()) return;
+    await renameFile(trimmed);
+  }
+
+  function cancelRename() {
+    setIsRenaming(false);
+  }
+
+  function handleRenameInputMount(el: HTMLInputElement) {
+    // Select just the name part (before the last dot)
+    const name = el.value;
+    const lastDot = name.lastIndexOf(".");
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(0, lastDot > 0 ? lastDot : name.length);
+    });
   }
 
   createEffect(() => {
@@ -903,10 +939,40 @@ export default function App() {
       >
         <div class="lm-titlebar">
           <div class="lm-titlebar-traffic-light-spacer" />
-          <span class="lm-titlebar-title">
-            {uiState.isSourceView() ? "[Source] " : ""}{documentState.isDeleted() ? "[Deleted] " : documentState.isReadOnly() ? "[Read Only] " : ""}{displayPath()}
-            {documentState.isModified() ? " *" : ""}
-          </span>
+          <Show when={isRenaming()} fallback={
+            <span class="lm-titlebar-title">
+              {uiState.isSourceView() ? "[Source] " : ""}{documentState.isDeleted() ? "[Deleted] " : documentState.isReadOnly() ? "[Read Only] " : ""}
+              {(() => {
+                const fp = documentState.filePath();
+                if (!fp) return <span class="lm-titlebar-filename" style={{ "-webkit-app-region": "no-drag", cursor: "pointer" }} onClick={handleTitleClick}>Untitled</span>;
+                const display = displayPath();
+                const name = documentState.fileName();
+                const dir = display.slice(0, display.length - name.length);
+                return <>{dir}<span class="lm-titlebar-filename" style={{ "-webkit-app-region": "no-drag", cursor: "pointer" }} onClick={handleTitleClick}>{name}</span></>;
+              })()}
+              {documentState.isModified() ? " *" : ""}
+            </span>
+          }>
+            <span class="lm-titlebar-title">
+              <input
+                class="lm-titlebar-rename-input"
+                type="text"
+                value={documentState.fileName()}
+                ref={handleRenameInputMount}
+                style={{ "-webkit-app-region": "no-drag" }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    confirmRename(e.currentTarget.value);
+                  } else if (e.key === "Escape") {
+                    e.preventDefault();
+                    cancelRename();
+                  }
+                }}
+                onBlur={(e) => confirmRename(e.currentTarget.value)}
+              />
+            </span>
+          </Show>
           <div class="lm-titlebar-traffic-light-spacer" />
         </div>
 
