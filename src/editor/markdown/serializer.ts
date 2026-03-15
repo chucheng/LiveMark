@@ -112,7 +112,7 @@ export const markdownSerializer = new MarkdownSerializer(
         const temp = markdownSerializer.serialize(
           cell.type.schema.node("doc", null, [paragraph])
         );
-        return temp.trim().replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
+        return temp.trim().replace(/\|/g, "\\|");
       }
 
       const rows: string[][] = [];
