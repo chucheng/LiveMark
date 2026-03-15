@@ -5,17 +5,25 @@ mod commands;
 
 use commands::file::{get_file_mtime, is_file_readonly, read_file, read_file_binary, write_binary_file, write_file, write_temp_html};
 use commands::filetree::{list_directory, unwatch_directory, watch_directory, WatcherState};
-use commands::image::save_image;
+use commands::image::{copy_image, save_image};
 use commands::preferences::{read_preferences, write_preferences};
 use std::sync::Mutex;
 use tauri::{Emitter, Manager};
 
 pub struct PendingFiles(pub Mutex<Vec<String>>);
 
+/// Debug log of all Opened events received (persists across drains).
+pub struct OpenedLog(pub Mutex<Vec<String>>);
+
 #[tauri::command]
 fn get_initial_files(state: tauri::State<PendingFiles>) -> Vec<String> {
     let mut files = state.0.lock().unwrap();
     std::mem::take(&mut *files)
+}
+
+#[tauri::command]
+fn get_opened_log(state: tauri::State<OpenedLog>) -> Vec<String> {
+    state.0.lock().unwrap().clone()
 }
 
 /// Extract file paths from CLI args (skip flags, match supported extensions).
@@ -57,9 +65,17 @@ fn main() {
         }))
         .setup(|app| {
             app.manage(WatcherState(Mutex::new(None)));
+            app.manage(OpenedLog(Mutex::new(Vec::new())));
 
             let args: Vec<String> = std::env::args().collect();
             let file_args = extract_file_args(&args);
+
+            // Debug: log CLI args to disk
+            let _ = std::fs::write("/tmp/livemark-open-debug.log", format!(
+                "[setup] args={:?}\nfile_args={:?}\n",
+                args, file_args
+            ));
+
             app.manage(PendingFiles(Mutex::new(file_args)));
 
             Ok(())
@@ -73,7 +89,9 @@ fn main() {
             get_file_mtime,
             is_file_readonly,
             get_initial_files,
+            get_opened_log,
             save_image,
+            copy_image,
             read_preferences,
             write_preferences,
             list_directory,
@@ -85,8 +103,14 @@ fn main() {
 
     app.run(|app_handle, event| {
         // macOS: double-click / "Open With" sends file URLs via Opened event.
-        // Store in PendingFiles for cold start AND emit for already-running frontend.
         if let tauri::RunEvent::Opened { urls } = &event {
+            // Debug: log to disk
+            let _ = std::fs::OpenOptions::new().create(true).append(true).open("/tmp/livemark-open-debug.log")
+                .and_then(|mut f| {
+                    use std::io::Write;
+                    writeln!(f, "[Opened] urls={:?}", urls)
+                });
+
             let files: Vec<String> = urls
                 .iter()
                 .filter_map(|u| {
@@ -97,11 +121,26 @@ fn main() {
                     }
                 })
                 .collect();
+
+            // Debug: log resolved files
+            let _ = std::fs::OpenOptions::new().create(true).append(true).open("/tmp/livemark-open-debug.log")
+                .and_then(|mut f| {
+                    use std::io::Write;
+                    writeln!(f, "[Opened] resolved files={:?}", files)
+                });
+
             if !files.is_empty() {
+                // Log to OpenedLog for frontend retrieval
+                if let Some(log) = app_handle.try_state::<OpenedLog>() {
+                    log.0.lock().unwrap().extend(files.clone());
+                }
                 if let Some(pending) = app_handle.try_state::<PendingFiles>() {
                     pending.0.lock().unwrap().extend(files.clone());
                 }
-                let _ = app_handle.emit("open-files", files);
+                // Only emit if the webview window exists (i.e., frontend is likely ready)
+                if let Some(window) = app_handle.get_webview_window("main") {
+                    let _ = window.emit("open-files", files);
+                }
             }
         }
 

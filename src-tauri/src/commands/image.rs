@@ -67,3 +67,35 @@ pub fn save_image(
         Ok(target.to_string_lossy().to_string())
     }
 }
+
+#[tauri::command]
+pub fn copy_image(source: String, doc_dir: Option<String>) -> Result<String, String> {
+    let src_path = Path::new(&source);
+    let safe_name = src_path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .filter(|n| !n.is_empty() && !n.starts_with('.'))
+        .ok_or_else(|| "Invalid filename".to_string())?;
+
+    let (dir, relative) = if let Some(ref dd) = doc_dir {
+        (Path::new(dd).join("images"), true)
+    } else {
+        (std::env::temp_dir().join("livemark-images"), false)
+    };
+
+    fs::create_dir_all(&dir).map_err(|e| format!("Failed to create image directory: {e}"))?;
+
+    let target = deduplicate(dir.join(safe_name))?;
+    fs::copy(src_path, &target).map_err(|e| format!("Failed to copy image: {e}"))?;
+
+    if relative {
+        let name = target
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string();
+        Ok(format!("./images/{name}"))
+    } else {
+        Ok(target.to_string_lossy().to_string())
+    }
+}

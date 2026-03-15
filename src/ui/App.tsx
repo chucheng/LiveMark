@@ -789,8 +789,8 @@ export default function App() {
         updateWordCount();
       }
 
-      // Listen for files opened from a second instance (e.g. double-clicking
-      // a .md file in Finder while the app is already running)
+      // Listen for files opened from Finder "Open With", double-click, or
+      // a second instance forwarding args via single-instance plugin.
       unlistenOpenFiles = await listen<string[]>("open-files", async (event) => {
         for (const file of event.payload) {
           try {
@@ -800,6 +800,25 @@ export default function App() {
           }
         }
       });
+
+      // On macOS, the Opened event (file double-click / "Open With") may arrive
+      // AFTER get_initial_files drained the PendingFiles mutex. Poll a few times
+      // to catch late arrivals from the RunEvent::Opened handler.
+      if (!hasInitialFiles) {
+        const pollDelays = [300, 800, 1500];
+        for (const delay of pollDelays) {
+          setTimeout(async () => {
+            try {
+              const lateFiles = await invoke<string[]>("get_initial_files");
+              for (const file of lateFiles) {
+                try {
+                  await openFileInTab(file);
+                } catch { /* skip */ }
+              }
+            } catch { /* ignore */ }
+          }, delay);
+        }
+      }
 
       // Drag-and-drop file open via Tauri window event
       unlistenDragDrop = await appWindow.onDragDropEvent(async (event) => {

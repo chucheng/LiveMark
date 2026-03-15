@@ -59,6 +59,8 @@ Insert images with `![alt text](url)` syntax:
 
 You can also **drag and drop** images directly into the editor, or **paste** them from your clipboard. LiveMark will automatically save the image alongside your document.
 
+**Insert from disk:** Press `Cmd+Shift+I` to open a file picker and choose an image. LiveMark copies it to an `images/` folder next to your document and inserts it inline.
+
 ### Resized Images
 
 Use HTML `<img>` tags to set a specific width:
@@ -435,6 +437,7 @@ Enter fullscreen via the standard macOS green button. In fullscreen mode, the ti
 | `Cmd+N` | New file |
 | `Cmd+W` | Close tab |
 | `Cmd+K` | Insert link |
+| `Cmd+Shift+I` | Insert image from file |
 | `Cmd+F` | Find & replace |
 | `Cmd+Shift+H` | Toggle replace bar |
 | `Cmd+/` | Toggle source view |

@@ -2,7 +2,7 @@
 
 A fast, distraction-free Markdown editor where what you type is what you see — no split panes, no preview toggle, just writing.
 
-![Version](https://img.shields.io/badge/version-2.8.4-blue)
+![Version](https://img.shields.io/badge/version-2.8.5-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -24,7 +24,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 - **YAML frontmatter** — parse, edit, and serialize frontmatter blocks
 - **Table editing** — visual tables with Tab navigation between cells
 - **Task list checkboxes** — clickable checkboxes that toggle state
-- **Image preview** — inline rendering, drag-and-drop or paste to insert, HTML `<img>` width preservation
+- **Image preview** — inline rendering, drag-and-drop, paste, or Cmd+Shift+I to insert from disk; HTML `<img>` width preservation
 - **Link popover** — click any rendered link for a compact popover with Open, Copy, Edit, and Unlink actions
 - **Smart link open** — local file links (e.g. `tutorial.md`) open in a tab; external URLs open in browser. Works in popover and Cmd+click
 - **Clickable links** — Cmd/Ctrl+click opens links (local files in-app, URLs in browser)
@@ -72,6 +72,7 @@ When your cursor enters a Markdown element, the raw syntax is revealed for editi
 | `Cmd+Shift+O` | Show Outline |
 | `Cmd+,` | Settings |
 | `Cmd+K` | Insert Link |
+| `Cmd+Shift+I` | Insert Image |
 | `Cmd+Shift+H` | Toggle Find and Replace |
 | `Cmd+Shift+X` | Strikethrough |
 | `Cmd+T` | Toggle Focus Mode (off → block) |
@@ -224,7 +225,7 @@ src-tauri/
     main.rs               — Tauri entry point, command handlers
     commands/
       file.rs             — Rust read_file/write_file (atomic writes)
-      image.rs            — Rust save_image command
+      image.rs            — Rust save_image/copy_image commands
       preferences.rs      — Rust read/write preferences (atomic)
       filetree.rs         — Rust file tree directory listing
 .github/
@@ -254,6 +255,7 @@ src-tauri/
 | v2.8.2 | Warm paper light theme — off-white canvas with warm tones for reduced eye strain; smart theme toggle (auto → opposite, explicit → auto); persist theme on status bar click |
 | v2.8.3 | macOS file association — handle RunEvent::Opened for Finder double-click and "Open With" |
 | v2.8.4 | Window close fix — add missing Tauri window:allow-destroy permission; register close handler early; macOS file open via PendingFiles for cold start |
+| v2.8.5 | Insert Image command — Cmd+Shift+I opens native file picker, copies image alongside document, inserts inline |
 
 ## Documentation
 

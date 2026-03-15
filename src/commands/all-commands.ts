@@ -383,6 +383,40 @@ export function registerAllCommands() {
   });
 
   registerCommand({
+    id: "edit.insertImage",
+    label: "Insert Image",
+    shortcut: "Cmd+Shift+I",
+    category: "Edit",
+    execute: async () => {
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const selected = await open({
+        multiple: false,
+        filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico"] }],
+      });
+      if (!selected) return;
+
+      const { invoke } = await import("@tauri-apps/api/core");
+      const { documentState } = await import("../state/document");
+      const { getEditorRef } = await import("./file-commands");
+      const { schema } = await import("../editor/schema");
+
+      const fp = documentState.filePath();
+      const docDir = fp ? fp.slice(0, fp.lastIndexOf("/")) || null : null;
+
+      try {
+        const savedPath = await invoke<string>("copy_image", { source: selected, docDir });
+        const editor = getEditorRef();
+        if (!editor) return;
+        const node = schema.nodes.image.create({ src: savedPath, alt: "" });
+        const tr = editor.view.state.tr.replaceSelectionWith(node);
+        editor.view.dispatch(tr.scrollIntoView());
+      } catch {
+        uiState.showStatus("Failed to insert image");
+      }
+    },
+  });
+
+  registerCommand({
     id: "find.toggleReplace",
     label: "Toggle Find and Replace",
     shortcut: "Cmd+Shift+H",
