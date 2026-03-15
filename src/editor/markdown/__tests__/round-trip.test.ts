@@ -334,32 +334,76 @@ describe("Image with width round-trip", () => {
 });
 
 describe("CJK round-trip", () => {
-  it("CJK bold", () => {
-    expectRoundTrip("這是**粗體**文字。");
+  describe("inline marks with CJK content", () => {
+    it("bold in CJK sentence", () => {
+      expectRoundTrip("這是**粗體**文字。");
+    });
+
+    it("italic in CJK sentence", () => {
+      expectRoundTrip("這是*斜體*文字。");
+    });
+
+    it("inline code in CJK sentence", () => {
+      expectRoundTrip("使用`程式碼`語法。");
+    });
+
+    it("strikethrough in CJK sentence", () => {
+      expectRoundTrip("~~刪除~~的文字。");
+    });
+
+    it("multiple marks in one CJK paragraph", () => {
+      expectRoundTrip("**粗體**和*斜體*以及`程式碼`都在這裡。");
+    });
   });
 
-  it("CJK italic", () => {
-    expectRoundTrip("這是*斜體*文字。");
+  describe("block elements with CJK", () => {
+    it("CJK heading", () => {
+      expectRoundTrip("# 中文標題");
+    });
+
+    it("CJK h2", () => {
+      expectRoundTrip("## 二級標題");
+    });
+
+    it("CJK bullet list", () => {
+      expectStructuralRoundTrip("- 中文列表項目\n\n- 第二個項目");
+    });
+
+    it("CJK ordered list", () => {
+      expectStructuralRoundTrip("1. 第一項\n\n2. 第二項");
+    });
+
+    it("CJK blockquote", () => {
+      expectRoundTrip("> 這是引用的文字。");
+    });
   });
 
-  it("CJK inline code", () => {
-    expectRoundTrip("使用`程式碼`語法。");
+  describe("mixed CJK and Latin", () => {
+    it("English bold adjacent to CJK", () => {
+      expectRoundTrip("Hello**你好**world");
+    });
+
+    it("CJK bold adjacent to English", () => {
+      expectRoundTrip("中文**bold**繼續");
+    });
+
+    it("CJK link", () => {
+      expectRoundTrip("[中文連結](https://example.com)");
+    });
+
+    it("CJK with fullwidth punctuation and marks", () => {
+      expectRoundTrip("結束。**新句子**開始！");
+    });
   });
 
-  it("CJK strikethrough", () => {
-    expectRoundTrip("~~刪除~~的文字。");
-  });
+  describe("Japanese and Korean", () => {
+    it("Japanese bold", () => {
+      expectRoundTrip("これは**太字**です。");
+    });
 
-  it("CJK heading", () => {
-    expectRoundTrip("# 中文標題");
-  });
-
-  it("CJK list item", () => {
-    expectStructuralRoundTrip("- 中文列表項目");
-  });
-
-  it("mixed English and CJK bold", () => {
-    expectRoundTrip("Hello**你好**world");
+    it("Korean bold", () => {
+      expectRoundTrip("이것은**굵게**입니다.");
+    });
   });
 });
 
