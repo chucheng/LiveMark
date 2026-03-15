@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.3.6-blue)
+![Version](https://img.shields.io/badge/version-3.3.7-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -36,7 +36,7 @@ Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
 - **Math rendering** — inline `$...$` and block `$$...$$` with KaTeX
 - **Mermaid diagrams** — fenced code blocks with `mermaid` language render as interactive diagrams
 - **YAML frontmatter** — parse, edit, and serialize frontmatter blocks
-- **Table editing** — visual tables with Tab navigation between cells
+- **Table editing** — visual tables with Tab navigation and drag-to-resize columns
 - **Task list checkboxes** — clickable checkboxes that toggle state
 - **Image preview** — inline rendering, drag-and-drop, paste, or Cmd+Shift+I to insert from disk
 - **Link popover** — click any rendered link for Open, Copy, Edit, and Unlink actions
@@ -279,6 +279,8 @@ src-tauri/
 | v3.3.2 | Fix source view scroll sync — toggling source view no longer loses scroll position (syncLine captured before unmount) |
 | v3.3.3 | Click-to-rename expanded — clicking anywhere in the titlebar title (including path) triggers rename, not just the filename |
 | v3.3.4 | Scroll sync fix part 2 — guard SourceView scroll handler during mount to prevent syncLine clobber; themed scrollbars (thin, light/dark) |
+| v3.3.5–3.3.6 | Mark boundary Backspace (bold→italic→plain peeling); table column resizing; scroll sync accuracy improvements |
+| v3.3.7 | Open-source readiness — CONTRIBUTING.md, GitHub issue/PR templates, Cargo.toml metadata, marketing strategy doc |
 
 ## Documentation
 

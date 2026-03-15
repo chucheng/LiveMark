@@ -32,8 +32,8 @@ Markdown supports six levels of headings. Type `#` followed by a space to create
 
 LiveMark supports all standard inline formatting. These render live as you type:
 
-- **Bold** — wrap text with `**double asterisks**`, or type `*text*` then press `*` again to upgrade italic to bold
-- *Italic* — wrap text with `*single asterisks*` or `_single underscores_`
+- **Bold** — wrap text with `**double asterisks**`, or type `*text*` then press `*` again to upgrade italic to bold. Press Backspace at the left edge to downgrade: **bold** → *italic* → plain
+- *Italic* — wrap text with `*single asterisks*` or `_single underscores_`. Press Backspace at the left edge to remove
 - ~~Strikethrough~~ — wrap text with `~~double tildes~~`
 - `Inline code` — wrap text with `` `backticks` ``
 
@@ -217,7 +217,7 @@ Use colons in the separator row to control column alignment:
 | Banana | Yellow | $0.50 |
 | Grape | Purple | $2.00 |
 
-**Tip:** Press `Tab` to navigate between table cells, `Shift+Tab` to go back.
+**Tip:** Press `Tab` to navigate between table cells, `Shift+Tab` to go back. Drag column borders to resize columns.
 
 ---
 

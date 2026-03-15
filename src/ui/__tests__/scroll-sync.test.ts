@@ -12,51 +12,59 @@ describe("buildSyncMap", () => {
   it("single paragraph", () => {
     const doc = parse("Hello world");
     const map = buildSyncMap(doc);
-    expect(map).toEqual([{ pmPos: 0, mdLine: 0 }]);
+    // Start + end-of-block entries
+    expect(map.length).toBe(2);
+    expect(map[0]).toEqual({ pmPos: 0, mdLine: 0 });
+    expect(map[1].mdLine).toBe(0); // end of block, same line
   });
 
   it("two paragraphs (blank-line separated)", () => {
     const doc = parse("First paragraph\n\nSecond paragraph");
     const map = buildSyncMap(doc);
-    expect(map.length).toBe(2);
-    expect(map[0].mdLine).toBe(0);
-    expect(map[1].mdLine).toBe(2); // line 0: text, line 1: blank, line 2: text
+    // 2 blocks × 2 entries each (start + end)
+    expect(map.length).toBe(4);
+    expect(map[0].mdLine).toBe(0);  // block 0 start
+    expect(map[1].mdLine).toBe(0);  // block 0 end (same line)
+    expect(map[2].mdLine).toBe(2);  // block 1 start: line 0: text, line 1: blank, line 2: text
+    expect(map[3].mdLine).toBe(2);  // block 1 end
   });
 
   it("heading followed by paragraph", () => {
     const doc = parse("# Title\n\nBody text");
     const map = buildSyncMap(doc);
-    expect(map.length).toBe(2);
-    expect(map[0].mdLine).toBe(0); // # Title
-    expect(map[1].mdLine).toBe(2); // Body text
+    expect(map.length).toBe(4);
+    expect(map[0].mdLine).toBe(0); // # Title start
+    expect(map[2].mdLine).toBe(2); // Body text start
   });
 
   it("code block (multi-line)", () => {
     const doc = parse("Before\n\n```js\nconst a = 1;\nconst b = 2;\n```\n\nAfter");
     const map = buildSyncMap(doc);
-    expect(map.length).toBe(3);
-    expect(map[0].mdLine).toBe(0); // Before
-    expect(map[1].mdLine).toBe(2); // code block starts at line 2
+    expect(map.length).toBe(6); // 3 blocks × 2 entries
+    expect(map[0].mdLine).toBe(0); // Before start
+    expect(map[2].mdLine).toBe(2); // code block starts at line 2
     // Code block: ```js + 2 lines + ``` = 4 lines (lines 2-5), next block at line 7
-    expect(map[2].mdLine).toBe(7); // After
+    expect(map[4].mdLine).toBe(7); // After start
   });
 
   it("bullet list (single top-level block)", () => {
     const doc = parse("- Item one\n- Item two\n- Item three");
     const map = buildSyncMap(doc);
-    // List is a single top-level block
-    expect(map.length).toBe(1);
+    // Single top-level block with start + end entries
+    expect(map.length).toBe(2);
     expect(map[0].mdLine).toBe(0);
   });
 
   it("mixed content", () => {
     const doc = parse("# Heading\n\nParagraph\n\n- List item\n\n> Quote");
     const map = buildSyncMap(doc);
-    expect(map.length).toBe(4);
-    expect(map[0].mdLine).toBe(0); // heading
-    // Each block separated by blank lines
-    for (let i = 1; i < map.length; i++) {
-      expect(map[i].mdLine).toBeGreaterThan(map[i - 1].mdLine);
+    // 4 blocks × 2 entries each
+    expect(map.length).toBe(8);
+    expect(map[0].mdLine).toBe(0); // heading start
+    // Block start entries have increasing mdLine values
+    const startEntries = map.filter((_, i) => i % 2 === 0);
+    for (let i = 1; i < startEntries.length; i++) {
+      expect(startEntries[i].mdLine).toBeGreaterThan(startEntries[i - 1].mdLine);
     }
   });
 
@@ -82,11 +90,11 @@ describe("pmPosToMdLine", () => {
   it("interpolates within a block", () => {
     const doc = parse("First paragraph\n\nSecond paragraph");
     const map = buildSyncMap(doc);
-    // Position halfway through first block should give fractional line between 0 and 2
+    // Position halfway through first block should stay on line 0
+    // (end-of-block entry ensures interpolation doesn't bleed into blank line)
     const midPos = Math.floor(map[1].pmPos / 2);
     const line = pmPosToMdLine(map, midPos);
-    expect(line).toBeGreaterThanOrEqual(0);
-    expect(line).toBeLessThan(2);
+    expect(line).toBe(0);
   });
 
   it("returns last block line for position past last block", () => {
@@ -111,8 +119,9 @@ describe("mdLineToPmPos", () => {
   it("returns second block pos for its line", () => {
     const doc = parse("First\n\nSecond");
     const map = buildSyncMap(doc);
-    const pos = mdLineToPmPos(map, map[1].mdLine, doc.content.size);
-    expect(pos).toBe(map[1].pmPos);
+    // Block 1 start is at map[2] (map[0]=start0, map[1]=end0, map[2]=start1, map[3]=end1)
+    const pos = mdLineToPmPos(map, map[2].mdLine, doc.content.size);
+    expect(pos).toBe(map[2].pmPos);
   });
 
   it("clamps to docSize", () => {

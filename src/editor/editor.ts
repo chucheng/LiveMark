@@ -23,7 +23,7 @@ import { markdownPastePlugin } from "./plugins/markdown-paste";
 import { imagePopoverPlugin } from "./plugins/image-popover";
 import { linkPopoverPlugin } from "./plugins/link-popover";
 import { italicBoldUpgradePlugin } from "./plugins/italic-bold-upgrade";
-import { tableEditing } from "prosemirror-tables";
+import { tableEditing, columnResizing } from "prosemirror-tables";
 import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
 import { parseMarkdown } from "./markdown/parser";
@@ -96,6 +96,7 @@ export function createEditor(
       imagePopoverPlugin(),
       linkPopoverPlugin(),
       gapCursor(),
+      columnResizing({ cellMinWidth: 60 }),
       tableEditing(),
     ],
   });

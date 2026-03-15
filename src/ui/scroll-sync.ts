@@ -21,7 +21,14 @@ export function buildSyncMap(doc: Node): SyncEntry[] {
     try {
       const tempDoc = schema.node("doc", null, [child]);
       const blockMd = markdownSerializer.serialize(tempDoc).replace(/\n+$/, "");
-      mdLine += blockMd.split("\n").length;
+      const blockLines = blockMd.split("\n").length;
+      // Record end-of-block so interpolation stays within the block's line range
+      // (without this, the blank line separator bleeds into the interpolation)
+      const endPos = offset + child.nodeSize - 1;
+      if (endPos > offset) {
+        map.push({ pmPos: endPos, mdLine: mdLine + blockLines - 1 });
+      }
+      mdLine += blockLines;
     } catch {
       mdLine += 1;
     }
@@ -60,7 +67,7 @@ export function mdLineToPmPos(map: SyncEntry[], line: number, docSize: number): 
 
   let idx = 0;
   for (let i = 1; i < map.length; i++) {
-    if (map[i].mdLine <= line) idx = i;
+    if (map[i].mdLine < line) idx = i;
     else break;
   }
 

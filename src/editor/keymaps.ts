@@ -18,6 +18,7 @@ import {
 import { undo, redo } from "prosemirror-history";
 import { goToNextCell } from "prosemirror-tables";
 import { schema } from "./schema";
+import { MarkType, ResolvedPos } from "prosemirror-model";
 
 const isMac = typeof navigator !== "undefined" && /Mac/.test(navigator.platform);
 
@@ -307,6 +308,89 @@ const exitHeadingOnEnter: Command = (state, dispatch) => {
   return true;
 };
 
+/**
+ * Find the contiguous range of a mark type starting from the cursor position,
+ * scanning forward through sibling inline nodes.
+ */
+function findMarkRangeForward($pos: ResolvedPos, markType: MarkType): { from: number; to: number } | null {
+  const parent = $pos.parent;
+  const index = $pos.index();
+  let to = $pos.pos;
+
+  for (let i = index; i < parent.childCount; i++) {
+    const child = parent.child(i);
+    if (markType.isInSet(child.marks)) {
+      to += child.nodeSize;
+    } else {
+      break;
+    }
+  }
+
+  return to === $pos.pos ? null : { from: $pos.pos, to };
+}
+
+/**
+ * At the left boundary of a strong/em mark, Backspace peels off one emphasis level:
+ *   **bold** → *italic* → plain
+ *   ***bold+italic*** → **bold** (remove em) or *italic* (remove strong)
+ *
+ * This makes the widget-decoration syntax markers feel like real editable characters.
+ */
+const markBoundaryBackspace: Command = (state, dispatch) => {
+  const { $head, empty } = state.selection;
+  if (!empty) return false;
+
+  // Must be inside a textblock
+  if (!$head.parent.isTextblock) return false;
+
+  const nodeAfter = $head.nodeAfter;
+  if (!nodeAfter || !nodeAfter.isInline) return false;
+
+  const strongType = schema.marks.strong;
+  const emType = schema.marks.em;
+
+  const hasStrongAfter = !!strongType.isInSet(nodeAfter.marks);
+  const hasEmAfter = !!emType.isInSet(nodeAfter.marks);
+
+  // Only care about emphasis marks
+  if (!hasStrongAfter && !hasEmAfter) return false;
+
+  const nodeBefore = $head.nodeBefore;
+  const hasStrongBefore = nodeBefore ? !!strongType.isInSet(nodeBefore.marks) : false;
+  const hasEmBefore = nodeBefore ? !!emType.isInSet(nodeBefore.marks) : false;
+
+  // Must be at a mark boundary (mark starts here)
+  if (hasStrongAfter && !hasStrongBefore) {
+    // Peel strong: **text** → *text*
+    if (dispatch) {
+      const range = findMarkRangeForward($head, strongType);
+      if (!range) return false;
+      const tr = state.tr;
+      tr.removeMark(range.from, range.to, strongType);
+      // If it didn't already have em, add em (downgrade rather than strip)
+      if (!hasEmAfter) {
+        tr.addMark(range.from, range.to, emType.create());
+      }
+      dispatch(tr.scrollIntoView());
+    }
+    return true;
+  }
+
+  if (hasEmAfter && !hasEmBefore) {
+    // Peel em: *text* → text
+    if (dispatch) {
+      const range = findMarkRangeForward($head, emType);
+      if (!range) return false;
+      const tr = state.tr;
+      tr.removeMark(range.from, range.to, emType);
+      dispatch(tr.scrollIntoView());
+    }
+    return true;
+  }
+
+  return false;
+};
+
 export function buildKeymaps() {
   const keys: Record<string, Command> = {};
 
@@ -337,8 +421,8 @@ export function buildKeymaps() {
   keys["Shift-Tab"] = chainCommands(goToNextCell(-1), liftListItem(schema.nodes.list_item), liftListItem(schema.nodes.task_list_item));
   keys["Enter"] = chainCommands(exitCodeBlockOnEnter, exitHeadingOnEnter, hrOnEnter, tableOnEnter, splitListItem(schema.nodes.list_item), splitListItem(schema.nodes.task_list_item));
 
-  // Heading level adjustment
-  keys["Backspace"] = headingBackspace;
+  // Heading level adjustment + mark boundary peeling
+  keys["Backspace"] = chainCommands(headingBackspace, markBoundaryBackspace);
 
   // Block operations
   keys["Mod-Alt-c"] = toCodeBlock;

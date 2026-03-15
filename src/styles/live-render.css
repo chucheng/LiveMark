@@ -680,8 +680,10 @@
 /* --- Table --- */
 .ProseMirror table {
   border-collapse: collapse;
-  width: 100%;
+  table-layout: fixed;
+  width: auto;
   margin: 1em 0;
+  overflow: hidden;
 }
 
 .ProseMirror th,
@@ -689,6 +691,9 @@
   border: 1px solid var(--lm-border);
   padding: 0.5em 0.75em;
   text-align: left;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .ProseMirror th {
@@ -698,6 +703,22 @@
 
 .ProseMirror .selectedCell {
   background: var(--lm-selection);
+}
+
+/* Column resize handle */
+.ProseMirror .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--lm-accent);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: col-resize;
 }
 
 /* Frontmatter */
