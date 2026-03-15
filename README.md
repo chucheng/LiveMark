@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.3.2-blue)
+![Version](https://img.shields.io/badge/version-3.3.3-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -55,7 +55,7 @@ Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
 
 ## File & Project
 
-- **Click-to-rename** — click the filename in the titlebar to rename the file inline
+- **Click-to-rename** — click anywhere in the title area (path or filename) to rename the file inline
 - **Multi-tab** — open multiple files with per-tab editor state
 - **Sidebar file tree** (`Cmd+\`) — navigate your project without leaving the editor
 - **Document outline** (`Cmd+Shift+O`) — heading tree with active tracking and click-to-navigate
@@ -277,6 +277,7 @@ src-tauri/
 | **v3.3.0** | **Click-to-rename** — click the filename in the titlebar to rename the file inline; Escape cancels, Enter/blur confirms; untitled files trigger Save As |
 | v3.3.1 | Heading level adjustment — Backspace at start of heading decreases level (H2→H1→paragraph); `# ` inside a heading increases level (H1→H2→…→H6) |
 | v3.3.2 | Fix source view scroll sync — toggling source view no longer loses scroll position (syncLine captured before unmount) |
+| v3.3.3 | Click-to-rename expanded — clicking anywhere in the titlebar title (including path) triggers rename, not just the filename |
 
 ## Documentation
 

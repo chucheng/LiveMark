@@ -944,15 +944,15 @@ export default function App() {
         <div class="lm-titlebar">
           <div class="lm-titlebar-traffic-light-spacer" />
           <Show when={isRenaming()} fallback={
-            <span class="lm-titlebar-title">
+            <span class="lm-titlebar-title" style={{ "-webkit-app-region": "no-drag", cursor: "pointer" }} onClick={handleTitleClick}>
               {uiState.isSourceView() ? "[Source] " : ""}{documentState.isDeleted() ? "[Deleted] " : documentState.isReadOnly() ? "[Read Only] " : ""}
               {(() => {
                 const fp = documentState.filePath();
-                if (!fp) return <span class="lm-titlebar-filename" style={{ "-webkit-app-region": "no-drag", cursor: "pointer" }} onClick={handleTitleClick}>Untitled</span>;
+                if (!fp) return <span class="lm-titlebar-filename">Untitled</span>;
                 const display = displayPath();
                 const name = documentState.fileName();
                 const dir = display.slice(0, display.length - name.length);
-                return <>{dir}<span class="lm-titlebar-filename" style={{ "-webkit-app-region": "no-drag", cursor: "pointer" }} onClick={handleTitleClick}>{name}</span></>;
+                return <>{dir}<span class="lm-titlebar-filename">{name}</span></>;
               })()}
               {documentState.isModified() ? " *" : ""}
             </span>

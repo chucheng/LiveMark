@@ -310,7 +310,7 @@ LiveMark supports **multi-tab editing** — open multiple files and switch betwe
 
 ## Rename File
 
-Click the **filename** in the titlebar to rename the current file. The filename text transforms into an editable input — change the name and press **Enter** to confirm, or **Escape** to cancel. Clicking outside the input also confirms, just like Finder.
+Click anywhere in the **title area** (path or filename) in the titlebar to rename the current file. The filename transforms into an editable input — change the name and press **Enter** to confirm, or **Escape** to cancel. Clicking outside the input also confirms, just like Finder.
 
 - Only the filename is editable (not the full path) — use Save As to move files to a different directory
 - If the file is untitled, clicking the filename triggers Save As instead
