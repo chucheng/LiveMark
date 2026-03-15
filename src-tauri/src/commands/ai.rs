@@ -39,7 +39,8 @@ pub async fn ai_revise(
         "messages": [{ "role": "user", "content": text }]
     });
 
-    eprintln!("[DEBUG ai_revise] url: {base_url}");
+    #[cfg(debug_assertions)]
+    eprintln!("[ai_revise] url: {base_url}");
 
     let response = client
         .post(&base_url)
@@ -75,7 +76,8 @@ pub async fn ai_revise(
         .await
         .map_err(|e| format!("AI revision failed — invalid response: {e}"))?;
 
-    eprintln!("[DEBUG ai_revise] response: {json}");
+    #[cfg(debug_assertions)]
+    eprintln!("[ai_revise] response: {json}");
 
     let revised = extract_text(&json)
         .ok_or_else(|| {

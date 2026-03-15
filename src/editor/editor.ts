@@ -22,6 +22,7 @@ import { smartCopyPlugin } from "./plugins/smart-copy";
 import { markdownPastePlugin } from "./plugins/markdown-paste";
 import { imagePopoverPlugin } from "./plugins/image-popover";
 import { linkPopoverPlugin } from "./plugins/link-popover";
+import { italicBoldUpgradePlugin } from "./plugins/italic-bold-upgrade";
 import { tableEditing } from "prosemirror-tables";
 import { gapCursor } from "prosemirror-gapcursor";
 import { nodeViews } from "./nodeviews";
@@ -76,6 +77,7 @@ export function createEditor(
     plugins: [
       aiRevisePlugin(),
       smartCopyPlugin(),
+      italicBoldUpgradePlugin(),
       buildInputRules(),
       buildKeymaps(),
       keymap(baseKeymap),

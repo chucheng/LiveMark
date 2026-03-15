@@ -15,11 +15,6 @@ import type { Node } from "prosemirror-model";
 const MAX_SELECTION_LENGTH = 4000;
 const MULTI_BLOCK_WARN_THRESHOLD = 3;
 
-/** Node types that cannot be meaningfully revised by a text LLM. */
-const BLOCKED_NODE_TYPES = new Set([
-  "image", "table", "code_block", "math_block", "frontmatter",
-]);
-
 /** Base timeout: 10s for short text, +2s per 500 chars beyond 500. Cap at 30s. */
 function computeTimeout(textLength: number): number {
   const BASE_MS = 10_000;
@@ -35,9 +30,8 @@ function computeTimeout(textLength: number): number {
 function validateSelection(view: EditorView, from: number, to: number): string | null {
   const doc = view.state.doc;
 
-  // Collect blocked node types and count top-level blocks in the selection
+  // Collect blocked node types in the selection
   const found = new Set<string>();
-  let blockCount = 0;
 
   doc.nodesBetween(from, to, (node: Node) => {
     if (node.type.name === "image") {
@@ -59,10 +53,6 @@ function validateSelection(view: EditorView, from: number, to: number): string |
     if (node.type.name === "frontmatter") {
       found.add("frontmatter");
       return false;
-    }
-    // Count block-level nodes (direct children of doc or list items, blockquotes, etc.)
-    if (node.isBlock && node.type.name !== "doc") {
-      blockCount++;
     }
     return true; // descend into other nodes
   });

@@ -170,7 +170,8 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
 
           const from = prev.originalFrom;
           const to = prev.originalTo;
-          const revisedText = meta.revisedText;
+          // Re-apply any inline formatting the AI may have stripped
+          const revisedText = preserveInlineFormatting(prev.originalText, meta.revisedText);
 
           // Build diff decorations with view-dependent click handlers
           const decos = from < to && activeView
@@ -286,6 +287,55 @@ export function aiRevisePlugin(): Plugin<AIReviseState> {
       };
     },
   });
+}
+
+/**
+ * Re-apply inline Markdown formatting that the AI may have stripped.
+ * Scans the original text for **bold**, *italic*, `code`, and ~~strike~~ spans,
+ * then finds matching unformatted words in the revised text and re-wraps them.
+ */
+function preserveInlineFormatting(original: string, revised: string): string {
+  // Collect formatted spans from the original: plain text → full formatted string
+  const spans = new Map<string, string>();
+
+  // Order matters: match ** before *, and avoid overlapping
+  const patterns: Array<{ re: RegExp; group: number }> = [
+    { re: /\*\*(.+?)\*\*/g, group: 1 },   // bold
+    { re: /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, group: 1 }, // italic
+    { re: /`(.+?)`/g, group: 1 },           // code
+    { re: /~~(.+?)~~/g, group: 1 },         // strikethrough
+  ];
+
+  for (const { re, group } of patterns) {
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(original)) !== null) {
+      const plain = m[group];
+      const formatted = m[0];
+      // Only keep the first occurrence per plain text (to avoid conflicts)
+      if (plain && !spans.has(plain)) {
+        spans.set(plain, formatted);
+      }
+    }
+  }
+
+  if (spans.size === 0) return revised;
+
+  let result = revised;
+  for (const [plain, formatted] of spans) {
+    // Skip if the formatted version already exists in the revised text
+    if (result.includes(formatted)) continue;
+
+    // Escape regex special chars in the plain text
+    const escaped = plain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Match the plain word only when NOT already wrapped in markdown markers
+    // Negative lookbehind/lookahead for *, `, ~
+    const re = new RegExp(
+      "(?<![*`~])(?<=^|[\\s(\\[\"'])" + escaped + "(?=$|[\\s)\\]\"'.,;:!?])(?![*`~])",
+    );
+    result = result.replace(re, formatted);
+  }
+
+  return result;
 }
 
 // Helper functions

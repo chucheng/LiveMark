@@ -107,7 +107,8 @@ function taskListRule(checked: boolean) {
 function markWrappingRule(
   pattern: RegExp,
   markType: MarkType,
-  markerLength: number
+  markerLength: number,
+  metaKey?: string
 ) {
   return new InputRule(pattern, (state: EditorState, match, start, end) => {
     // match[1] is the prefix before the marker (may be empty)
@@ -132,6 +133,10 @@ function markWrappingRule(
     const markTo = markerStart + (closeStart - openEnd);
     tr.addMark(markFrom, markTo, markType.create());
     tr.removeStoredMark(markType);
+
+    if (metaKey) {
+      tr.setMeta(metaKey, { from: markFrom, to: markTo });
+    }
 
     return tr;
   });
@@ -177,6 +182,13 @@ export function buildInputRules() {
       // *italic*: match "*text*" but not "**"
       markWrappingRule(
         /(?:^|(\s))\*([^*]+)\*$/,
+        schema.marks.em,
+        1,
+        "italic-star-applied"
+      ),
+      // _italic_: match "_text_"
+      markWrappingRule(
+        /(?:^|(\s))_([^_]+)_$/,
         schema.marks.em,
         1
       ),

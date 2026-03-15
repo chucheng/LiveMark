@@ -2,7 +2,7 @@
 
 **The Markdown editor with built-in AI revision.** Select text, hit a shortcut, get an inline diff — right where you write. No copy-pasting to ChatGPT. No switching tabs. No breaking your flow.
 
-![Version](https://img.shields.io/badge/version-3.2.3-blue)
+![Version](https://img.shields.io/badge/version-3.2.4-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 
@@ -42,6 +42,7 @@ Set it up once in **Settings → AI Revision** (`Cmd+,`) and it just works.
 - **Link popover** — click any rendered link for Open, Copy, Edit, and Unlink actions
 - **Smart links** — local file links open in a tab; external URLs open in browser
 - **Find & replace** — Cmd+F with regex, case-sensitive toggle, replace-all; per-textblock search for tables and nested lists
+- **Italic-to-bold upgrade** — type `*text*` to get italic, then type `*` to upgrade to bold; also supports `_text_` for italic
 - **Full keyboard workflow** — Cmd+B/I for bold/italic, Markdown shortcuts, undo/redo
 - **Large file support** — IntersectionObserver-based lazy rendering
 
@@ -196,6 +197,7 @@ src/
       link-click.ts       — Cmd+click opens links (smart local/external)
       link-helpers.ts     — Shared link detection and path resolution
       link-popover.ts     — Link popover (Open, Copy, Edit, Unlink)
+      italic-bold-upgrade.ts — Italic-to-bold upgrade on extra `*`
       image-drop-paste.ts — Image drag-drop/paste handler
       inline-decorations.ts — Inline mark decorations
       lazy-render.ts      — IntersectionObserver-based lazy rendering
@@ -203,6 +205,7 @@ src/
       typewriter.ts       — Typewriter mode (cursor vertical centering)
       smart-copy.ts       — Smart copy/cut (Markdown + styled HTML clipboard)
       markdown-paste.ts   — Smart paste (Markdown text → structured content)
+      italic-bold-upgrade.ts — Upgrades *italic* → **bold** when typing another *
   ui/
     App.tsx               — Root component
     StatusBar.tsx         — Status bar (line/col, words, zoom, theme toggle)
@@ -265,6 +268,7 @@ src-tauri/
 | v3.2.1 | Markdown-aware AI revision (preserves formatting), dark mode diff readability, AI revise test suite, README & welcome rewrite |
 | v3.2.2 | Source view guard — editor-only commands (AI Revise, Find, Insert Link/Image) show a helpful message instead of silently failing |
 | v3.2.3 | AI diff widget renders Markdown formatting (bold, italic, code, links) instead of showing raw syntax |
+| v3.2.4 | AI formatting preservation — post-processor re-applies **bold**/*italic*/`code` stripped by the LLM; improved AI prompt; italic-to-bold upgrade (`*text*` → `**text**`); `_italic_` input rule |
 
 ## Documentation
 

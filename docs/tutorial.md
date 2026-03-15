@@ -28,8 +28,8 @@ Markdown supports six levels of headings. Type `#` followed by a space to create
 
 LiveMark supports all standard inline formatting. These render live as you type:
 
-- **Bold** — wrap text with `**double asterisks**`
-- *Italic* — wrap text with `*single asterisks*`
+- **Bold** — wrap text with `**double asterisks**`, or type `*text*` then press `*` again to upgrade italic to bold
+- *Italic* — wrap text with `*single asterisks*` or `_single underscores_`
 - ~~Strikethrough~~ — wrap text with `~~double tildes~~`
 - `Inline code` — wrap text with `` `backticks` ``
 
