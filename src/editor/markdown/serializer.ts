@@ -251,5 +251,5 @@ function backticksFor(textNode: Node, side: number): string {
  * Serialize a ProseMirror document node to a Markdown string.
  */
 export function serializeMarkdown(doc: Node): string {
-  return markdownSerializer.serialize(doc);
+  return markdownSerializer.serialize(doc, { tightLists: true });
 }
